@@ -22,7 +22,7 @@ public sealed class StockItemEndpointsTests
 		_client = await _factory.CreateAuthenticatedClientAsync();
 
 		var stockItems = _factory.ScopedServices.GetRequiredService<IStockItemServiceProvider>();
-		await stockItems.AddStockItemAsync(new StockItem("Screw", code: "A1", amount: 10, price: 5000));
+		await stockItems.AddStockItemAsync(new StockItem("Screw", code: "A1", amount: 10, price: 5000) { Barcode = "4006381333931" });
 		await stockItems.AddStockItemAsync(new StockItem("Nut", code: "B2", amount: 3, price: 1000));
 	}
 
@@ -119,6 +119,39 @@ public sealed class StockItemEndpointsTests
 	}
 
 	[TestMethod]
+	public async Task CreateStockItem_ValidBarcode_StoresIt()
+	{
+		// Act
+		var response = await _client.PostAsJsonAsync("/api/stock-items", new { Code = "C3", Name = "Bolt", Barcode = "40123455" });
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+		var stockItem = await response.Content.ReadAsAsync<StockItemResponse>();
+		Assert.AreEqual("40123455", stockItem.Barcode);
+	}
+
+	[TestMethod]
+	public async Task CreateStockItem_InvalidBarcode_Returns400()
+	{
+		// Act
+		var response = await _client.PostAsJsonAsync("/api/stock-items", new { Code = "C3", Name = "Bolt", Barcode = "not-a-barcode" });
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+		StringAssert.Contains(await response.Content.ReadAsStringAsync(), "barcodeInvalid");
+	}
+
+	[TestMethod]
+	public async Task CreateStockItem_DuplicateBarcode_Returns409()
+	{
+		// Act
+		var response = await _client.PostAsJsonAsync("/api/stock-items", new { Code = "C3", Name = "Bolt", Barcode = "4006381333931" });
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Conflict, response.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task CreateStockItem_EmptyName_Returns400()
 	{
 		// Act
@@ -174,6 +207,19 @@ public sealed class StockItemEndpointsTests
 	}
 
 	[TestMethod]
+	public async Task UpdateStockItem_BarcodeChangedToDuplicate_Returns409()
+	{
+		// Arrange
+		var id = (await (await _client.GetAsync("/api/stock-items/B2")).Content.ReadAsAsync<StockItemResponse>()).Id;
+
+		// Act
+		var response = await _client.PutAsJsonAsync($"/api/stock-items/{id}", new { Id = id, Code = "B2", Name = "Nut", Barcode = "4006381333931" });
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Conflict, response.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task UpdateStockItem_UnknownId_Returns404()
 	{
 		// Act
@@ -202,6 +248,28 @@ public sealed class StockItemEndpointsTests
 	{
 		// Act
 		var response = await _client.DeleteAsync("/api/stock-items/unknown");
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task GetStockItemByBarcode_KnownBarcode_ReturnsItem()
+	{
+		// Act
+		var response = await _client.GetAsync("/api/stock-items/by-barcode/4006381333931");
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+		var stockItem = await response.Content.ReadAsAsync<StockItemResponse>();
+		Assert.AreEqual("A1", stockItem.Code);
+	}
+
+	[TestMethod]
+	public async Task GetStockItemByBarcode_UnknownBarcode_Returns404()
+	{
+		// Act
+		var response = await _client.GetAsync("/api/stock-items/by-barcode/0000000000000");
 
 		// Assert
 		Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);

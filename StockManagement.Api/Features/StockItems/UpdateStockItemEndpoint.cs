@@ -11,7 +11,7 @@ using StockManagement.Settings.Core.Contracts;
 namespace StockManagement.Api.Features.StockItems;
 
 
-public sealed record UpdateStockItemRequest(string Id, string Code, string Name, string Description = "", string Location = "", int Amount = 0, decimal Price = 0, string Manufacturer = "", decimal Factor = 0, decimal PurchasePrice = 0, decimal PurchaseExchangeRate = 0, decimal AdditionalPurchaseCost = 0, string? SupplierId = null, int MinimumStock = 0, decimal VatRatePercent = 0);
+public sealed record UpdateStockItemRequest(string Id, string Code, string Name, string Description = "", string Location = "", int Amount = 0, decimal Price = 0, string Manufacturer = "", decimal Factor = 0, decimal PurchasePrice = 0, decimal PurchaseExchangeRate = 0, decimal AdditionalPurchaseCost = 0, string? SupplierId = null, int MinimumStock = 0, decimal VatRatePercent = 0, string Barcode = "");
 
 
 public class UpdateStockItemValidator : Validator<UpdateStockItemRequest>
@@ -20,6 +20,7 @@ public class UpdateStockItemValidator : Validator<UpdateStockItemRequest>
 	{
 		this.RuleFor(request => request.Code).NotEmpty().WithMessage("codeRequired");
 		this.RuleFor(request => request.Name).NotEmpty().WithMessage("nameRequired");
+		this.RuleFor(request => request.Barcode).Matches(@"^(\d{8}|\d{12,13})$").When(request => request.Barcode != "").WithMessage("barcodeInvalid");
 		this.RuleFor(request => request.Amount).GreaterThanOrEqualTo(0).WithMessage("amountNegative");
 		this.RuleFor(request => request.Price).GreaterThanOrEqualTo(0).WithMessage("priceNegative");
 		this.RuleFor(request => request.Factor).GreaterThanOrEqualTo(0).WithMessage("factorNegative");
@@ -33,7 +34,7 @@ public class UpdateStockItemValidator : Validator<UpdateStockItemRequest>
 
 
 /// <remarks>Matches the stored item by <c>Id</c> (docs/decisions.md: update by Id, never by business key), so Code can be renamed. When <c>Factor > 0</c>, <c>Price</c> is derived from the purchase fields (ADR-0020) instead of the request's <c>Price</c>.</remarks>
-public class UpdateStockItemEndpoint(IStockItemServiceProvider stockItemServiceProvider, ISettingsService settingsService) : Endpoint<UpdateStockItemRequest, Results<Ok<StockItemResponse>, NotFound, Conflict<DuplicateStockItemCodeResponse>>>
+public class UpdateStockItemEndpoint(IStockItemServiceProvider stockItemServiceProvider, ISettingsService settingsService) : Endpoint<UpdateStockItemRequest, Results<Ok<StockItemResponse>, NotFound, Conflict<DuplicateStockItemCodeResponse>, Conflict<DuplicateStockItemBarcodeResponse>>>
 {
 	private readonly IStockItemServiceProvider _stockItemServiceProvider = stockItemServiceProvider;
 	private readonly ISettingsService _settingsService = settingsService;
@@ -45,7 +46,7 @@ public class UpdateStockItemEndpoint(IStockItemServiceProvider stockItemServiceP
 		this.Permissions(Permission.StockItemsWrite);
 	}
 
-	public override async Task<Results<Ok<StockItemResponse>, NotFound, Conflict<DuplicateStockItemCodeResponse>>> ExecuteAsync(UpdateStockItemRequest request, CancellationToken cancellationToken)
+	public override async Task<Results<Ok<StockItemResponse>, NotFound, Conflict<DuplicateStockItemCodeResponse>, Conflict<DuplicateStockItemBarcodeResponse>>> ExecuteAsync(UpdateStockItemRequest request, CancellationToken cancellationToken)
 	{
 		if (await _stockItemServiceProvider.GetStockItemByIdAsync(request.Id, cancellationToken) is not StockItem stockItem) return TypedResults.NotFound();
 
@@ -62,6 +63,7 @@ public class UpdateStockItemEndpoint(IStockItemServiceProvider stockItemServiceP
 		stockItem.SupplierId = request.SupplierId;
 		stockItem.MinimumStock = request.MinimumStock;
 		stockItem.VatRatePercent = request.VatRatePercent;
+		stockItem.Barcode = request.Barcode;
 
 		if (request.Factor > 0)
 		{
@@ -80,6 +82,10 @@ public class UpdateStockItemEndpoint(IStockItemServiceProvider stockItemServiceP
 		catch (StockItemCodeAlreadyExistsException)
 		{
 			return TypedResults.Conflict(new DuplicateStockItemCodeResponse(request.Code));
+		}
+		catch (StockItemBarcodeAlreadyExistsException)
+		{
+			return TypedResults.Conflict(new DuplicateStockItemBarcodeResponse(request.Barcode));
 		}
 
 		// Reload: stockItem.Supplier may still reference the old row after a SupplierId change

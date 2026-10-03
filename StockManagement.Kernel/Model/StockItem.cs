@@ -9,6 +9,7 @@ namespace StockManagement.Kernel.Model;
 public class StockItem : BaseDocument
 {
 	private string _code = string.Empty;
+	private string _barcode = string.Empty;
 	private string _description = string.Empty;
 	private string _location = string.Empty;
 	private string _name = string.Empty;
@@ -51,6 +52,14 @@ public class StockItem : BaseDocument
 	{
 		get { return _code; }
 		set { this.SetField(ref _code, value); }
+	}
+
+	/// <remarks>EAN-8/EAN-13/UPC-A, optional; scanned at point of sale instead of typing <see cref="Code"/> (#165)</remarks>
+	[Display(ResourceType = typeof(Language.StockItems), Name = nameof(Language.StockItems.barcode))]
+	public string Barcode
+	{
+		get { return _barcode; }
+		set { this.SetField(ref _barcode, value); }
 	}
 
 	[Display(ResourceType = typeof(Language.StockItems), Name = nameof(Language.StockItems.amount))]

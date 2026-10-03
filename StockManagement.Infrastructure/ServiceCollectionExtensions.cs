@@ -39,6 +39,7 @@ public static class ServiceCollectionExtensions
 		services.AddScoped<IRemissionNoteServiceProvider, EfRemissionNoteServiceProvider>();
 		services.AddScoped<IPendingRemisionTransmissionServiceProvider, EfPendingRemisionTransmissionServiceProvider>();
 		services.AddScoped<IGoodsImportDocumentServiceProvider, EfGoodsImportDocumentServiceProvider>();
+		services.AddScoped<IReportServiceProvider, EfReportServiceProvider>();
 		return services;
 	}
 }

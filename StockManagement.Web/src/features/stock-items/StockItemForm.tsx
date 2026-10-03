@@ -4,9 +4,9 @@ import { FailureMessage } from "../../FailureMessage";
 import { useI18n, type TextKey } from "../../i18n";
 import { useLoad } from "../../useLoad";
 
-const fields: (keyof StockItem & TextKey)[] = ["code", "name", "description", "location", "amount", "manufacturer", "purchasePrice", "purchaseExchangeRate", "additionalPurchaseCost", "factor", "price", "minimumStock"];
+const fields: (keyof StockItem & TextKey)[] = ["code", "barcode", "name", "description", "location", "amount", "manufacturer", "purchasePrice", "purchaseExchangeRate", "additionalPurchaseCost", "factor", "price", "minimumStock"];
 const numberFields = new Set<string>(["amount", "price", "factor", "purchasePrice", "purchaseExchangeRate", "additionalPurchaseCost", "minimumStock"]);
-const empty: StockItem = { id: "", code: "", name: "", description: "", location: "", amount: 0, price: 0, manufacturer: "", factor: 0, purchasePrice: 0, purchaseExchangeRate: 0, additionalPurchaseCost: 0, minimumStock: 0 };
+const empty: StockItem = { id: "", code: "", name: "", description: "", location: "", amount: 0, price: 0, manufacturer: "", factor: 0, purchasePrice: 0, purchaseExchangeRate: 0, additionalPurchaseCost: 0, minimumStock: 0, barcode: "" };
 
 export function StockItemForm({ editing, onSaved, onCancel }: { editing?: StockItem; onSaved: (stockItem: StockItem) => void; onCancel: () => void })
 {

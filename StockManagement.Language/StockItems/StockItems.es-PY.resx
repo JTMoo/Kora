@@ -132,6 +132,9 @@
   <data name="code" xml:space="preserve">
     <value>Codigo</value>
   </data>
+  <data name="barcode" xml:space="preserve">
+    <value>Código de barras</value>
+  </data>
   <data name="createItem" xml:space="preserve">
     <value>Crear artículo</value>
   </data>
@@ -242,6 +245,15 @@
   </data>
   <data name="codeRequired" xml:space="preserve">
     <value>El código es obligatorio.</value>
+  </data>
+  <data name="barcodeInvalid" xml:space="preserve">
+    <value>El código de barras debe ser EAN-8, EAN-13 o UPC-A.</value>
+  </data>
+  <data name="scanBarcode" xml:space="preserve">
+    <value>Escanear código de barras</value>
+  </data>
+  <data name="barcodeNotFound" xml:space="preserve">
+    <value>No hay artículo con este código de barras.</value>
   </data>
   <data name="amountNegative" xml:space="preserve">
     <value>La cantidad no puede ser negativa.</value>

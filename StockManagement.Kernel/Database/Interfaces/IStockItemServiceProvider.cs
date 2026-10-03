@@ -8,6 +8,9 @@ public interface IStockItemServiceProvider
 {
 	public Task<StockItem> GetStockItemAsync(string code, CancellationToken cancellationToken = default);
 	public Task<StockItem> GetStockItemByIdAsync(string id, CancellationToken cancellationToken = default);
+
+	/// <summary>Scan-to-sell lookup (#165); <paramref name="barcode"/> empty never matches</summary>
+	public Task<StockItem?> GetStockItemByBarcodeAsync(string barcode, CancellationToken cancellationToken = default);
 	public Task<IEnumerable<StockItem>> GetAllStockItemsAsync(CancellationToken cancellationToken = default);
 
 	/// <summary>Stock items by <see cref="StockItem.Code"/> then <see cref="BaseDocument.Id"/>, one page at a time</summary>

@@ -6,6 +6,7 @@ import { LoginPage } from "./features/auth/LoginPage";
 import { customersRoute } from "./features/customers/route";
 import { invoicesRoute } from "./features/invoices/route";
 import { salesRoute } from "./features/sales/route";
+import { reportsRoute } from "./features/reports/route";
 import { CommandPalette } from "./features/search/CommandPalette";
 import { companySettingsRoute, settingsRoute } from "./features/settings/routes";
 import { stockItemsRoute } from "./features/stock-items/route";
@@ -15,7 +16,7 @@ import { useI18n } from "./i18n";
 import type { NavRoute, View } from "./routes";
 
 // Same order and icons as the WPF menu (FontAwesome Wrench, AddressBook, Inbox)
-const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, companySettingsRoute, settingsRoute, usersRoute];
+const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, reportsRoute, companySettingsRoute, settingsRoute, usersRoute];
 
 export function App()
 {

@@ -60,6 +60,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Suppliers.resx</DependentUpon>
     </Compile>
+    <Compile Update="Reports\Reports.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Reports.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -111,6 +116,11 @@
     <EmbeddedResource Update="Suppliers\Suppliers.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Suppliers.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>StockManagement.Language</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Reports\Reports.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Reports.Designer.cs</LastGenOutput>
       <CustomToolNamespace>StockManagement.Language</CustomToolNamespace>
     </EmbeddedResource>
   </ItemGroup>

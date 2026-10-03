@@ -100,4 +100,40 @@ describe("SaleForm", () =>
 		// Assert
 		expect(within(screen.getByRole("table", { name: "Shopping Cart" })).queryByRole("cell", { name: "Screw" })).not.toBeInTheDocument();
 	});
+
+	it("ScanBarcode_KnownBarcode_AddsToCart", async () =>
+	{
+		// Arrange
+		mockApi({
+			"GET /api/customers?pageSize=100": { body: { items: [ana], nextCursor: null } },
+			"GET /api/stock-items?pageSize=100": { body: { items: [screw, nut], nextCursor: null } },
+			"GET /api/stock-items/by-barcode/4006381333931": { body: screw }
+		});
+		renderEnglish(<SaleForm onSold={vi.fn()} />);
+		await screen.findByRole("option", { name: "1001 Ana Gómez" });
+
+		// Act
+		await userEvent.type(screen.getByLabelText("Scan barcode"), "4006381333931{Enter}");
+
+		// Assert
+		expect(within(screen.getByRole("table", { name: "Shopping Cart" })).getByRole("cell", { name: /Screw/ })).toBeInTheDocument();
+	});
+
+	it("ScanBarcode_UnknownBarcode_ShowsToast", async () =>
+	{
+		// Arrange
+		mockApi({
+			"GET /api/customers?pageSize=100": { body: { items: [ana], nextCursor: null } },
+			"GET /api/stock-items?pageSize=100": { body: { items: [screw, nut], nextCursor: null } },
+			"GET /api/stock-items/by-barcode/0000000000000": { status: 404 }
+		});
+		renderEnglish(<SaleForm onSold={vi.fn()} />);
+		await screen.findByRole("option", { name: "1001 Ana Gómez" });
+
+		// Act
+		await userEvent.type(screen.getByLabelText("Scan barcode"), "0000000000000{Enter}");
+
+		// Assert
+		expect(await screen.findByText("No stock item with this barcode.")).toBeInTheDocument();
+	});
 });

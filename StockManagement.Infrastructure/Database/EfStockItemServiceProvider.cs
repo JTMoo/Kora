@@ -26,6 +26,12 @@ public class EfStockItemServiceProvider(AppDbContext db) : IStockItemServiceProv
 		return _db.StockItems.Include(item => item.Supplier).SingleOrDefaultAsync(item => item.Id == id, cancellationToken)!;
 	}
 
+	public Task<StockItem?> GetStockItemByBarcodeAsync(string barcode, CancellationToken cancellationToken = default)
+	{
+		if (string.IsNullOrEmpty(barcode)) return Task.FromResult<StockItem?>(null);
+		return _db.StockItems.Include(item => item.Supplier).SingleOrDefaultAsync(item => item.Barcode == barcode, cancellationToken);
+	}
+
 	public async Task<IEnumerable<StockItem>> GetAllStockItemsAsync(CancellationToken cancellationToken = default)
 	{
 		return await _db.StockItems.Include(item => item.Supplier).ToListAsync(cancellationToken);
@@ -65,6 +71,7 @@ public class EfStockItemServiceProvider(AppDbContext db) : IStockItemServiceProv
 	}
 
 	/// <exception cref="StockItemCodeAlreadyExistsException">Code already in use</exception>
+	/// <exception cref="StockItemBarcodeAlreadyExistsException">Barcode already in use</exception>
 	public async Task AddStockItemAsync(StockItem stockItem, CancellationToken cancellationToken = default)
 	{
 		_db.StockItems.Add(stockItem);
@@ -80,6 +87,7 @@ public class EfStockItemServiceProvider(AppDbContext db) : IStockItemServiceProv
 	}
 
 	/// <exception cref="StockItemCodeAlreadyExistsException">Code already in use</exception>
+	/// <exception cref="StockItemBarcodeAlreadyExistsException">Barcode already in use</exception>
 	public async Task<int> UpdateStockItemAsync(StockItem stockItem, CancellationToken cancellationToken = default)
 	{
 		// Track StockItem's own state first: Add() on the Transaction below would otherwise graph-fixup StockItem as Added too
@@ -162,6 +170,10 @@ public class EfStockItemServiceProvider(AppDbContext db) : IStockItemServiceProv
 		try
 		{
 			await _db.SaveChangesAsync(cancellationToken);
+		}
+		catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException { SqlState: "23505", ConstraintName: StockItemConfiguration.BarcodeIndexName })
+		{
+			throw new StockItemBarcodeAlreadyExistsException();
 		}
 		catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException { SqlState: "23505" })
 		{

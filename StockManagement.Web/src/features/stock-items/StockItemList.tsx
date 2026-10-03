@@ -52,7 +52,7 @@ export function StockItemList()
 
 	const term = search.trim().toLowerCase();
 	const visible = stockItems
-		.filter(item => [item.code, item.name, item.description, item.location].some(value => value.toLowerCase().includes(term)))
+		.filter(item => [item.code, item.barcode, item.name, item.description, item.location].some(value => value.toLowerCase().includes(term)))
 		.filter(item => !belowMinimumOnly || (item.minimumStock > 0 && item.amount < item.minimumStock));
 
 	function onSaved(stockItem: StockItem)

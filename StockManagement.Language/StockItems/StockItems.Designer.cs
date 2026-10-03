@@ -106,6 +106,15 @@ namespace StockManagement.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Barcode.
+        /// </summary>
+        public static string barcode {
+            get {
+                return ResourceManager.GetString("barcode", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Create Stock item.
         /// </summary>
         public static string createItem {
@@ -434,6 +443,33 @@ namespace StockManagement.Language {
         public static string codeRequired {
             get {
                 return ResourceManager.GetString("codeRequired", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Barcode must be EAN-8, EAN-13 or UPC-A..
+        /// </summary>
+        public static string barcodeInvalid {
+            get {
+                return ResourceManager.GetString("barcodeInvalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Scan barcode.
+        /// </summary>
+        public static string scanBarcode {
+            get {
+                return ResourceManager.GetString("scanBarcode", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No stock item with this barcode..
+        /// </summary>
+        public static string barcodeNotFound {
+            get {
+                return ResourceManager.GetString("barcodeNotFound", resourceCulture);
             }
         }
 

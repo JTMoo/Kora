@@ -286,6 +286,15 @@ namespace StockManagement.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to View reports.
+        /// </summary>
+        public static string permReportsRead {
+            get {
+                return ResourceManager.GetString("permReportsRead", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Manage users.
         /// </summary>
         public static string permUsersManage {

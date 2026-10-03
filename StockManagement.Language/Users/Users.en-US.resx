@@ -192,6 +192,9 @@
   <data name="permSuppliersWrite" xml:space="preserve">
     <value>Edit suppliers</value>
   </data>
+  <data name="permReportsRead" xml:space="preserve">
+    <value>View reports</value>
+  </data>
   <data name="permUsersManage" xml:space="preserve">
     <value>Manage users</value>
   </data>

@@ -16,6 +16,7 @@ export function SaleForm({ onSold }: { onSold: (invoice: Invoice) => void })
 	const stockItems = useLoad(api.listStockItems);
 	const [customerId, setCustomerId] = useState("");
 	const [code, setCode] = useState("");
+	const [barcode, setBarcode] = useState("");
 	const [amount, setAmount] = useState(1);
 	const [saleCondition, setSaleCondition] = useState<SaleCondition>("Cash");
 	const [cart, setCart] = useState<CartLine[]>([]);
@@ -25,16 +26,31 @@ export function SaleForm({ onSold }: { onSold: (invoice: Invoice) => void })
 	const available = (stockItems.data ?? []).filter(item => item.amount > 0);
 	const total = cart.reduce((sum, line) => sum + line.item.price * line.amount, 0);
 
-	function onAdd()
+	function addToCart(item: StockItem)
 	{
-		const item = available.find(candidate => candidate.code === code);
-		if (!item || amount < 1) return;
-
-		const existing = cart.find(line => line.item.code === code);
+		const existing = cart.find(line => line.item.code === item.code);
 		setCart(existing
 			? cart.map(line => line === existing ? { ...line, amount: line.amount + amount } : line)
 			: [...cart, { item, amount }]);
 		setAmount(1);
+	}
+
+	function onAdd()
+	{
+		const item = available.find(candidate => candidate.code === code);
+		if (!item || amount < 1) return;
+		addToCart(item);
+	}
+
+	async function onScan()
+	{
+		if (!barcode) return;
+
+		const result = await api.getStockItemByBarcode(barcode);
+		setBarcode("");
+		if (!result.ok) return showToast(t("barcodeNotFound"));
+
+		addToCart(result.value);
 	}
 
 	async function onSubmit(event: FormEvent)
@@ -87,6 +103,18 @@ export function SaleForm({ onSold }: { onSold: (invoice: Invoice) => void })
 					</div>
 					<div className="form-actions">
 						<button type="button" onClick={onAdd} disabled={!code}>{t("addToShoppingCart")}</button>
+					</div>
+					<div className="form-grid">
+						<label>
+							{t("scanBarcode")}
+							<input
+								type="text"
+								autoFocus
+								value={barcode}
+								onChange={event => setBarcode(event.target.value)}
+								onKeyDown={event => { if (event.key === "Enter") { event.preventDefault(); onScan(); } }}
+							/>
+						</label>
 					</div>
 				</div>
 				<div className="panel receipt">

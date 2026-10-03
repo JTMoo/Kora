@@ -7,11 +7,18 @@ namespace StockManagement.Infrastructure.Database;
 
 internal sealed class StockItemConfiguration : IEntityTypeConfiguration<StockItem>
 {
+	public const string BarcodeIndexName = "IX_StockItems_Barcode";
+
+
 	public void Configure(EntityTypeBuilder<StockItem> builder)
 	{
 		builder.Property<string>("Id").ValueGeneratedOnAdd();
 		builder.HasKey("Id");
 		builder.HasIndex(item => item.Code).IsUnique();
+		builder.HasIndex(item => item.Barcode)
+			.IsUnique()
+			.HasDatabaseName(BarcodeIndexName)
+			.HasFilter("\"Barcode\" <> ''");
 		builder.Property(item => item.Price).HasPrecision(18, 2);
 		builder.Property(item => item.Factor).HasPrecision(18, 2);
 		builder.Property(item => item.PurchasePrice).HasPrecision(18, 2);

@@ -482,6 +482,10 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Barcode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("text");
@@ -532,6 +536,11 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .HasColumnType("numeric(5,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Barcode")
+                        .IsUnique()
+                        .HasDatabaseName("IX_StockItems_Barcode")
+                        .HasFilter("\"Barcode\" <> ''");
 
                     b.HasIndex("Code")
                         .IsUnique();

@@ -1,7 +1,7 @@
 // Turns per-domain StockManagement.Language resx files into src/i18n/*.json (neutral + culture overrides).
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
-const domains = ["Common", "Auth", "Settings", "Customers", "StockItems", "Invoices", "Import", "Users", "Suppliers"];
+const domains = ["Common", "Auth", "Settings", "Customers", "StockItems", "Invoices", "Import", "Users", "Suppliers", "Reports"];
 const source = new URL("../../StockManagement.Language/", import.meta.url);
 const target = new URL("../src/i18n/", import.meta.url);
 const entities = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" };
