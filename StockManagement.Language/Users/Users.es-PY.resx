@@ -192,6 +192,12 @@
   <data name="permSuppliersWrite" xml:space="preserve">
     <value>Editar proveedores</value>
   </data>
+  <data name="permGoodsImportsRead" xml:space="preserve">
+    <value>Ver importaciones de mercancías</value>
+  </data>
+  <data name="permGoodsImportsWrite" xml:space="preserve">
+    <value>Editar importaciones de mercancías</value>
+  </data>
   <data name="permReportsRead" xml:space="preserve">
     <value>Ver reportes</value>
   </data>

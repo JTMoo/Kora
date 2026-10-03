@@ -286,6 +286,24 @@ namespace StockManagement.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to View goods imports.
+        /// </summary>
+        public static string permGoodsImportsRead {
+            get {
+                return ResourceManager.GetString("permGoodsImportsRead", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Edit goods imports.
+        /// </summary>
+        public static string permGoodsImportsWrite {
+            get {
+                return ResourceManager.GetString("permGoodsImportsWrite", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to View reports.
         /// </summary>
         public static string permReportsRead {
