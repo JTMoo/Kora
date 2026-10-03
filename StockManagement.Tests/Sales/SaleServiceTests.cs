@@ -54,7 +54,7 @@ public sealed class SaleServiceTests
 	}
 
 	[TestMethod]
-	public async Task CreateInvoiceAsync_ContingencyModeOff_LeavesCdcEmpty()
+	public async Task CreateInvoiceAsync_Always_LeavesCdcEmpty()
 	{
 		// Arrange
 		var service = this.CreateService();
@@ -65,22 +65,6 @@ public sealed class SaleServiceTests
 
 		// Assert
 		Assert.AreEqual("", invoice.Cdc);
-	}
-
-	[TestMethod]
-	public async Task CreateInvoiceAsync_ContingencyModeActive_IssuesCdcLocally()
-	{
-		// Arrange
-		var cdc = "0" + new string('1', 43);
-		_contingencyCdcIssuer.Setup(issuer => issuer.TryIssueAsync(It.IsAny<CancellationToken>())).ReturnsAsync(cdc);
-		var service = this.CreateService();
-		List<ShoppingCartItem> items = [CreateCartItem("A1", "Screw", inStock: 10, price: 100, quantity: 1)];
-
-		// Act
-		var invoice = await service.CreateInvoiceAsync(new Customer(), items, DateTime.Today);
-
-		// Assert
-		Assert.AreEqual(cdc, invoice.Cdc);
 	}
 
 	[TestMethod]
@@ -215,6 +199,55 @@ public sealed class SaleServiceTests
 		Assert.IsFalse(result.Succeeded);
 		CollectionAssert.AreEqual(new[] { "Screw" }, result.UnavailableItems.ToList());
 		_invoices.Verify(provider => provider.TryAddSaleAsync(It.IsAny<Invoice>(), It.IsAny<CancellationToken>()), Times.Never);
+	}
+
+	[TestMethod]
+	public async Task CompleteSaleAsync_StockShortage_NeverReservesCdc()
+	{
+		// Arrange (#167): shortage must short-circuit before the CDC is reserved
+		this.SetupStock(new StockItem("Screw", code: "A1", amount: 2));
+		var invoice = CreateInvoice(CreateCartItem("A1", "Screw", inStock: 10, price: 100, quantity: 3));
+		var service = this.CreateService();
+
+		// Act
+		await service.CompleteSaleAsync(invoice);
+
+		// Assert
+		_contingencyCdcIssuer.Verify(issuer => issuer.TryIssueAsync(It.IsAny<CancellationToken>()), Times.Never);
+		Assert.AreEqual("", invoice.Cdc);
+	}
+
+	[TestMethod]
+	public async Task CompleteSaleAsync_ContingencyModeOff_LeavesCdcEmpty()
+	{
+		// Arrange
+		this.SetupStock(new StockItem("Screw", code: "A1", amount: 10));
+		var invoice = CreateInvoice(CreateCartItem("A1", "Screw", inStock: 10, price: 100, quantity: 1));
+		var service = this.CreateService();
+
+		// Act
+		await service.CompleteSaleAsync(invoice);
+
+		// Assert
+		Assert.AreEqual("", invoice.Cdc);
+	}
+
+	[TestMethod]
+	public async Task CompleteSaleAsync_ContingencyModeActive_IssuesCdcLocallyAfterShortageCheck()
+	{
+		// Arrange
+		var cdc = "0" + new string('1', 43);
+		_contingencyCdcIssuer.Setup(issuer => issuer.TryIssueAsync(It.IsAny<CancellationToken>())).ReturnsAsync(cdc);
+		this.SetupStock(new StockItem("Screw", code: "A1", amount: 10));
+		var invoice = CreateInvoice(CreateCartItem("A1", "Screw", inStock: 10, price: 100, quantity: 1));
+		var service = this.CreateService();
+
+		// Act
+		var result = await service.CompleteSaleAsync(invoice);
+
+		// Assert
+		Assert.IsTrue(result.Succeeded);
+		Assert.AreEqual(cdc, invoice.Cdc);
 	}
 
 	[TestMethod]

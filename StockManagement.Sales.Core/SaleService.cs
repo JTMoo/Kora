@@ -31,11 +31,6 @@ internal class SaleService(IStockItemServiceProvider stockItemServiceProvider, I
 		var lines = cartItems.Select(ToSaleLine).ToList();
 		var total = InvoiceCalculator.CalculateTotal(lines, companySettings.CurrencyDecimalDigits);
 
-		// Contingency mode (#149): issue the CDC locally now, from the pre-assigned DNIT range, so the invoice is
-		// legally valid with zero connectivity; null when contingency mode is off, same as the normal path where
-		// the CDC is only assigned once the outbox worker reaches SIFEN.
-		var contingencyCdc = await _contingencyCdcIssuer.TryIssueAsync(cancellationToken);
-
 		return new Invoice()
 		{
 			Customer = customer,
@@ -44,7 +39,7 @@ internal class SaleService(IStockItemServiceProvider stockItemServiceProvider, I
 			Items = cartItems,
 			Total = total,
 			Tax = InvoiceCalculator.CalculateTax(lines, companySettings.CurrencyDecimalDigits),
-			Cdc = contingencyCdc ?? ""
+			Cdc = ""
 		};
 	}
 
@@ -77,6 +72,10 @@ internal class SaleService(IStockItemServiceProvider stockItemServiceProvider, I
 		var requests = items.Select(item => new StockRequest(item.StockItem.Code, item.StockItem.Name, item.Amount, currentStock.GetValueOrDefault(item.StockItem.Code)?.Amount ?? 0));
 		var shortages = StockAvailability.FindShortages(requests);
 		if (shortages.Count > 0) return new SaleResult(shortages.Select(shortage => shortage.Name).ToList());
+
+		// Contingency mode (#149): issue the CDC locally, from the pre-assigned DNIT range, only once the shortage
+		// check above has passed and right before the write, so a failed sale never burns a reserved number (#167).
+		invoice.Cdc = await _contingencyCdcIssuer.TryIssueAsync(cancellationToken) ?? "";
 
 		var shortItems = await _invoiceServiceProvider.TryAddSaleAsync(invoice, cancellationToken);
 		return shortItems.Count == 0 ? SaleResult.Success : new SaleResult(shortItems);
