@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
@@ -29,27 +28,8 @@ public class ExportIvaBookEndpoint(IIvaBookExportService ivaBookExportService) :
 		if (request.From > request.To) return TypedResults.BadRequest();
 
 		var rows = await _ivaBookExportService.GetRowsAsync(request.From, request.To, cancellationToken);
-		var csv = Encoding.UTF8.GetBytes(BuildCsv(rows));
+		var csv = Encoding.UTF8.GetBytes(IvaBookCsvWriter.BuildCsv(rows));
 		var fileName = $"iva-book-{request.From:yyyyMMdd}-{request.To:yyyyMMdd}.csv";
 		return TypedResults.File(csv, "text/csv", fileName);
-	}
-
-	private static string BuildCsv(IReadOnlyList<IvaBookRow> rows)
-	{
-		var lines = new List<string> { "TipoComprobante,Numero,Fecha,RucCliente,NombreCliente,Gravado10,Iva10,Gravado5,Iva5,Exento,Total" };
-		lines.AddRange(rows.Select(row => string.Join(",",
-			row.DocumentTypeCode, CsvField(row.Number), row.Date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture), CsvField(row.CustomerRuc), CsvField(row.CustomerName),
-			Amount(row.Taxed10), Amount(row.Vat10), Amount(row.Taxed5), Amount(row.Vat5), Amount(row.Exempt), Amount(row.Total))));
-		return string.Join("\r\n", lines) + "\r\n";
-	}
-
-	private static string Amount(decimal value)
-	{
-		return value.ToString(CultureInfo.InvariantCulture);
-	}
-
-	private static string CsvField(string value)
-	{
-		return value.IndexOfAny([',', '"', '\r', '\n']) < 0 ? value : $"\"{value.Replace("\"", "\"\"")}\"";
 	}
 }
