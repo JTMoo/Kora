@@ -24,7 +24,7 @@ public sealed class SaleServiceTests
 	{
 		_settings.Setup(service => service.GetCompanySettingsAsync(It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new CompanySettings("", "", "", 10m, 30, 1, 1001, 0));
-		_contingencyCdcIssuer.Setup(issuer => issuer.TryIssueAsync(It.IsAny<CancellationToken>())).ReturnsAsync((string?)null);
+		_contingencyCdcIssuer.Setup(issuer => issuer.TryIssueAsync(It.IsAny<SifenDocumentType>(), It.IsAny<CancellationToken>())).ReturnsAsync((string?)null);
 	}
 
 	[TestMethod]
@@ -213,7 +213,7 @@ public sealed class SaleServiceTests
 		await service.CompleteSaleAsync(invoice);
 
 		// Assert
-		_contingencyCdcIssuer.Verify(issuer => issuer.TryIssueAsync(It.IsAny<CancellationToken>()), Times.Never);
+		_contingencyCdcIssuer.Verify(issuer => issuer.TryIssueAsync(It.IsAny<SifenDocumentType>(), It.IsAny<CancellationToken>()), Times.Never);
 		Assert.AreEqual("", invoice.Cdc);
 	}
 
@@ -237,7 +237,7 @@ public sealed class SaleServiceTests
 	{
 		// Arrange
 		var cdc = "0" + new string('1', 43);
-		_contingencyCdcIssuer.Setup(issuer => issuer.TryIssueAsync(It.IsAny<CancellationToken>())).ReturnsAsync(cdc);
+		_contingencyCdcIssuer.Setup(issuer => issuer.TryIssueAsync(It.IsAny<SifenDocumentType>(), It.IsAny<CancellationToken>())).ReturnsAsync(cdc);
 		this.SetupStock(new StockItem("Screw", code: "A1", amount: 10));
 		var invoice = CreateInvoice(CreateCartItem("A1", "Screw", inStock: 10, price: 100, quantity: 1));
 		var service = this.CreateService();

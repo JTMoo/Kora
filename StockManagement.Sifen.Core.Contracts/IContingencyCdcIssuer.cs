@@ -17,9 +17,10 @@ public interface IContingencyCdcIssuer
 	public Task SetActiveAsync(bool active, CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Reserves the next contingency document number and builds its 44-digit CDC (<see cref="EmissionType.Contingencia"/>),
-	/// or <see langword="null"/> when contingency mode is off or the range is exhausted.
+	/// Reserves the next contingency document number and builds its 44-digit CDC (<see cref="EmissionType.Contingencia"/>)
+	/// for the given <paramref name="documentType"/>, or <see langword="null"/> when contingency mode is off or the
+	/// range is exhausted. The reserved-number sequence is shared across document types (#188) - one DNIT-granted range.
 	/// </summary>
 	/// <exception cref="InvalidOperationException">Company settings are missing data a CDC needs</exception>
-	public Task<string?> TryIssueAsync(CancellationToken cancellationToken = default);
+	public Task<string?> TryIssueAsync(SifenDocumentType documentType, CancellationToken cancellationToken = default);
 }

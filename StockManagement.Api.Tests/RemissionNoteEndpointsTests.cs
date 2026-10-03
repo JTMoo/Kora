@@ -2,6 +2,8 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using StockManagement.Api.Features.RemissionNotes;
+using StockManagement.Api.Features.Settings;
+using StockManagement.Api.Features.Sifen;
 using StockManagement.Kernel.Database.Interfaces;
 using StockManagement.Kernel.Model;
 using StockManagement.Kernel.Model.Types;
@@ -127,6 +129,28 @@ public sealed class RemissionNoteEndpointsTests
 		// Assert
 		Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 		StringAssert.Contains(await response.Content.ReadAsStringAsync(), "destinationAddressRequired");
+	}
+
+	[TestMethod]
+	public async Task CreateRemissionNote_ContingencyModeActive_IssuesCdcLocally()
+	{
+		// Arrange (#188): same contingency range/mode as invoices (#149); CDC generation needs a valid company RUC
+		await _client.PutAsJsonAsync("/api/company-settings", new UpdateCompanySettingsRequest("Kora", "", "PYG", 10m, 30, 1, 1001, 0, Ruc: "1946520-3"), ApiFactory.JsonOptions);
+		await _client.PutAsJsonAsync("/api/sifen/contingency-range", new SetContingencyRangeRequest(1, 100), ApiFactory.JsonOptions);
+		await _client.PostAsJsonAsync("/api/sifen/contingency-mode", new SetContingencyModeRequest(true), ApiFactory.JsonOptions);
+
+		// Act
+		var response = await _client.PostAsJsonAsync("/api/remission-notes", new CreateRemissionNoteRequest(1001, RemissionReason.Venta, "Avda. España 500", [new("A1", 1)]), ApiFactory.JsonOptions);
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+		var remissionNote = await response.Content.ReadAsAsync<RemissionNoteResponse>();
+		Assert.AreEqual(44, remissionNote.Cdc.Length);
+		Assert.AreEqual("07", remissionNote.Cdc[0..2]); // iTiDE = NotaDeRemisionElectronica
+		Assert.AreEqual("2", remissionNote.Cdc[33..34]); // iTipEmi = Contingencia
+
+		var statusResponse = await _client.GetFromJsonAsync<ContingencyStatusResponse>("/api/sifen/contingency-mode", ApiFactory.JsonOptions);
+		Assert.AreEqual(2, statusResponse.NextNumber); // the range is shared across invoices and remission notes
 	}
 
 	[TestMethod]
