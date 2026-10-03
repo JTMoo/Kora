@@ -2,10 +2,12 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using StockManagement.Api.Features.Customers;
+using StockManagement.Api.Features.GoodsImportDocuments;
 using StockManagement.Api.Features.Users;
 using StockManagement.Auth.Core.Contracts;
 using StockManagement.Kernel.Database.Interfaces;
 using StockManagement.Kernel.Model;
+using StockManagement.Kernel.Model.Types;
 
 namespace StockManagement.Api.Tests;
 
@@ -84,6 +86,35 @@ public sealed class PermissionEnforcementTests
 
 		// Act
 		var response = await client.PostAsJsonAsync("/api/suppliers", new { Name = "Acme" });
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task StandardUser_WithoutGoodsImportsWrite_CannotCreateGoodsImportDocument()
+	{
+		// Arrange
+		var client = await this.CreateStandardUserClientAsync("plain3", []);
+
+		// Act
+		var response = await client.PostAsJsonAsync("/api/goods-import-documents", new { ProformaNumber = "PF-100" });
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task StandardUser_WithGoodsImportsWrite_CanCreateGoodsImportDocument()
+	{
+		// Arrange
+		var supplier = new Supplier("Acme Imports");
+		await _factory.ScopedServices.GetRequiredService<ISupplierServiceProvider>().AddSupplierAsync(supplier);
+		await _factory.ScopedServices.GetRequiredService<IStockItemServiceProvider>().AddStockItemAsync(new StockItem("Screw", code: "A1", amount: 10, price: 5000));
+		var client = await this.CreateStandardUserClientAsync("importer", [Permission.GoodsImportsWrite]);
+
+		// Act
+		var response = await client.PostAsJsonAsync("/api/goods-import-documents", new CreateGoodsImportDocumentRequest("PF-101", supplier.Id, Incoterm.Fob, "Despachante SA", "DUA-2026-200", DateTime.Now, [new("A1", 1)]));
 
 		// Assert
 		Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);

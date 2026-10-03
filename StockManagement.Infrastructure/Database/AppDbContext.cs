@@ -49,6 +49,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvid
 
 	public DbSet<PendingRemisionTransmission> PendingRemisionTransmissions => this.Set<PendingRemisionTransmission>();
 
+	public DbSet<GoodsImportDocument> GoodsImportDocuments => this.Set<GoodsImportDocument>();
+
 
 	public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
 	{

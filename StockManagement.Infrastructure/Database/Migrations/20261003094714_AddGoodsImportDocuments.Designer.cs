@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StockManagement.Infrastructure.Database;
@@ -11,9 +12,11 @@ using StockManagement.Infrastructure.Database;
 namespace StockManagement.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261003094714_AddGoodsImportDocuments")]
+    partial class AddGoodsImportDocuments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -482,10 +485,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Barcode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("text");
@@ -536,11 +535,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .HasColumnType("numeric(5,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Barcode")
-                        .IsUnique()
-                        .HasDatabaseName("IX_StockItems_Barcode")
-                        .HasFilter("\"Barcode\" <> ''");
 
                     b.HasIndex("Code")
                         .IsUnique();

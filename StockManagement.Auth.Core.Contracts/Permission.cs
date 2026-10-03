@@ -20,6 +20,8 @@ public static class Permission
 	public const string SettingsWrite = "Settings.Write";
 	public const string SuppliersRead = "Suppliers.Read";
 	public const string SuppliersWrite = "Suppliers.Write";
+	public const string GoodsImportsRead = "GoodsImports.Read";
+	public const string GoodsImportsWrite = "GoodsImports.Write";
 	public const string ReportsRead = "Reports.Read";
 
 	public static readonly IReadOnlyList<string> CatalogAll =
@@ -30,6 +32,7 @@ public static class Permission
 		SalesRead, SalesWrite,
 		SettingsRead, SettingsWrite,
 		SuppliersRead, SuppliersWrite,
+		GoodsImportsRead, GoodsImportsWrite,
 		ReportsRead
 	];
 
