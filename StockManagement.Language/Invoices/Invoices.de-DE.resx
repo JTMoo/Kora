@@ -225,4 +225,40 @@
   <data name="transmissionStatus" xml:space="preserve">
     <value>SIFEN-Status</value>
   </data>
+  <data name="paymentLink" xml:space="preserve">
+    <value>Zahlungslink</value>
+  </data>
+  <data name="generatePaymentLink" xml:space="preserve">
+    <value>Zahlungslink erstellen</value>
+  </data>
+  <data name="paymentLinkAmount" xml:space="preserve">
+    <value>Betrag</value>
+  </data>
+  <data name="paymentLinkCreated" xml:space="preserve">
+    <value>Erstellt</value>
+  </data>
+  <data name="paymentLinkExpires" xml:space="preserve">
+    <value>Läuft ab</value>
+  </data>
+  <data name="paymentLinkOpen" xml:space="preserve">
+    <value>Zahlungsseite öffnen</value>
+  </data>
+  <data name="statusExpired" xml:space="preserve">
+    <value>Abgelaufen</value>
+  </data>
+  <data name="statusFailed" xml:space="preserve">
+    <value>Fehlgeschlagen</value>
+  </data>
+  <data name="invoiceAlreadyPaid" xml:space="preserve">
+    <value>Rechnung ist bereits bezahlt.</value>
+  </data>
+  <data name="paymentLinkGatewayError" xml:space="preserve">
+    <value>Fehler beim Zahlungsanbieter. Bitte erneut versuchen.</value>
+  </data>
+  <data name="marangatuExport" xml:space="preserve">
+    <value>Marangatú-Export</value>
+  </data>
+  <data name="downloadIvaBook" xml:space="preserve">
+    <value>CSV herunterladen</value>
+  </data>
 </root>

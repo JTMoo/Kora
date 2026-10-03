@@ -1,4 +1,4 @@
-import { send } from "./client";
+import { authHeaders, send } from "./client";
 import type { SaleCondition } from "./sales";
 
 export type InvoiceLine = { code: string; name: string; amount: number; unitPrice: number };
@@ -16,7 +16,8 @@ export type InvoiceFilter = { customerId?: number; from?: string; to?: string; c
 export const invoicesApi = {
 	getInvoice: (number: string, signal?: AbortSignal) => send<Invoice>(`/invoices/${number}`, { signal }),
 	listInvoices: (filter: InvoiceFilter, signal?: AbortSignal) => send<InvoiceListResult>(`/invoices?${invoiceFilterQuery(filter)}`, { signal }),
-	cancelInvoice: (number: string, reason: string) => send<CreditNote>(`/invoices/${number}/cancel`, { method: "POST", body: JSON.stringify({ number, reason }) })
+	cancelInvoice: (number: string, reason: string) => send<CreditNote>(`/invoices/${number}/cancel`, { method: "POST", body: JSON.stringify({ number, reason }) }),
+	downloadIvaBook: (from: string, to: string) => fetch(`/api/invoices/iva-book?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`, { headers: authHeaders() })
 };
 
 function invoiceFilterQuery(filter: InvoiceFilter): string

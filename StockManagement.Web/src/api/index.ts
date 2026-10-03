@@ -16,6 +16,7 @@ export * from "./search";
 export * from "./reports";
 export * from "./goodsImports";
 export * from "./remissionNotes";
+export * from "./payments";
 
 import { authApi } from "./auth";
 import { companySettingsApi } from "./companySettings";
@@ -23,6 +24,7 @@ import { customersApi } from "./customers";
 import { goodsImportApi } from "./goodsImports";
 import { importApi } from "./import";
 import { invoicesApi } from "./invoices";
+import { paymentsApi } from "./payments";
 import { remissionNotesApi } from "./remissionNotes";
 import { reportsApi } from "./reports";
 import { salesApi } from "./sales";
@@ -46,5 +48,6 @@ export const api = {
 	...searchApi,
 	...reportsApi,
 	...goodsImportApi,
-	...remissionNotesApi
+	...remissionNotesApi,
+	...paymentsApi
 };

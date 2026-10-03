@@ -382,5 +382,113 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("invoiceSavedToast", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Payment link.
+        /// </summary>
+        public static string paymentLink {
+            get {
+                return ResourceManager.GetString("paymentLink", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Generate payment link.
+        /// </summary>
+        public static string generatePaymentLink {
+            get {
+                return ResourceManager.GetString("generatePaymentLink", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Amount.
+        /// </summary>
+        public static string paymentLinkAmount {
+            get {
+                return ResourceManager.GetString("paymentLinkAmount", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Created.
+        /// </summary>
+        public static string paymentLinkCreated {
+            get {
+                return ResourceManager.GetString("paymentLinkCreated", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Expires.
+        /// </summary>
+        public static string paymentLinkExpires {
+            get {
+                return ResourceManager.GetString("paymentLinkExpires", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Open payment page.
+        /// </summary>
+        public static string paymentLinkOpen {
+            get {
+                return ResourceManager.GetString("paymentLinkOpen", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Expired.
+        /// </summary>
+        public static string statusExpired {
+            get {
+                return ResourceManager.GetString("statusExpired", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed.
+        /// </summary>
+        public static string statusFailed {
+            get {
+                return ResourceManager.GetString("statusFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Invoice is already paid..
+        /// </summary>
+        public static string invoiceAlreadyPaid {
+            get {
+                return ResourceManager.GetString("invoiceAlreadyPaid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Payment gateway error. Try again..
+        /// </summary>
+        public static string paymentLinkGatewayError {
+            get {
+                return ResourceManager.GetString("paymentLinkGatewayError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Marangatu export.
+        /// </summary>
+        public static string marangatuExport {
+            get {
+                return ResourceManager.GetString("marangatuExport", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Download CSV.
+        /// </summary>
+        public static string downloadIvaBook {
+            get {
+                return ResourceManager.GetString("downloadIvaBook", resourceCulture);
+            }
+        }
     }
 }

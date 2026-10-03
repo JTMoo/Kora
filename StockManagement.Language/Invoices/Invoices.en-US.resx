@@ -225,4 +225,40 @@
   <data name="transmissionStatus" xml:space="preserve">
     <value>SIFEN status</value>
   </data>
+  <data name="paymentLink" xml:space="preserve">
+    <value>Payment link</value>
+  </data>
+  <data name="generatePaymentLink" xml:space="preserve">
+    <value>Generate payment link</value>
+  </data>
+  <data name="paymentLinkAmount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="paymentLinkCreated" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="paymentLinkExpires" xml:space="preserve">
+    <value>Expires</value>
+  </data>
+  <data name="paymentLinkOpen" xml:space="preserve">
+    <value>Open payment page</value>
+  </data>
+  <data name="statusExpired" xml:space="preserve">
+    <value>Expired</value>
+  </data>
+  <data name="statusFailed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="invoiceAlreadyPaid" xml:space="preserve">
+    <value>Invoice is already paid.</value>
+  </data>
+  <data name="paymentLinkGatewayError" xml:space="preserve">
+    <value>Payment gateway error. Try again.</value>
+  </data>
+  <data name="marangatuExport" xml:space="preserve">
+    <value>Marangatu export</value>
+  </data>
+  <data name="downloadIvaBook" xml:space="preserve">
+    <value>Download CSV</value>
+  </data>
 </root>
