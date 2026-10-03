@@ -6,7 +6,7 @@ import { AuthProvider } from "./auth";
 import { I18nProvider } from "./i18n";
 import { ToastProvider } from "./Toast";
 
-export const allPermissions: Permission[] = ["Users.Manage", "Customers.Read", "Customers.Write", "StockItems.Read", "StockItems.Write", "Sales.Read", "Sales.Write", "Settings.Read", "Settings.Write", "Suppliers.Read", "Suppliers.Write", "Reports.Read"];
+export const allPermissions: Permission[] = ["Users.Manage", "Customers.Read", "Customers.Write", "StockItems.Read", "StockItems.Write", "Sales.Read", "Sales.Write", "Settings.Read", "Settings.Write", "Suppliers.Read", "Suppliers.Write", "GoodsImports.Read", "GoodsImports.Write", "Reports.Read"];
 
 export type Route = { status?: number; body?: unknown };
 
@@ -50,3 +50,4 @@ export const ana = { customerId: 1001, name: "Ana", lastname: "Gómez", address:
 export const acme = { id: "1", name: "Acme", contactName: "Joe", country: "PY", currency: "PYG", leadTimeDays: 5, miscellaneous: "" };
 export const remissionNote = { number: "001-001-0000010", date: "2026-01-01T00:00:00", reason: "Venta" as const, destinationAddress: "Calle Falsa 123", customerId: ana.customerId, customerName: "Ana Gómez", cdc: "", transmissionStatus: "Pending" as const, lines: [{ code: screw.code, name: screw.name, amount: 2 }] };
 export const invoice = { number: "001-001-0000007", date: "2026-09-24T10:00:00", expirationDate: "2026-10-24T10:00:00", total: 10000, tax: 909, amountPaid: 10000, amountDue: 0, status: "Paid", saleCondition: "Cash", customerId: 1001, customerName: "Ana Gómez", isCancelled: false, lines: [{ code: "A1", name: "Screw", amount: 2, unitPrice: 5000 }] };
+export const importDoc = { id: "1", proformaNumber: "PF-001", incoterm: "Fob" as const, brokerName: "Despachante SA", duaReference: "DUA-001", date: "2026-01-01T00:00:00", supplierId: acme.id, supplierName: acme.name, items: [{ code: screw.code, name: screw.name, amount: 50 }] };
