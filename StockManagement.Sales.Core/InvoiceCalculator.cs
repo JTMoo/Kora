@@ -18,22 +18,14 @@ internal static class InvoiceCalculator
 	}
 
 	/// <summary>
-	/// VAT contained in the lines' gross totals, grouped by each line's own rate, rounded once at the end.
+	/// VAT contained in the lines' gross totals, grouped by each line's own rate.
 	/// </summary>
-	/// <remarks>Prices include VAT: for a line rate of 10, the VAT share of that line's gross total is 10/110.</remarks>
 	public static decimal CalculateTax(IEnumerable<SaleLine> lines, int currencyDecimalDigits)
 	{
 		if (lines == null) return 0;
 
-		var tax = lines
-			.GroupBy(line => line.VatRatePercent)
-			.Sum(group =>
-			{
-				var groupTotal = group.Sum(line => line.Quantity * Round(line.UnitPrice, currencyDecimalDigits));
-				return groupTotal * group.Key / (100 + group.Key);
-			});
-
-		return Round(tax, currencyDecimalDigits);
+		return VatRateGroup.ByRate(lines.Select(line => ((decimal)line.Quantity, line.UnitPrice, line.VatRatePercent)), currencyDecimalDigits)
+			.Sum(group => group.Vat);
 	}
 
 	public static DateTime CalculateExpirationDate(DateTime invoiceDate, int paymentTermInDays)
