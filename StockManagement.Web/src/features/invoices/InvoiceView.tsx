@@ -1,9 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { api, type ApiFailure, type Invoice } from "../../api";
+import { api, type ApiFailure, type Invoice, type PaymentLink } from "../../api";
 import { FailureMessage } from "../../FailureMessage";
 import { invoiceStatusBadge } from "./invoiceStatus";
+import { paymentLinkStatusBadge } from "./paymentLinkStatus";
 import { Page } from "../../Page";
-import { useI18n } from "../../i18n";
+import { isTextKey, useI18n } from "../../i18n";
 
 export function InvoiceView({ invoice: initial, onBack }: { invoice?: Invoice; onBack?: () => void })
 {
@@ -13,9 +14,41 @@ export function InvoiceView({ invoice: initial, onBack }: { invoice?: Invoice; o
 	const [failure, setFailure] = useState<ApiFailure>();
 	const [cancelling, setCancelling] = useState(false);
 	const [cancelReason, setCancelReason] = useState("");
+	const [paymentLink, setPaymentLink] = useState<PaymentLink>();
+	const [paymentLinkFailure, setPaymentLinkFailure] = useState<ApiFailure>();
+	const [creatingPaymentLink, setCreatingPaymentLink] = useState(false);
 
 	useEffect(() => setInvoice(initial), [initial]);
 	useEffect(() => setCancelling(false), [invoice?.number]);
+
+	useEffect(() =>
+	{
+		setPaymentLink(undefined);
+		setPaymentLinkFailure(undefined);
+		if (!invoice) return;
+
+		const controller = new AbortController();
+		api.getPaymentLink(invoice.number, controller.signal).then(result =>
+		{
+			if (controller.signal.aborted) return;
+			if (result.ok) setPaymentLink(result.value);
+		});
+		return () => controller.abort();
+	}, [invoice?.number]);
+
+	async function onCreatePaymentLink()
+	{
+		setCreatingPaymentLink(true);
+		const result = await api.createPaymentLink(invoice!.number);
+		setCreatingPaymentLink(false);
+		// PaymentLinkRejectedResponse.Reason is a resource key (not a pre-rendered message like other 409s)
+		if (!result.ok) return setPaymentLinkFailure(result.failure.kind === "invalidState"
+			? { kind: "invalidState", reason: t(isTextKey(result.failure.reason) ? result.failure.reason : "unexpectedError") }
+			: result.failure);
+
+		setPaymentLinkFailure(undefined);
+		setPaymentLink(result.value);
+	}
 
 	async function onSubmit(event: FormEvent)
 	{
@@ -90,6 +123,25 @@ export function InvoiceView({ invoice: initial, onBack }: { invoice?: Invoice; o
 								<button type="button" onClick={() => setCancelling(false)}>{t("cancel")}</button>
 							</div>
 						</form>
+					)}
+					{!invoice.isCancelled && (
+						<section aria-label={t("paymentLink")}>
+							<h4>{t("paymentLink")}</h4>
+							<FailureMessage failure={paymentLinkFailure} />
+							{paymentLink ? (
+								<dl>
+									<dt>{t("paymentLinkAmount")}</dt><dd>{formatNumber(paymentLink.amount)}</dd>
+									<dt>{t("status")}</dt><dd>{paymentLinkStatusBadge(paymentLink, t)}</dd>
+									<dt>{t("paymentLinkCreated")}</dt><dd>{formatDate(paymentLink.createdAt)}</dd>
+									<dt>{t("paymentLinkExpires")}</dt><dd>{formatDate(paymentLink.expiresAt)}</dd>
+									<dd><a href={paymentLink.qrUrl} target="_blank" rel="noreferrer">{t("paymentLinkOpen")}</a></dd>
+								</dl>
+							) : (
+								<div className="form-actions">
+									<button type="button" disabled={creatingPaymentLink} onClick={onCreatePaymentLink}>{t("generatePaymentLink")}</button>
+								</div>
+							)}
+						</section>
 					)}
 				</article>
 			)}

@@ -74,4 +74,60 @@ describe("InvoiceView", () =>
 		expect(screen.getByTestId("invoice-cancelled")).toHaveTextContent("Cancelled");
 		expect(screen.queryByRole("button", { name: "Cancel invoice" })).not.toBeInTheDocument();
 	});
+
+	it("Render_AlreadyCancelledInvoice_HidesPaymentLinkSection", () =>
+	{
+		// Arrange / Act
+		renderEnglish(<InvoiceView invoice={{ ...invoice, isCancelled: true } as Invoice} />);
+
+		// Assert
+		expect(screen.queryByRole("button", { name: "Generate payment link" })).not.toBeInTheDocument();
+	});
+
+	it("Load_NoPaymentLink_ShowsGenerateButton", async () =>
+	{
+		// Arrange
+		mockApi({ "GET /api/invoices/001-001-0000007/payment-link": { status: 404 } });
+
+		// Act
+		renderEnglish(<InvoiceView invoice={invoice as Invoice} />);
+
+		// Assert
+		expect(await screen.findByRole("button", { name: "Generate payment link" })).toBeInTheDocument();
+	});
+
+	it("GeneratePaymentLink_Success_ShowsStatusAndLink", async () =>
+	{
+		// Arrange
+		mockApi({
+			"GET /api/invoices/001-001-0000007/payment-link": { status: 404 },
+			"POST /api/invoices/001-001-0000007/payment-link": { status: 201, body: { externalId: "ext-1", qrUrl: "https://bancard.example/pay/ext-1", amount: 10000, status: "Pending", createdAt: "2026-09-27T10:00:00", expiresAt: "2026-09-28T10:00:00" } }
+		});
+		renderEnglish(<InvoiceView invoice={invoice as Invoice} />);
+		await screen.findByRole("button", { name: "Generate payment link" });
+
+		// Act
+		await userEvent.click(screen.getByRole("button", { name: "Generate payment link" }));
+
+		// Assert
+		expect(await screen.findByRole("link", { name: "Open payment page" })).toHaveAttribute("href", "https://bancard.example/pay/ext-1");
+		expect(screen.getByText("Pending")).toBeInTheDocument();
+	});
+
+	it("GeneratePaymentLink_AlreadyPaid_ShowsLocalizedError", async () =>
+	{
+		// Arrange
+		mockApi({
+			"GET /api/invoices/001-001-0000007/payment-link": { status: 404 },
+			"POST /api/invoices/001-001-0000007/payment-link": { status: 409, body: { reason: "invoiceAlreadyPaid" } }
+		});
+		renderEnglish(<InvoiceView invoice={invoice as Invoice} />);
+		await screen.findByRole("button", { name: "Generate payment link" });
+
+		// Act
+		await userEvent.click(screen.getByRole("button", { name: "Generate payment link" }));
+
+		// Assert
+		expect(await screen.findByRole("alert")).toHaveTextContent("Invoice is already paid.");
+	});
 });
