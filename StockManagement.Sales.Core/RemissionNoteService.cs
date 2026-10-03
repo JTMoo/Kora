@@ -4,14 +4,16 @@ using StockManagement.Kernel.Model.Types;
 using StockManagement.Kernel.Util;
 using StockManagement.Sales.Core.Contracts;
 using StockManagement.Settings.Core.Contracts;
+using StockManagement.Sifen.Core.Contracts;
 
 namespace StockManagement.Sales.Core;
 
 
-internal class RemissionNoteService(IRemissionNoteServiceProvider remissionNoteServiceProvider, ISettingsService settingsService) : IRemissionNoteService
+internal class RemissionNoteService(IRemissionNoteServiceProvider remissionNoteServiceProvider, ISettingsService settingsService, IContingencyCdcIssuer contingencyCdcIssuer) : IRemissionNoteService
 {
 	private readonly IRemissionNoteServiceProvider _remissionNoteServiceProvider = remissionNoteServiceProvider;
 	private readonly ISettingsService _settingsService = settingsService;
+	private readonly IContingencyCdcIssuer _contingencyCdcIssuer = contingencyCdcIssuer;
 
 
 	/// <remarks>"Highest + 1" scoped to remission notes already carrying the configured establishment/point-of-sale prefix, same approach as <see cref="SaleService.GetNextInvoiceNumberAsync"/> - own sequence, not shared with invoices.</remarks>
@@ -45,6 +47,11 @@ internal class RemissionNoteService(IRemissionNoteServiceProvider remissionNoteS
 			Number = await this.GetNextNumberAsync(cancellationToken),
 			Items = items.Select(item => new RemissionNoteItem(item.StockItem) { Amount = item.Amount }).ToList(),
 		};
+
+		// Contingency mode (#149/#188): issue the CDC locally, from the pre-assigned DNIT range, only once every
+		// argument check above has passed and right before the write - same reservation point as SaleService's
+		// CompleteSaleAsync, so a rejected remission note never burns a reserved number (#167).
+		remissionNote.Cdc = await _contingencyCdcIssuer.TryIssueAsync(SifenDocumentType.NotaDeRemisionElectronica, cancellationToken) ?? "";
 
 		await _remissionNoteServiceProvider.AddAsync(remissionNote, cancellationToken);
 		return remissionNote;

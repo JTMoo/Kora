@@ -27,7 +27,7 @@ public sealed class ContingencyCdcIssuerTests
 		_rangeServiceProvider.Setup(provider => provider.TryReserveNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync((long?)null);
 
 		// Act
-		var cdc = await this.CreateIssuer().TryIssueAsync();
+		var cdc = await this.CreateIssuer().TryIssueAsync(SifenDocumentType.FacturaElectronica);
 
 		// Assert
 		Assert.IsNull(cdc);
@@ -40,12 +40,29 @@ public sealed class ContingencyCdcIssuerTests
 		_rangeServiceProvider.Setup(provider => provider.TryReserveNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(42L);
 
 		// Act
-		var cdc = await this.CreateIssuer().TryIssueAsync();
+		var cdc = await this.CreateIssuer().TryIssueAsync(SifenDocumentType.FacturaElectronica);
 
 		// Assert
 		Assert.IsNotNull(cdc);
 		Assert.AreEqual(44, cdc!.Length);
+		Assert.AreEqual("01", cdc[0..2]); // iTiDE = FacturaElectronica
 		Assert.AreEqual("0000042", cdc[17..24]); // document number = the reserved number
+		Assert.AreEqual("2", cdc[33..34]); // iTipEmi = Contingencia
+	}
+
+	[TestMethod]
+	public async Task TryIssueAsync_RemisionDocumentType_UsesRemisionDocTypeInCdc()
+	{
+		// Arrange (#188): same reserved-number sequence, different SIFEN document type
+		_rangeServiceProvider.Setup(provider => provider.TryReserveNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(7L);
+
+		// Act
+		var cdc = await this.CreateIssuer().TryIssueAsync(SifenDocumentType.NotaDeRemisionElectronica);
+
+		// Assert
+		Assert.IsNotNull(cdc);
+		Assert.AreEqual("07", cdc![0..2]); // iTiDE = NotaDeRemisionElectronica
+		Assert.AreEqual("0000007", cdc[17..24]);
 		Assert.AreEqual("2", cdc[33..34]); // iTipEmi = Contingencia
 	}
 
@@ -58,7 +75,7 @@ public sealed class ContingencyCdcIssuerTests
 		_rangeServiceProvider.Setup(provider => provider.TryReserveNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1L);
 
 		// Act + Assert
-		await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => this.CreateIssuer().TryIssueAsync());
+		await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => this.CreateIssuer().TryIssueAsync(SifenDocumentType.FacturaElectronica));
 	}
 
 	[TestMethod]

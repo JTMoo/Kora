@@ -75,7 +75,7 @@ internal class SaleService(IStockItemServiceProvider stockItemServiceProvider, I
 
 		// Contingency mode (#149): issue the CDC locally, from the pre-assigned DNIT range, only once the shortage
 		// check above has passed and right before the write, so a failed sale never burns a reserved number (#167).
-		invoice.Cdc = await _contingencyCdcIssuer.TryIssueAsync(cancellationToken) ?? "";
+		invoice.Cdc = await _contingencyCdcIssuer.TryIssueAsync(SifenDocumentType.FacturaElectronica, cancellationToken) ?? "";
 
 		var shortItems = await _invoiceServiceProvider.TryAddSaleAsync(invoice, cancellationToken);
 		return shortItems.Count == 0 ? SaleResult.Success : new SaleResult(shortItems);

@@ -64,9 +64,9 @@ public sealed class DirectDnitSifenGateway(
 	}
 
 	/// <summary>
-	/// Builds, signs and transmits a Nota de Remisión Electrónica (#162). No contingency path yet (unlike
-	/// <see cref="SendAsync(Invoice, CancellationToken)"/>) - a remission note always gets <see cref="EmissionType.Normal"/>;
-	/// flagged as a known gap, same reasoning as #149 would apply if remission notes also need offline issuance.
+	/// Builds, signs and transmits a Nota de Remisión Electrónica (#162). Contingency-issued remission notes (#188)
+	/// arrive here with <see cref="RemissionNote.Cdc"/> already set and are reused as-is, same as
+	/// <see cref="SendAsync(Invoice, CancellationToken)"/> does for invoices.
 	/// </summary>
 	public async Task<SifenTransmissionResult> SendRemisionAsync(RemissionNote remissionNote, CancellationToken cancellationToken = default)
 	{
@@ -122,27 +122,41 @@ public sealed class DirectDnitSifenGateway(
 			RucCheckDigit: null,
 			remissionNote.Customer.IdentificationNumber);
 
-		if (InvoiceNumber.TryParseSequence(remissionNote.Number, companySettings.EstablishmentCode, companySettings.PointOfSaleCode) is not int sequence)
-			throw new InvalidOperationException($"Remission note number '{remissionNote.Number}' does not match the configured establishment/point-of-sale.");
+		// A non-empty remissionNote.Cdc was already assigned locally (e.g. contingency issuance, #188) - reuse it as-is
+		// rather than regenerating, so the CDC and dNumDoc below always agree on the same document number (same
+		// reasoning as BuildInvoiceData's Cdc reuse).
+		string cdc;
+		long documentNumber;
+		if (!string.IsNullOrEmpty(remissionNote.Cdc))
+		{
+			cdc = remissionNote.Cdc;
+			documentNumber = long.Parse(cdc.AsSpan(17, 7));
+		}
+		else
+		{
+			if (InvoiceNumber.TryParseSequence(remissionNote.Number, companySettings.EstablishmentCode, companySettings.PointOfSaleCode) is not int sequence)
+				throw new InvalidOperationException($"Remission note number '{remissionNote.Number}' does not match the configured establishment/point-of-sale.");
 
-		var cdc = _cdcGenerator.Generate(new CdcInput(
-			SifenDocumentType.NotaDeRemisionElectronica,
-			rucBase,
-			rucCheckDigit,
-			companySettings.EstablishmentCode,
-			companySettings.PointOfSaleCode,
-			sequence,
-			TaxpayerType.Juridica,
-			DateOnly.FromDateTime(remissionNote.Date),
-			EmissionType.Normal,
-			GenerateSecurityCode()));
+			documentNumber = sequence;
+			cdc = _cdcGenerator.Generate(new CdcInput(
+				SifenDocumentType.NotaDeRemisionElectronica,
+				rucBase,
+				rucCheckDigit,
+				companySettings.EstablishmentCode,
+				companySettings.PointOfSaleCode,
+				documentNumber,
+				TaxpayerType.Juridica,
+				DateOnly.FromDateTime(remissionNote.Date),
+				EmissionType.Normal,
+				GenerateSecurityCode()));
+		}
 
 		var items = remissionNote.Items.Select(item => new DteRemisionItem(
 			item.StockItem.Code,
 			item.StockItem.Name,
 			item.Amount)).ToList();
 
-		return new DteRemisionData(cdc, emisor, receptor, remissionNote.Date, sequence, remissionNote.Reason, remissionNote.DestinationAddress, items);
+		return new DteRemisionData(cdc, emisor, receptor, remissionNote.Date, documentNumber, remissionNote.Reason, remissionNote.DestinationAddress, items);
 	}
 
 	/// <exception cref="InvalidOperationException">Company settings or the invoice are missing data a DE needs</exception>

@@ -39,7 +39,7 @@ public sealed class ContingencyCdcIssuer(
 		return _rangeServiceProvider.SetActiveAsync(active, cancellationToken);
 	}
 
-	public async Task<string?> TryIssueAsync(CancellationToken cancellationToken = default)
+	public async Task<string?> TryIssueAsync(SifenDocumentType documentType, CancellationToken cancellationToken = default)
 	{
 		if (await _rangeServiceProvider.TryReserveNextAsync(cancellationToken) is not long documentNumber) return null;
 
@@ -50,7 +50,7 @@ public sealed class ContingencyCdcIssuer(
 		var rucParts = normalizedRuc.Split('-');
 
 		return _cdcGenerator.Generate(new CdcInput(
-			SifenDocumentType.FacturaElectronica,
+			documentType,
 			RucBase: rucParts[0],
 			RucCheckDigit: int.Parse(rucParts[1]),
 			companySettings.EstablishmentCode,
