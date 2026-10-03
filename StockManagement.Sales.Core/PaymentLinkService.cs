@@ -30,10 +30,19 @@ internal class PaymentLinkService(
 		var amountDue = _paymentService.GetAmountDue(invoice);
 		if (amountDue <= 0) return CreatePaymentLinkResult.Failure(CreatePaymentLinkError.AlreadyPaid);
 
+		var now = DateTime.Now;
+		if (await _paymentLinkServiceProvider.GetLatestForInvoiceAsync(invoiceNumber, cancellationToken) is PaymentLink existing
+			&& existing.Status == PaymentLinkStatus.Pending)
+		{
+			if (existing.ExpiresAt > now) return CreatePaymentLinkResult.Success(existing);
+
+			existing.Status = PaymentLinkStatus.Expired;
+			await _paymentLinkServiceProvider.UpdateAsync(existing, cancellationToken);
+		}
+
 		var gatewayResult = await _gateway.CreateAsync(invoiceNumber, amountDue, cancellationToken);
 		if (!gatewayResult.Succeeded) return CreatePaymentLinkResult.Failure(CreatePaymentLinkError.GatewayError);
 
-		var now = DateTime.Now;
 		var link = new PaymentLink
 		{
 			Invoice = invoice,
@@ -60,6 +69,13 @@ internal class PaymentLinkService(
 
 		if (await _paymentLinkServiceProvider.GetByExternalIdAsync(externalId, cancellationToken) is not PaymentLink link) return false;
 		if (link.Status != PaymentLinkStatus.Pending) return true;
+
+		if (link.ExpiresAt <= DateTime.Now)
+		{
+			link.Status = PaymentLinkStatus.Expired;
+			await _paymentLinkServiceProvider.UpdateAsync(link, cancellationToken);
+			return true;
+		}
 
 		var status = await _gateway.GetStatusAsync(externalId, cancellationToken);
 		if (status == PaymentLinkStatus.Paid)
