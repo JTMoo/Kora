@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StockManagement.Kernel.Model.Types;
 using StockManagement.Sales.Core.Contracts;
@@ -19,10 +20,11 @@ namespace StockManagement.Sales.Core;
 /// same flag as <see cref="StockManagement.Sifen.Core"/>'s DNIT gateway. Verify against Bancard's sandbox before
 /// relying on this for production collection.
 /// </remarks>
-public sealed class BancardPaymentLinkGateway(IHttpClientFactory httpClientFactory, IOptions<BancardGatewayOptions> options) : IPaymentLinkGateway
+public sealed class BancardPaymentLinkGateway(IHttpClientFactory httpClientFactory, IOptions<BancardGatewayOptions> options, ILogger<BancardPaymentLinkGateway> logger) : IPaymentLinkGateway
 {
 	private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 	private readonly BancardGatewayOptions _options = options.Value;
+	private readonly ILogger<BancardPaymentLinkGateway> _logger = logger;
 
 
 	public async Task<PaymentLinkGatewayResult> CreateAsync(string invoiceNumber, decimal amount, CancellationToken cancellationToken = default)
@@ -73,8 +75,9 @@ public sealed class BancardPaymentLinkGateway(IHttpClientFactory httpClientFacto
 				_ => PaymentLinkStatus.Pending
 			};
 		}
-		catch
+		catch (Exception ex) when (ex is not OperationCanceledException)
 		{
+			_logger.LogError(ex, "Bancard status poll failed for {ExternalId}.", externalId);
 			return PaymentLinkStatus.Pending;
 		}
 	}
