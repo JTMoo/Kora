@@ -231,4 +231,16 @@
   <data name="savedToast" xml:space="preserve">
     <value>{0} guardado.</value>
   </data>
+  <data name="itemsRequired" xml:space="preserve">
+    <value>Se requiere al menos un artículo.</value>
+  </data>
+  <data name="statusSent" xml:space="preserve">
+    <value>Enviado</value>
+  </data>
+  <data name="statusAccepted" xml:space="preserve">
+    <value>Aceptado</value>
+  </data>
+  <data name="statusRejected" xml:space="preserve">
+    <value>Rechazado</value>
+  </data>
 </root>
