@@ -14,10 +14,12 @@ export * from "./auth";
 export * from "./import";
 export * from "./search";
 export * from "./reports";
+export * from "./goodsImports";
 
 import { authApi } from "./auth";
 import { companySettingsApi } from "./companySettings";
 import { customersApi } from "./customers";
+import { goodsImportApi } from "./goodsImports";
 import { importApi } from "./import";
 import { invoicesApi } from "./invoices";
 import { reportsApi } from "./reports";
@@ -40,5 +42,6 @@ export const api = {
 	...authApi,
 	...importApi,
 	...searchApi,
-	...reportsApi
+	...reportsApi,
+	...goodsImportApi
 };

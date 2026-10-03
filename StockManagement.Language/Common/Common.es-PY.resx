@@ -231,4 +231,7 @@
   <data name="savedToast" xml:space="preserve">
     <value>{0} guardado.</value>
   </data>
+  <data name="itemsRequired" xml:space="preserve">
+    <value>Se requiere al menos un artículo.</value>
+  </data>
 </root>

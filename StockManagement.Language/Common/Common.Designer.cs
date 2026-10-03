@@ -400,5 +400,14 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("savedToast", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to At least one item is required..
+        /// </summary>
+        public static string itemsRequired {
+            get {
+                return ResourceManager.GetString("itemsRequired", resourceCulture);
+            }
+        }
     }
 }
