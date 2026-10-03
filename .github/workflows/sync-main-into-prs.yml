@@ -23,15 +23,15 @@ jobs:
       uses: actions/checkout@v5
       with:
         fetch-depth: 0
+        # actions/checkout wires up the git credential (http.extraheader) from this token,
+        # separately from any GH_TOKEN env used by the gh CLI below - a plain `git push`
+        # authenticates with THIS token, not GH_TOKEN. Previously left at the default
+        # GITHUB_TOKEN, so the push was still attributed to github-actions[bot] despite
+        # GH_TOKEN being overridden below, reproducing the action_required stall (ADR-0027).
+        token: ${{ secrets.SYNC_PR_TOKEN || secrets.GITHUB_TOKEN }}
 
     - name: Merge main into each open PR branch
       env:
-        # A push authenticated as the default GITHUB_TOKEN (github-actions[bot]) makes GitHub
-        # hold the resulting pull_request checks as action_required/0 jobs pending manual
-        # approval, even on a same-repo branch - see ADR-0027. SYNC_PR_TOKEN (a PAT with repo
-        # write, owner-provided) attributes the push to a real collaborator instead, so checks
-        # run normally, same as any human or App push. Falls back to GITHUB_TOKEN (reproduces
-        # the stuck-check symptom) until the secret is added.
         GH_TOKEN: ${{ secrets.SYNC_PR_TOKEN || secrets.GITHUB_TOKEN }}
       run: |
         git config user.name "github-actions[bot]"
