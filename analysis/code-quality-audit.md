@@ -139,3 +139,36 @@ Repo @ main (6a9abb5). Delta since cycle 2 (bf99814) - merged: #137/#152/#153/#1
 
 - No dead code to remove
 - Findings above filed as #167-#171
+
+## Cycle 4, 2026-10-03
+
+Repo @ main (28a831b). Delta since cycle 3 (6ea47fb) - merged: #167-#171 fixes (#173-#176, #178), Nota de Remisión (#162, PR #177), basic reports (#163, PR #179), barcode scan-to-sell (#165, PR #180), goods-import documents (#164, PR #181), sync-main-into-prs checkout-token fix (PR #182).
+
+### Findings (new)
+
+| # | File | What | Issue |
+|---|------|------|-------|
+| 1 | `DirectDnitSifenGateway.SendRemisionAsync` | Remisión always `EmissionType.Normal`, no contingency/offline path unlike invoices (#149/#167); self-flagged in code | #188 |
+| 2 | `permissionOptions.ts` | `GoodsImports.Read`/`.Write` (#181) missing from the user permission picker - a Standard user can never be granted goods-import access via the UI | #189 |
+
+### Design-system / UI-gap check (ADR-0025)
+
+- Reports (#163) and barcode scan-to-sell (#165) got UI this cycle, built on `Page`/`Segmented` - consistent with the design system
+- Still API-only, no React UI: Remisión (#177), goods-import documents (#181), Bancard payment links (#150), Marangatu IVA-book export (#123) - filed as #190
+
+### Verified clean / no new dead code
+
+- Dead code: none found; `#178`'s `VatRateGroup` extraction correctly deduped `IvaBreakdown`/`InvoiceCalculator` with no leftover duplicate
+- Permissions: every new endpoint (Remisión x3, Reports x3, barcode, goods-import x3) has `Permissions()`; `GoodsImportsRead`/`Write`/`ReportsRead` all exercised by `PermissionEnforcementTests`
+- `CancellationToken`: threaded through all new providers/endpoints, no regressions
+- Atomicity: `EfGoodsImportDocumentServiceProvider.AddGoodsImportDocumentAsync` - document insert + stock check-in + transaction log in one transaction, rolls back together
+- resx/Designer.cs: new `Reports.resx` set, `Users.resx` additions - `ResxDesignerSyncTests` green, no drift
+- e2e `global-setup.ts` TRUNCATE list extended for all 4 new tables (`RemissionNotes`, `RemissionNoteItems`, `PendingRemisionTransmissions`, `GoodsImportDocuments`, `GoodsImportDocumentItems`)
+- Test coverage: all 4 new feature areas (Remisión, reports, barcode, goods-import) have endpoint + unit tests
+- Money/decimal: `decimal` throughout; no `double`
+- No `async void`, fire-and-forget, empty `catch`, or secrets in new config
+
+### Actions taken this cycle
+
+- No dead code to remove
+- Findings above filed as #188-#190
