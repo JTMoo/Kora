@@ -409,5 +409,32 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("itemsRequired", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sent.
+        /// </summary>
+        public static string statusSent {
+            get {
+                return ResourceManager.GetString("statusSent", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Accepted.
+        /// </summary>
+        public static string statusAccepted {
+            get {
+                return ResourceManager.GetString("statusAccepted", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Rejected.
+        /// </summary>
+        public static string statusRejected {
+            get {
+                return ResourceManager.GetString("statusRejected", resourceCulture);
+            }
+        }
     }
 }

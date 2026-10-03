@@ -234,4 +234,13 @@
   <data name="itemsRequired" xml:space="preserve">
     <value>At least one item is required.</value>
   </data>
+  <data name="statusSent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="statusAccepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="statusRejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
 </root>
