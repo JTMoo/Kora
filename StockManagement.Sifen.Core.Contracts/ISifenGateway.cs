@@ -21,4 +21,10 @@ public interface ISifenGateway
 	/// contract as <see cref="SendAsync(Invoice, CancellationToken)"/>.
 	/// </summary>
 	Task<SifenTransmissionResult> SendRemisionAsync(RemissionNote remissionNote, CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Builds, signs and transmits <paramref name="debitNote"/>'s DE (#184). Same never-throws-for-SIFEN-outcomes
+	/// contract as <see cref="SendAsync(Invoice, CancellationToken)"/>.
+	/// </summary>
+	Task<SifenTransmissionResult> SendDebitNoteAsync(DebitNote debitNote, CancellationToken cancellationToken = default);
 }
