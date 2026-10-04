@@ -8,7 +8,7 @@ namespace StockManagement.Api.Features.Settings;
 
 
 public sealed record UpdateCompanySettingsRequest(string CompanyName, string TaxId, string Currency, decimal VatRatePercent, int PaymentTermInDays, int FirstInvoiceNumber, int FirstCustomerId, int CurrencyDecimalDigits,
-	string Ruc = "", string TimbradoNumber = "", DateTime? TimbradoValidFrom = null, DateTime? TimbradoValidTo = null, string EstablishmentCode = "001", string PointOfSaleCode = "001");
+	string Ruc = "", string TimbradoNumber = "", DateTime? TimbradoValidFrom = null, DateTime? TimbradoValidTo = null, string EstablishmentCode = "001", string PointOfSaleCode = "001", string EstablishmentAddress = "");
 
 
 public class UpdateCompanySettingsValidator : Validator<UpdateCompanySettingsRequest>
@@ -42,7 +42,7 @@ public class UpdateCompanySettingsEndpoint(ISettingsService settingsService) : E
 	public override async Task<CompanySettingsResponse> ExecuteAsync(UpdateCompanySettingsRequest request, CancellationToken cancellationToken)
 	{
 		var settings = new CompanySettings(request.CompanyName, request.TaxId, request.Currency, request.VatRatePercent, request.PaymentTermInDays, request.FirstInvoiceNumber, request.FirstCustomerId, request.CurrencyDecimalDigits,
-			request.Ruc, request.TimbradoNumber, request.TimbradoValidFrom, request.TimbradoValidTo, request.EstablishmentCode, request.PointOfSaleCode);
+			request.Ruc, request.TimbradoNumber, request.TimbradoValidFrom, request.TimbradoValidTo, request.EstablishmentCode, request.PointOfSaleCode, request.EstablishmentAddress);
 		await _settingsService.SetCompanySettingsAsync(settings, cancellationToken);
 		return CompanySettingsResponse.From(settings);
 	}

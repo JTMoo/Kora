@@ -112,7 +112,7 @@ public sealed class DirectDnitSifenGateway(
 			companySettings.CompanyName,
 			companySettings.EstablishmentCode,
 			companySettings.PointOfSaleCode,
-			EstablishmentAddress: "",
+			companySettings.EstablishmentAddress,
 			companySettings.TimbradoNumber,
 			DateOnly.FromDateTime(timbradoValidFrom));
 
@@ -178,7 +178,7 @@ public sealed class DirectDnitSifenGateway(
 			companySettings.CompanyName,
 			companySettings.EstablishmentCode,
 			companySettings.PointOfSaleCode,
-			EstablishmentAddress: "",
+			companySettings.EstablishmentAddress,
 			companySettings.TimbradoNumber,
 			DateOnly.FromDateTime(timbradoValidFrom));
 

@@ -24,6 +24,7 @@ public class AppSettings : BaseDocument
 	private DateTime? _timbradoValidTo;
 	private string _establishmentCode = "001";
 	private string _pointOfSaleCode = "001";
+	private string _establishmentAddress = "";
 
 
 	public AvailableLanguages Language
@@ -148,5 +149,14 @@ public class AppSettings : BaseDocument
 	{
 		get => this._pointOfSaleCode;
 		set => this.SetField(ref this._pointOfSaleCode, value);
+	}
+
+	/// <summary>
+	/// Street address of the establishment issuing the DTE (SIFEN <c>dDirEmi</c>)
+	/// </summary>
+	public string EstablishmentAddress
+	{
+		get => this._establishmentAddress;
+		set => this.SetField(ref this._establishmentAddress, value);
 	}
 }

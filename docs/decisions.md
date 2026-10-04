@@ -41,6 +41,7 @@ Generated from `docs/adr/*.md` by `scripts/generate-adr-index.sh`. Don't hand-ed
 | [0030](adr/0030-frontend-testing-strategy.md) | Frontend testing strategy | Accepted |
 | [0031](adr/0031-sifen-electronic-invoicing-and-per-category-iva.md) | SIFEN electronic invoicing and per-category IVA | Proposed |
 | [0034](adr/0034-open-invoice-import.md) | Open invoices as an import target | Proposed |
+| [0035](adr/0035-kude-generation.md) | KuDE generation for SIFEN documents | Accepted |
 <!-- ADR-INDEX:END -->
 
 ## Standing decisions
