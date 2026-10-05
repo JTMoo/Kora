@@ -11,7 +11,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <see cref="IGoodsImportDocumentServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
 /// <remarks>Checks in every item's stock in the same transaction the document is inserted in (atomic multi-step write)</remarks>
-public class EfGoodsImportDocumentServiceProvider(AppDbContext db) : IGoodsImportDocumentServiceProvider
+public class GoodsImportDocumentServiceProvider(AppDbContext db) : IGoodsImportDocumentServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

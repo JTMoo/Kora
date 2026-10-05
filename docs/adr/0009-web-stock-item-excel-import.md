@@ -7,7 +7,7 @@
 
 - WPF's `TableMappingViewModel` opens the file locally, then the user manually maps each Excel column to a `StockItem` property, previews the duplicate count, and confirms
 - A browser can't open a local `OpenFileDialog` into server-side processing the same way; the file has to be uploaded
-- `IStockItemImportService` (`StockManagement.Import.Core`) already holds the duplicate-split and insert logic ([#37](https://github.com/JTMoo/StockManagement/pull/37)) and is DI-registered against `IStockItemServiceProvider`, which the API already has bound to `EfStockItemServiceProvider` — reusable as-is
+- `IStockItemImportService` (`StockManagement.Import.Core`) already holds the duplicate-split and insert logic ([#37](https://github.com/JTMoo/StockManagement/pull/37)) and is DI-registered against `IStockItemServiceProvider`, which the API already has bound to `StockItemServiceProvider` — reusable as-is
 - Standing decision: import keeps the first row for a repeated code, reports the rest as duplicates
 
 ## Options

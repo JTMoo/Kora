@@ -24,7 +24,7 @@
 - 12 hour expiry, no refresh token: the token is stateless, so "logout" is discarding it client-side, nothing server-side to revoke
 - `Kernel.Model.User` gets `Username` (unique) and `PasswordHash`; `IUserServiceProvider` gets `GetUserByUsernameAsync`, and its writes move from Mongo result types to `Task<int>` (rows affected), matching the ADR-0008 cutover already done for the other entities
 - New `StockManagement.Auth.Core`/`.Contracts`: `IAuthService.ValidateCredentialsAsync` checks username/password (PBKDF2-SHA256, 100k iterations, own `PasswordHasher`, no extra NuGet package)
-- `EfUserServiceProvider` (Infrastructure) is the first implementation with a real password; the `AddUsers` migration creates the table and seeds one `admin` user (password `ChangeMe123!`) so a fresh install has something to log in with
+- `UserServiceProvider` (Infrastructure) is the first implementation with a real password; the `AddUsers` migration creates the table and seeds one `admin` user (password `ChangeMe123!`) so a fresh install has something to log in with
 - `POST /api/auth/login`, `AllowAnonymous`; every other endpoint requires the bearer token (removed `AllowAnonymous()` from all of them)
 - React: token kept in memory + `localStorage` (survives a refresh; no cookie, so no CSRF surface), sent as `Authorization: Bearer`; a login screen gates the app shell, a 401 from any call clears the token and returns to it
 

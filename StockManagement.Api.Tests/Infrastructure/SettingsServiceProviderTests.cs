@@ -12,7 +12,7 @@ namespace StockManagement.Api.Tests.Infrastructure;
 
 
 [TestClass]
-public sealed class EfSettingsServiceProviderTests
+public sealed class SettingsServiceProviderTests
 {
 	private ServiceProvider _services;
 
@@ -27,7 +27,7 @@ public sealed class EfSettingsServiceProviderTests
 
 		_services = new ServiceCollection()
 			.AddInfrastructure(configuration)
-			.AddScoped<ISettingsServiceProvider, EfSettingsServiceProvider>()
+			.AddScoped<ISettingsServiceProvider, SettingsServiceProvider>()
 			.BuildServiceProvider();
 
 		await using var scope = _services.CreateAsyncScope();

@@ -24,27 +24,27 @@ public static class ServiceCollectionExtensions
 	/// </summary>
 	public static IServiceCollection AddInfrastructureServiceProviders(this IServiceCollection services)
 	{
-		services.AddScoped<IStockItemServiceProvider, EfStockItemServiceProvider>();
-		services.AddScoped<ICustomerServiceProvider, EfCustomerServiceProvider>();
-		services.AddScoped<IInvoiceServiceProvider, EfInvoiceServiceProvider>();
-		services.AddScoped<ICreditNoteServiceProvider, EfCreditNoteServiceProvider>();
-		services.AddScoped<ISettingsServiceProvider, EfSettingsServiceProvider>();
-		services.AddScoped<IUserServiceProvider, EfUserServiceProvider>();
-		services.AddScoped<IImportBatchServiceProvider, EfImportBatchServiceProvider>();
-		services.AddScoped<ISupplierServiceProvider, EfSupplierServiceProvider>();
-		services.AddScoped<ISupplierInvoiceServiceProvider, EfSupplierInvoiceServiceProvider>();
-		services.AddScoped<ISearchServiceProvider, EfSearchServiceProvider>();
-		services.AddScoped<IPendingTransmissionServiceProvider, EfPendingTransmissionServiceProvider>();
-		services.AddScoped<IPaymentLinkServiceProvider, EfPaymentLinkServiceProvider>();
-		services.AddScoped<IContingencyCdcRangeServiceProvider, EfContingencyCdcRangeServiceProvider>();
-		services.AddScoped<IRemissionNoteServiceProvider, EfRemissionNoteServiceProvider>();
-		services.AddScoped<IPendingRemisionTransmissionServiceProvider, EfPendingRemisionTransmissionServiceProvider>();
-		services.AddScoped<IDebitNoteServiceProvider, EfDebitNoteServiceProvider>();
-		services.AddScoped<IPendingDebitNoteTransmissionServiceProvider, EfPendingDebitNoteTransmissionServiceProvider>();
-		services.AddScoped<IGoodsImportDocumentServiceProvider, EfGoodsImportDocumentServiceProvider>();
-		services.AddScoped<IReportServiceProvider, EfReportServiceProvider>();
-		services.AddScoped<ICancellationRequestServiceProvider, EfCancellationRequestServiceProvider>();
-		services.AddScoped<IInvoiceNumberVoidServiceProvider, EfInvoiceNumberVoidServiceProvider>();
+		services.AddScoped<IStockItemServiceProvider, StockItemServiceProvider>();
+		services.AddScoped<ICustomerServiceProvider, CustomerServiceProvider>();
+		services.AddScoped<IInvoiceServiceProvider, InvoiceServiceProvider>();
+		services.AddScoped<ICreditNoteServiceProvider, CreditNoteServiceProvider>();
+		services.AddScoped<ISettingsServiceProvider, SettingsServiceProvider>();
+		services.AddScoped<IUserServiceProvider, UserServiceProvider>();
+		services.AddScoped<IImportBatchServiceProvider, ImportBatchServiceProvider>();
+		services.AddScoped<ISupplierServiceProvider, SupplierServiceProvider>();
+		services.AddScoped<ISupplierInvoiceServiceProvider, SupplierInvoiceServiceProvider>();
+		services.AddScoped<ISearchServiceProvider, SearchServiceProvider>();
+		services.AddScoped<IPendingTransmissionServiceProvider, PendingTransmissionServiceProvider>();
+		services.AddScoped<IPaymentLinkServiceProvider, PaymentLinkServiceProvider>();
+		services.AddScoped<IContingencyCdcRangeServiceProvider, ContingencyCdcRangeServiceProvider>();
+		services.AddScoped<IRemissionNoteServiceProvider, RemissionNoteServiceProvider>();
+		services.AddScoped<IPendingRemisionTransmissionServiceProvider, PendingRemisionTransmissionServiceProvider>();
+		services.AddScoped<IDebitNoteServiceProvider, DebitNoteServiceProvider>();
+		services.AddScoped<IPendingDebitNoteTransmissionServiceProvider, PendingDebitNoteTransmissionServiceProvider>();
+		services.AddScoped<IGoodsImportDocumentServiceProvider, GoodsImportDocumentServiceProvider>();
+		services.AddScoped<IReportServiceProvider, ReportServiceProvider>();
+		services.AddScoped<ICancellationRequestServiceProvider, CancellationRequestServiceProvider>();
+		services.AddScoped<IInvoiceNumberVoidServiceProvider, InvoiceNumberVoidServiceProvider>();
 		return services;
 	}
 }

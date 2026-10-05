@@ -8,7 +8,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="ISettingsServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfSettingsServiceProvider(AppDbContext db) : ISettingsServiceProvider
+public class SettingsServiceProvider(AppDbContext db) : ISettingsServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

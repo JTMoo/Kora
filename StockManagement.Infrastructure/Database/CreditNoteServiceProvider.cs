@@ -10,7 +10,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="ICreditNoteServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfCreditNoteServiceProvider(AppDbContext db) : ICreditNoteServiceProvider
+public class CreditNoteServiceProvider(AppDbContext db) : ICreditNoteServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

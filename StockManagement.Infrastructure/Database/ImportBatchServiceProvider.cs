@@ -8,7 +8,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="IImportBatchServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfImportBatchServiceProvider(AppDbContext db) : IImportBatchServiceProvider
+public class ImportBatchServiceProvider(AppDbContext db) : IImportBatchServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

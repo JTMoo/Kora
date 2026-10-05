@@ -8,7 +8,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="IContingencyCdcRangeServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfContingencyCdcRangeServiceProvider(AppDbContext db) : IContingencyCdcRangeServiceProvider
+public class ContingencyCdcRangeServiceProvider(AppDbContext db) : IContingencyCdcRangeServiceProvider
 {
 	private readonly AppDbContext _db = db;
 
@@ -47,7 +47,7 @@ public class EfContingencyCdcRangeServiceProvider(AppDbContext db) : IContingenc
 
 	/// <remarks>
 	/// Conditional <c>UPDATE ... WHERE NextNumber = @reserved</c>, same guarded-update pattern as the stock
-	/// decrement in <see cref="EfInvoiceServiceProvider"/> - no two sales reserve the same contingency number
+	/// decrement in <see cref="InvoiceServiceProvider"/> - no two sales reserve the same contingency number
 	/// under concurrency.
 	/// </remarks>
 	public async Task<long?> TryReserveNextAsync(CancellationToken cancellationToken = default)

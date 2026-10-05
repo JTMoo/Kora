@@ -19,7 +19,7 @@
 
 - No `Suppliers.Core`: `ISupplierServiceProvider` (Kernel) is called directly from `StockManagement.Api/Features/Suppliers/*`, same shape as `StockItems`
 - `StockItem` gets `SupplierId` (nullable FK) + `Supplier` navigation + `MinimumStock` (int); `Supplier` is a normal `BaseDocument` with a unique `Name` index (same conflict-on-duplicate pattern as `StockItem.Code`)
-- Deleting an in-use supplier is blocked: Postgres FK violation (`23503`) is caught in `EfSupplierServiceProvider` and mapped to `SupplierInUseException` → 409, same pattern as the existing `23505` → `*AlreadyExistsException` mapping
+- Deleting an in-use supplier is blocked: Postgres FK violation (`23503`) is caught in `SupplierServiceProvider` and mapped to `SupplierInUseException` → 409, same pattern as the existing `23505` → `*AlreadyExistsException` mapping
 - New permissions `Suppliers.Read`/`Suppliers.Write` (ADR-0017)
 - `IStockItemServiceProvider.GetStockItemsBelowMinimumAsync()` + `GET /stock-items/below-minimum`: items with `MinimumStock > 0` and `Amount < MinimumStock`, for the web "below minimum" list; also usable to prefill a purchase once #25 exists
 - Purchases (#25) and purchase price/exchange rate on stock items (#28) are out of scope here
