@@ -130,6 +130,42 @@ public sealed class ReportEndpointsTests
 	}
 
 	[TestMethod]
+	public async Task GetAccountsReceivableAging_MidRangeOverdue_BucketedAsDays31To60()
+	{
+		// Arrange: default payment term is 30 days, so 45 days out is 15 days overdue... use 75 days out for 45 days overdue (31-60 bucket)
+		await this.CreateCustomerAndSaleAsync("Diego", "Ruiz", 1, 4000m);
+		var asOf = DateTime.Now.AddDays(75);
+
+		// Act
+		var response = await _client.GetAsync($"/api/reports/accounts-receivable-aging?asOf={Uri.EscapeDataString(asOf.ToString("O"))}");
+
+		// Assert
+		var body = await response.Content.ReadAsAsync<AccountsReceivableAgingResponse>();
+		Assert.AreEqual(4000m, body.Totals.Days31To60);
+		Assert.AreEqual(0m, body.Totals.Current);
+		Assert.AreEqual(0m, body.Totals.Days90Plus);
+	}
+
+	[TestMethod]
+	public async Task GetAccountsReceivableAging_MultipleCustomersAcrossBuckets_TotalsAndPerCustomerRowsAgree()
+	{
+		// Arrange: one not-yet-due invoice, one far past due invoice, for different customers
+		await this.CreateCustomerAndSaleAsync("Elena", "Vega", 1, 1500m);
+		await this.CreateCustomerAndSaleAsync("Fabio", "Sosa", 1, 2500m);
+		var asOf = DateTime.Now.AddDays(121);
+
+		// Act
+		var response = await _client.GetAsync($"/api/reports/accounts-receivable-aging?asOf={Uri.EscapeDataString(asOf.ToString("O"))}");
+
+		// Assert
+		var body = await response.Content.ReadAsAsync<AccountsReceivableAgingResponse>();
+		Assert.AreEqual(4000m, body.Totals.Total);
+		Assert.AreEqual(4000m, body.Totals.Days90Plus);
+		Assert.AreEqual(2, body.Items.Count);
+		CollectionAssert.AreEquivalent(new[] { 1500m, 2500m }, body.Items.Select(row => row.Days90Plus).ToList());
+	}
+
+	[TestMethod]
 	public async Task GetAccountsReceivableAging_FullyPaidInvoice_ExcludedFromTotals()
 	{
 		// Arrange
