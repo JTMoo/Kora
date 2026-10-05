@@ -41,6 +41,7 @@ Generated from `docs/adr/*.md` by `scripts/generate-adr-index.sh`. Don't hand-ed
 | [0030](adr/0030-frontend-testing-strategy.md) | Frontend testing strategy | Accepted |
 | [0031](adr/0031-sifen-electronic-invoicing-and-per-category-iva.md) | SIFEN electronic invoicing and per-category IVA | Proposed |
 | [0034](adr/0034-open-invoice-import.md) | Open invoices as an import target | Proposed |
+| [0036](adr/0036-debit-notes.md) | Nota de Débito Electrónica | Proposed |
 <!-- ADR-INDEX:END -->
 
 ## Standing decisions

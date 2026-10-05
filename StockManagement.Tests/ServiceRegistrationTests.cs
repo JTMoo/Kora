@@ -39,6 +39,7 @@ public sealed class ServiceRegistrationTests
 			.AddScoped(_ => new Mock<IPaymentLinkServiceProvider>().Object)
 			.AddScoped(_ => new Mock<IContingencyCdcIssuer>().Object)
 			.AddScoped(_ => new Mock<IRemissionNoteServiceProvider>().Object)
+			.AddScoped(_ => new Mock<IDebitNoteServiceProvider>().Object)
 			.AddSalesCore(new ConfigurationBuilder().Build())
 			.AddCustomersCore()
 			.AddImportCore()
@@ -55,6 +56,7 @@ public sealed class ServiceRegistrationTests
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IPaymentLinkService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<ICreditNoteService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IRemissionNoteService>());
+		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IDebitNoteService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<ICustomerService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IStockItemImportService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IImportBatchService>());
