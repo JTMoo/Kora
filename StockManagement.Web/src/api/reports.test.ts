@@ -80,4 +80,30 @@ describe("reportsApi", () =>
 		// Assert
 		expect(result).toEqual({ ok: true, value: { items: [], nextCursor: null } });
 	});
+
+	it("getAccountsReceivableAging_Ok_ReturnsTotalsAndRows", async () =>
+	{
+		// Arrange
+		const totals = { current: 1000, days1To30: 0, days31To60: 0, days61To90: 0, days90Plus: 0, total: 1000 };
+		const row = { customerId: 1, customerName: "Ana Gomez", ...totals };
+		mockApi({ "GET /api/reports/accounts-receivable-aging?pageSize=20": { body: { totals, items: [row], nextCursor: null } } });
+
+		// Act
+		const result = await reportsApi.getAccountsReceivableAging({ pageSize: 20 });
+
+		// Assert
+		expect(result).toEqual({ ok: true, value: { totals, items: [row], nextCursor: null } });
+	});
+
+	it("getAccountsReceivableAging_WithCursor_IncludesCursor", async () =>
+	{
+		// Arrange
+		mockApi({ "GET /api/reports/accounts-receivable-aging?cursor=c1&pageSize=20": { body: { totals: { current: 0, days1To30: 0, days31To60: 0, days61To90: 0, days90Plus: 0, total: 0 }, items: [], nextCursor: null } } });
+
+		// Act
+		const result = await reportsApi.getAccountsReceivableAging({ cursor: "c1", pageSize: 20 });
+
+		// Assert
+		expect(result.ok).toBe(true);
+	});
 });
