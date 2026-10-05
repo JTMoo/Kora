@@ -172,9 +172,68 @@ public sealed class SupplierInvoiceEndpointsTests
 		Assert.IsFalse(body.Items.Any());
 	}
 
+	[TestMethod]
+	public async Task GetAccountsPayableAging_FarPastDue_BucketedAsDays90Plus()
+	{
+		// Arrange: 30-day term, 121 days out is 91 days overdue
+		await this.CreateSupplierInvoiceAsync("SI-1", 3000, DateTime.Now.AddDays(-91));
+
+		// Act
+		var response = await _client.GetAsync("/api/reports/accounts-payable-aging");
+
+		// Assert
+		var body = await response.Content.ReadAsAsync<AccountsPayableAgingResponse>();
+		Assert.AreEqual(0m, body.Totals.Current);
+		Assert.AreEqual(3000m, body.Totals.Days90Plus);
+		Assert.AreEqual(3000m, body.Totals.Total);
+	}
+
+	[TestMethod]
+	public async Task GetAccountsPayableAging_MidRangeOverdue_BucketedAsDays31To60()
+	{
+		// Arrange: 45 days overdue falls in the 31-60 bucket
+		await this.CreateSupplierInvoiceAsync("SI-1", 4000, DateTime.Now.AddDays(-45));
+
+		// Act
+		var response = await _client.GetAsync("/api/reports/accounts-payable-aging");
+
+		// Assert
+		var body = await response.Content.ReadAsAsync<AccountsPayableAgingResponse>();
+		Assert.AreEqual(4000m, body.Totals.Days31To60);
+		Assert.AreEqual(0m, body.Totals.Current);
+		Assert.AreEqual(0m, body.Totals.Days90Plus);
+	}
+
+	[TestMethod]
+	public async Task GetAccountsPayableAging_MultipleSuppliersAcrossBuckets_TotalsAndPerSupplierRowsAgree()
+	{
+		// Arrange: one not-yet-due invoice, one far past due invoice, for different suppliers
+		var otherSupplier = new Supplier("Other Co");
+		await _factory.ScopedServices.GetRequiredService<ISupplierServiceProvider>().AddSupplierAsync(otherSupplier);
+		await this.CreateSupplierInvoiceAsync("SI-1", 1500);
+		var response1 = await _client.PostAsJsonAsync("/api/supplier-invoices", new CreateSupplierInvoiceRequest("SI-2", otherSupplier.Id, DateTime.Now.AddDays(-120), DateTime.Now.AddDays(-91), 2500));
+		Assert.AreEqual(HttpStatusCode.Created, response1.StatusCode);
+
+		// Act
+		var response = await _client.GetAsync("/api/reports/accounts-payable-aging");
+
+		// Assert
+		var body = await response.Content.ReadAsAsync<AccountsPayableAgingResponse>();
+		Assert.AreEqual(4000m, body.Totals.Total);
+		Assert.AreEqual(2500m, body.Totals.Days90Plus);
+		Assert.AreEqual(2, body.Items.Count);
+		CollectionAssert.AreEquivalent(new[] { 0m, 2500m }, body.Items.Select(row => row.Days90Plus).ToList());
+	}
+
 	private async Task CreateSupplierInvoiceAsync(string number, decimal total)
 	{
 		var response = await _client.PostAsJsonAsync("/api/supplier-invoices", new CreateSupplierInvoiceRequest(number, _supplier.Id, DateTime.Now, DateTime.Now.AddDays(30), total));
+		Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+	}
+
+	private async Task CreateSupplierInvoiceAsync(string number, decimal total, DateTime expirationDate)
+	{
+		var response = await _client.PostAsJsonAsync("/api/supplier-invoices", new CreateSupplierInvoiceRequest(number, _supplier.Id, DateTime.Now.AddDays(-120), expirationDate, total));
 		Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
 	}
 }
