@@ -37,6 +37,7 @@ public sealed class SifenTransmissionWorker(IServiceScopeFactory scopeFactory, I
 
 		await this.ProcessDueInvoicesAsync(scope.ServiceProvider.GetRequiredService<IPendingTransmissionServiceProvider>(), gateway, cancellationToken);
 		await this.ProcessDueRemisionesAsync(scope.ServiceProvider.GetRequiredService<IPendingRemisionTransmissionServiceProvider>(), gateway, cancellationToken);
+		await this.ProcessDueDebitNotesAsync(scope.ServiceProvider.GetRequiredService<IPendingDebitNoteTransmissionServiceProvider>(), gateway, cancellationToken);
 	}
 
 	private async Task ProcessDueInvoicesAsync(IPendingTransmissionServiceProvider pendingTransmissions, ISifenGateway gateway, CancellationToken cancellationToken)
@@ -76,6 +77,28 @@ public sealed class SifenTransmissionWorker(IServiceScopeFactory scopeFactory, I
 			catch (Exception ex) when (ex is not OperationCanceledException)
 			{
 				_logger.LogError(ex, "SIFEN transmission failed for remission note {RemissionNoteNumber}", transmission.RemissionNote.Number);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Same polling loop for the <see cref="Kernel.Model.DebitNote"/> outbox (#184).
+	/// </summary>
+	private async Task ProcessDueDebitNotesAsync(IPendingDebitNoteTransmissionServiceProvider pendingTransmissions, ISifenGateway gateway, CancellationToken cancellationToken)
+	{
+		var due = await pendingTransmissions.GetDueAsync(DateTime.Now, BatchSize, cancellationToken);
+		foreach (var transmission in due)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+
+			try
+			{
+				var result = await gateway.SendDebitNoteAsync(transmission.DebitNote, cancellationToken);
+				await SifenTransmissionProcessor.ApplyDebitNoteAsync(pendingTransmissions, transmission, result, DateTime.Now, cancellationToken);
+			}
+			catch (Exception ex) when (ex is not OperationCanceledException)
+			{
+				_logger.LogError(ex, "SIFEN transmission failed for debit note {DebitNoteNumber}", transmission.DebitNote.Number);
 			}
 		}
 	}

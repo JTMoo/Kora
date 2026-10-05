@@ -14,4 +14,9 @@ public interface IDteXmlBuilder
 	/// Builds the unsigned <c>rDE</c> XML document for a Nota de Remisión Electrónica (#162).
 	/// </summary>
 	XDocument BuildRemision(DteRemisionData data);
+
+	/// <summary>
+	/// Builds the unsigned <c>rDE</c> XML document for a Nota de Débito Electrónica (#184).
+	/// </summary>
+	XDocument BuildDebitNote(DteDebitNoteData data);
 }

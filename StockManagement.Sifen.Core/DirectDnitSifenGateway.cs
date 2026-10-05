@@ -93,6 +93,101 @@ public sealed class DirectDnitSifenGateway(
 		}
 	}
 
+	/// <summary>
+	/// Builds, signs and transmits a Nota de Débito Electrónica (#184). <see cref="DebitNote.Invoice"/> must already
+	/// carry a non-empty <see cref="Invoice.Cdc"/> - enforced by <see cref="Sales.Core.IDebitNoteService"/> at creation,
+	/// checked again here since the invoice could have changed between creation and transmission.
+	/// </summary>
+	public async Task<SifenTransmissionResult> SendDebitNoteAsync(DebitNote debitNote, CancellationToken cancellationToken = default)
+	{
+		ArgumentNullException.ThrowIfNull(debitNote);
+
+		try
+		{
+			var companySettings = await _settingsService.GetCompanySettingsAsync(cancellationToken);
+			var data = BuildDebitNoteData(debitNote, companySettings);
+			var unsignedDe = _xmlBuilder.BuildDebitNote(data);
+
+			using var certificate = LoadCertificate();
+			var signedDe = _signer.Sign(unsignedDe, certificate);
+
+			using var client = _httpClientFactory.CreateClient(nameof(DirectDnitSifenGateway));
+			using var content = new StringContent(signedDe.ToString(SaveOptions.DisableFormatting), Encoding.UTF8, "text/xml");
+			using var response = await client.PostAsync(_options.ServiceUrl, content, cancellationToken);
+
+			return ParseResponse(await response.Content.ReadAsStringAsync(cancellationToken), data.Cdc);
+		}
+		catch (Exception ex) when (ex is not ArgumentException and not InvalidOperationException)
+		{
+			return SifenTransmissionResult.Error(ex.Message);
+		}
+	}
+
+	/// <exception cref="InvalidOperationException">Company settings, the debit note, or its invoice are missing data a DE needs</exception>
+	private DteDebitNoteData BuildDebitNoteData(DebitNote debitNote, CompanySettings companySettings)
+	{
+		if (string.IsNullOrEmpty(debitNote.Invoice.Cdc))
+			throw new InvalidOperationException($"Invoice '{debitNote.Invoice.Number}' has no Cdc yet; it must be transmitted to SIFEN before a debit note can reference it.");
+
+		if (!RucValidator.TryNormalize(companySettings.Ruc, out var normalizedRuc))
+			throw new InvalidOperationException("Company settings RUC is missing or invalid; set it before transmitting to SIFEN.");
+
+		var rucParts = normalizedRuc.Split('-');
+		var rucBase = rucParts[0];
+		var rucCheckDigit = int.Parse(rucParts[1]);
+
+		if (companySettings.TimbradoValidFrom is not DateTime timbradoValidFrom)
+			throw new InvalidOperationException("Company settings timbrado validity start is missing; set it before transmitting to SIFEN.");
+
+		var emisor = new DteEmisor(
+			rucBase,
+			rucCheckDigit,
+			companySettings.CompanyName,
+			companySettings.EstablishmentCode,
+			companySettings.PointOfSaleCode,
+			companySettings.EstablishmentAddress,
+			companySettings.TimbradoNumber,
+			DateOnly.FromDateTime(timbradoValidFrom));
+
+		var receptor = new DteReceptor(
+			debitNote.Invoice.Customer.Display,
+			RucBase: null,
+			RucCheckDigit: null,
+			debitNote.Invoice.Customer.IdentificationNumber);
+
+		// A non-empty debitNote.Cdc was already assigned locally (e.g. contingency issuance) - reuse it as-is rather
+		// than regenerating, same reasoning as BuildInvoiceData's Cdc reuse.
+		string cdc;
+		long documentNumber;
+		if (!string.IsNullOrEmpty(debitNote.Cdc))
+		{
+			cdc = debitNote.Cdc;
+			documentNumber = long.Parse(cdc.AsSpan(17, 7));
+		}
+		else
+		{
+			if (InvoiceNumber.TryParseSequence(debitNote.Number, companySettings.EstablishmentCode, companySettings.PointOfSaleCode) is not int sequence)
+				throw new InvalidOperationException($"Debit note number '{debitNote.Number}' does not match the configured establishment/point-of-sale.");
+
+			documentNumber = sequence;
+			cdc = _cdcGenerator.Generate(new CdcInput(
+				SifenDocumentType.NotaDeDebitoElectronica,
+				rucBase,
+				rucCheckDigit,
+				companySettings.EstablishmentCode,
+				companySettings.PointOfSaleCode,
+				documentNumber,
+				TaxpayerType.Juridica,
+				DateOnly.FromDateTime(debitNote.Date),
+				EmissionType.Normal,
+				GenerateSecurityCode()));
+		}
+
+		var items = debitNote.Items.Select(item => new DteDebitNoteItem(item.Description, item.Amount, item.VatRatePercent)).ToList();
+
+		return new DteDebitNoteData(cdc, emisor, receptor, debitNote.Date, documentNumber, debitNote.Invoice.Cdc, items, companySettings.CurrencyDecimalDigits);
+	}
+
 	/// <exception cref="InvalidOperationException">Company settings or the remission note are missing data a DE needs</exception>
 	private DteRemisionData BuildRemisionData(RemissionNote remissionNote, CompanySettings companySettings)
 	{

@@ -51,6 +51,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvid
 
 	public DbSet<GoodsImportDocument> GoodsImportDocuments => this.Set<GoodsImportDocument>();
 
+	public DbSet<DebitNote> DebitNotes => this.Set<DebitNote>();
+
+	public DbSet<PendingDebitNoteTransmission> PendingDebitNoteTransmissions => this.Set<PendingDebitNoteTransmission>();
+
 
 	public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
 	{
