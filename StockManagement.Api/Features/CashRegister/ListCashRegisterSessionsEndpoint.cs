@@ -28,12 +28,8 @@ public class ListCashRegisterSessionsEndpoint(ICashRegisterService cashRegisterS
 		var pageSize = Math.Clamp(request.PageSize ?? 20, 1, 100);
 		var result = await _cashRegisterService.GetSessionsAsync(request.Cursor, pageSize, cancellationToken);
 
-		var items = new List<CashRegisterSessionResponse>();
-		foreach (var session in result.Items)
-		{
-			var expected = await _cashRegisterService.GetExpectedAmountAsync(session, cancellationToken);
-			items.Add(CashRegisterSessionResponse.From(session, expected));
-		}
+		var expectedBySession = await _cashRegisterService.GetExpectedAmountsAsync(result.Items, cancellationToken);
+		var items = result.Items.Select(session => CashRegisterSessionResponse.From(session, expectedBySession[session.Id])).ToList();
 
 		return new(items, result.NextCursor);
 	}

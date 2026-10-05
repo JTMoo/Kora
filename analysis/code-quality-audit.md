@@ -229,3 +229,28 @@ Repo @ main (5509f3e). Delta since cycle 5 (91f9614) - merged: #212 (VatSplit de
 
 - No dead code to remove
 - Findings above filed as #216-#217
+
+## Cycle 7, 2026-10-05
+
+Repo @ main (13833ea). Delta since cycle 6 (5509f3e): #221 (.NET 10 upgrade), #222 (Ef-prefix rename, closes #76), #223 (cash register #166).
+
+### Findings (new)
+
+| # | File | What | Issue |
+|---|------|------|-------|
+| 1 | `CashRegisterService.OpenSessionAsync`/`AddMovementAsync`/`CloseSessionAsync` | #223 stored opening float/movement amount/counted amount unrounded - every other money-accepting service (`PaymentService`, `SupplierPaymentService`) rounds to `CompanySettings.CurrencyDecimalDigits` first | #224 (fixed this cycle) |
+| 2 | `ListCashRegisterSessionsEndpoint.ExecuteAsync` | N+1: looped the page calling `GetExpectedAmountAsync` per session, each running its own cash-payments query | #225 (fixed this cycle) |
+| 3 | `DirectDnitSifenGateway.LoadCertificate`, `XadesSignerTests.CreateSelfSignedCertificate` | #221's net10.0 retarget surfaced `SYSLIB0057` (obsolete `X509Certificate2` ctors), not flagged under net8.0 | #226 (fixed this cycle) |
+
+### Verified clean / no new dead code
+
+- Dead code: none found
+- #221: no leftover `net8.0`/`net8` references anywhere (csproj, CI, scripts, Dockerfiles, docs) - full rebuild with a freshly `apt`-installed .NET 10 SDK succeeds, 0 errors
+- #222: no stale `Ef`-prefixed type names left in code, docs, ADRs or CLAUDE.md - #76 fully closed
+- #223: `CashRegister.Read`/`.Write` permissions on all 6 endpoints and present in `permissionOptions.ts` (cycle-4's #189 gap class not repeated); `CancellationToken` threaded throughout; e2e `global-setup.ts` TRUNCATE list already includes `CashRegisterSessions`/`CashMovements` (#217's gap class not repeated); resx/Designer.cs key counts match (27/27); atomic single-aggregate writes via EF owned collection (`Movements` `AutoInclude`d)
+- Pre-existing, out of scope for this delta: `NU1902`/`NU1903` transitive advisories on `SharpCompress`/`Snappier` (via Testcontainers, present since the package was first added, not introduced by #221-#223)
+
+### Actions taken this cycle
+
+- #224-#226 fixed directly (small, same PR): `CashRegisterService` now rounds via `ISettingsService`; `ListCashRegisterSessionsEndpoint` batches expected-amount lookup through a new `GetExpectedAmountsAsync`/`GetCashPaymentsTotalsAsync` (one query instead of N); `X509Certificate2` ctors replaced with `X509CertificateLoader`
+- No dead code to remove

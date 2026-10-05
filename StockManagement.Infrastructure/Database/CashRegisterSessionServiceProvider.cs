@@ -59,4 +59,13 @@ public class CashRegisterSessionServiceProvider(AppDbContext db) : ICashRegister
 	{
 		return _db.Invoices.SelectMany(invoice => invoice.Payments).Where(payment => payment.CashRegisterSessionId == sessionId).SumAsync(payment => payment.Amount, cancellationToken);
 	}
+
+	public async Task<Dictionary<string, decimal>> GetCashPaymentsTotalsAsync(IReadOnlyCollection<string> sessionIds, CancellationToken cancellationToken = default)
+	{
+		return await _db.Invoices.SelectMany(invoice => invoice.Payments)
+			.Where(payment => payment.CashRegisterSessionId != null && sessionIds.Contains(payment.CashRegisterSessionId))
+			.GroupBy(payment => payment.CashRegisterSessionId!)
+			.Select(group => new { SessionId = group.Key, Total = group.Sum(payment => payment.Amount) })
+			.ToDictionaryAsync(entry => entry.SessionId, entry => entry.Total, cancellationToken);
+	}
 }

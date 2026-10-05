@@ -440,7 +440,7 @@ public sealed class DirectDnitSifenGateway(
 		if (string.IsNullOrWhiteSpace(_options.CertificatePath))
 			throw new InvalidOperationException($"{SifenGatewayOptions.SectionName}:{nameof(SifenGatewayOptions.CertificatePath)} is not configured.");
 
-		return new X509Certificate2(_options.CertificatePath, _options.CertificatePassword, X509KeyStorageFlags.EphemeralKeySet);
+		return X509CertificateLoader.LoadPkcs12FromFile(_options.CertificatePath, _options.CertificatePassword, X509KeyStorageFlags.EphemeralKeySet);
 	}
 
 	private static string GenerateSecurityCode()

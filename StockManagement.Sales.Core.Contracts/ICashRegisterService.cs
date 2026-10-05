@@ -27,4 +27,7 @@ public interface ICashRegisterService
 
 	/// <summary>Expected cash for an already-closed session, recomputed from its recorded movements and payments</summary>
 	public Task<decimal> GetExpectedAmountAsync(CashRegisterSession session, CancellationToken cancellationToken = default);
+
+	/// <summary>Expected cash per session, batched in one query instead of one per session</summary>
+	public Task<Dictionary<string, decimal>> GetExpectedAmountsAsync(IReadOnlyCollection<CashRegisterSession> sessions, CancellationToken cancellationToken = default);
 }
