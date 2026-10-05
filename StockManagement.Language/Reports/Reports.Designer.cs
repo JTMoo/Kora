@@ -149,5 +149,68 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("noLowStockItems", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Accounts receivable aging.
+        /// </summary>
+        public static string accountsReceivableAging {
+            get {
+                return ResourceManager.GetString("accountsReceivableAging", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Current.
+        /// </summary>
+        public static string current {
+            get {
+                return ResourceManager.GetString("current", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to 1-30 days.
+        /// </summary>
+        public static string days1To30 {
+            get {
+                return ResourceManager.GetString("days1To30", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to 31-60 days.
+        /// </summary>
+        public static string days31To60 {
+            get {
+                return ResourceManager.GetString("days31To60", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to 61-90 days.
+        /// </summary>
+        public static string days61To90 {
+            get {
+                return ResourceManager.GetString("days61To90", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to 90+ days.
+        /// </summary>
+        public static string days90Plus {
+            get {
+                return ResourceManager.GetString("days90Plus", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No open invoices..
+        /// </summary>
+        public static string noOpenInvoices {
+            get {
+                return ResourceManager.GetString("noOpenInvoices", resourceCulture);
+            }
+        }
     }
 }

@@ -98,4 +98,25 @@
   <data name="noLowStockItems" xml:space="preserve">
     <value>Keine Artikel unter dem Mindestbestand.</value>
   </data>
+  <data name="accountsReceivableAging" xml:space="preserve">
+    <value>Offene Forderungen (Fälligkeit)</value>
+  </data>
+  <data name="current" xml:space="preserve">
+    <value>Aktuell</value>
+  </data>
+  <data name="days1To30" xml:space="preserve">
+    <value>1-30 Tage</value>
+  </data>
+  <data name="days31To60" xml:space="preserve">
+    <value>31-60 Tage</value>
+  </data>
+  <data name="days61To90" xml:space="preserve">
+    <value>61-90 Tage</value>
+  </data>
+  <data name="days90Plus" xml:space="preserve">
+    <value>90+ Tage</value>
+  </data>
+  <data name="noOpenInvoices" xml:space="preserve">
+    <value>Keine offenen Rechnungen.</value>
+  </data>
 </root>
