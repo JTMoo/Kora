@@ -12,7 +12,7 @@ function Check-Command($name, $hint) {
 	}
 }
 
-Check-Command dotnet "https://dotnet.microsoft.com/download/dotnet/8.0"
+Check-Command dotnet "https://dotnet.microsoft.com/download/dotnet/10.0"
 Check-Command node "https://nodejs.org"
 Check-Command npm "https://nodejs.org"
 Check-Command psql "PostgreSQL client, e.g. https://www.postgresql.org/download/windows/"

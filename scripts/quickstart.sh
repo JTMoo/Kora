@@ -14,7 +14,7 @@ check() {
 	fi
 }
 
-check dotnet "https://dotnet.microsoft.com/download/dotnet/8.0"
+check dotnet "https://dotnet.microsoft.com/download/dotnet/10.0"
 check node "https://nodejs.org"
 check npm "https://nodejs.org"
 check psql "PostgreSQL client, e.g. 'brew install postgresql@16' or 'apt install postgresql-client'"
