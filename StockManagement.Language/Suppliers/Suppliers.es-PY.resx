@@ -104,4 +104,58 @@
   <data name="leadTimeNegative" xml:space="preserve">
     <value>El plazo de entrega no puede ser negativo.</value>
   </data>
+  <data name="payables" xml:space="preserve">
+    <value>Cuentas por pagar</value>
+  </data>
+  <data name="supplierInvoice" xml:space="preserve">
+    <value>Factura de proveedor</value>
+  </data>
+  <data name="supplierInvoices" xml:space="preserve">
+    <value>Facturas de proveedor</value>
+  </data>
+  <data name="supplierInvoiceNumber" xml:space="preserve">
+    <value>Número de factura</value>
+  </data>
+  <data name="createSupplierInvoice" xml:space="preserve">
+    <value>Crear factura de proveedor</value>
+  </data>
+  <data name="recordPayment" xml:space="preserve">
+    <value>Registrar pago</value>
+  </data>
+  <data name="supplierInvoiceNotFound" xml:space="preserve">
+    <value>Factura de proveedor no encontrada.</value>
+  </data>
+  <data name="supplierInvoiceNumberAlreadyExists" xml:space="preserve">
+    <value>Ya existe una factura de proveedor con este número:</value>
+  </data>
+  <data name="paymentAmount" xml:space="preserve">
+    <value>Monto</value>
+  </data>
+  <data name="paymentDate" xml:space="preserve">
+    <value>Fecha</value>
+  </data>
+  <data name="paymentMethod" xml:space="preserve">
+    <value>Método</value>
+  </data>
+  <data name="bankTransfer" xml:space="preserve">
+    <value>Transferencia bancaria</value>
+  </data>
+  <data name="check" xml:space="preserve">
+    <value>Cheque</value>
+  </data>
+  <data name="bancardQr" xml:space="preserve">
+    <value>Bancard QR</value>
+  </data>
+  <data name="other" xml:space="preserve">
+    <value>Otro</value>
+  </data>
+  <data name="payments" xml:space="preserve">
+    <value>Pagos</value>
+  </data>
+  <data name="amountDue" xml:space="preserve">
+    <value>Monto adeudado</value>
+  </data>
+  <data name="amountPaid" xml:space="preserve">
+    <value>Monto pagado</value>
+  </data>
 </root>

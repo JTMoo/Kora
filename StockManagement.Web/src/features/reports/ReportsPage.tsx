@@ -1,21 +1,23 @@
 import { useState } from "react";
 import { Page } from "../../Page";
 import { useI18n } from "../../i18n";
+import { AccountsPayableAgingReport } from "./AccountsPayableAgingReport";
 import { AccountsReceivableAgingReport } from "./AccountsReceivableAgingReport";
 import { LowStockReport } from "./LowStockReport";
 import { SalesByCustomerReport } from "./SalesByCustomerReport";
 import { SalesByPeriodReport } from "./SalesByPeriodReport";
 import { StockValueReport } from "./StockValueReport";
 
-const tabs = ["stockValue", "salesByPeriod", "salesByCustomer", "arAging", "lowStock"] as const;
+const tabs = ["stockValue", "salesByPeriod", "salesByCustomer", "arAging", "apAging", "lowStock"] as const;
 
 type ReportTab = typeof tabs[number];
 
-const labels: Record<ReportTab, "stockValueReport" | "salesByPeriod" | "salesByCustomer" | "accountsReceivableAging" | "lowStockReport"> = {
+const labels: Record<ReportTab, "stockValueReport" | "salesByPeriod" | "salesByCustomer" | "accountsReceivableAging" | "accountsPayableAging" | "lowStockReport"> = {
 	stockValue: "stockValueReport",
 	salesByPeriod: "salesByPeriod",
 	salesByCustomer: "salesByCustomer",
 	arAging: "accountsReceivableAging",
+	apAging: "accountsPayableAging",
 	lowStock: "lowStockReport"
 };
 
@@ -41,6 +43,7 @@ export function ReportsPage()
 			{tab === "salesByPeriod" && <SalesByPeriodReport />}
 			{tab === "salesByCustomer" && <SalesByCustomerReport />}
 			{tab === "arAging" && <AccountsReceivableAgingReport />}
+			{tab === "apAging" && <AccountsPayableAgingReport />}
 			{tab === "lowStock" && <LowStockReport />}
 		</Page>
 	);

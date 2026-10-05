@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
 		services.AddScoped<IRemissionNoteService, RemissionNoteService>();
 		services.AddScoped<IDebitNoteService, DebitNoteService>();
 		services.AddScoped<IPaymentService, PaymentService>();
+		services.AddScoped<ISupplierPaymentService, SupplierPaymentService>();
 		services.AddScoped<IIvaBookExportService, IvaBookExportService>();
 		services.AddScoped<IPurchaseIvaBookExportService, PurchaseIvaBookExportService>();
 

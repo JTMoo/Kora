@@ -138,4 +138,83 @@ public class EfReportServiceProvider(AppDbContext db) : IReportServiceProvider
 
 
 	private sealed record InvoiceAgingBucket(int CustomerId, string CustomerName, decimal Current, decimal Days1To30, decimal Days31To60, decimal Days61To90, decimal Days90Plus, decimal AmountDue);
+
+
+	public async Task<AccountsPayableAgingTotals> GetAccountsPayableAgingTotalsAsync(DateTime asOf, CancellationToken cancellationToken = default)
+	{
+		var buckets = await this.LoadOpenSupplierInvoiceAgingAsync(asOf, cancellationToken);
+		return new(
+			buckets.Sum(bucket => bucket.Current),
+			buckets.Sum(bucket => bucket.Days1To30),
+			buckets.Sum(bucket => bucket.Days31To60),
+			buckets.Sum(bucket => bucket.Days61To90),
+			buckets.Sum(bucket => bucket.Days90Plus),
+			buckets.Sum(bucket => bucket.AmountDue));
+	}
+
+	/// <remarks>Keyset page by amount due descending then <see cref="SupplierAgingBucket.SupplierId"/> (ADR-0029), same shape as <see cref="GetAccountsReceivableAgingByCustomerAsync"/></remarks>
+	public async Task<CursorPage<AccountsPayableAgingRow>> GetAccountsPayableAgingBySupplierAsync(DateTime asOf, string? cursor, int pageSize, CancellationToken cancellationToken = default)
+	{
+		var grouped = (await this.LoadOpenSupplierInvoiceAgingAsync(asOf, cancellationToken))
+			.GroupBy(bucket => new { bucket.SupplierId, bucket.SupplierName })
+			.Select(group => new AccountsPayableAgingRow(
+				group.Key.SupplierId,
+				group.Key.SupplierName,
+				group.Sum(bucket => bucket.Current),
+				group.Sum(bucket => bucket.Days1To30),
+				group.Sum(bucket => bucket.Days31To60),
+				group.Sum(bucket => bucket.Days61To90),
+				group.Sum(bucket => bucket.Days90Plus),
+				group.Sum(bucket => bucket.AmountDue)))
+			.OrderByDescending(row => row.Total).ThenBy(row => row.SupplierId)
+			.ToList();
+
+		var startIndex = 0;
+		if (Cursor.TryDecode(cursor, 2) is [var lastTotalText, var lastSupplierId]
+			&& decimal.TryParse(lastTotalText, NumberStyles.Number, CultureInfo.InvariantCulture, out var lastTotal))
+		{
+			startIndex = grouped.FindIndex(row => row.Total < lastTotal || (row.Total == lastTotal && string.CompareOrdinal(row.SupplierId, lastSupplierId) > 0));
+			if (startIndex < 0) startIndex = grouped.Count;
+		}
+
+		var items = grouped.Skip(startIndex).Take(pageSize).ToList();
+		var nextCursor = startIndex + items.Count < grouped.Count
+			? Cursor.Encode(items[^1].Total.ToString(CultureInfo.InvariantCulture), items[^1].SupplierId)
+			: null;
+		return new(items, nextCursor);
+	}
+
+	/// <summary>Per-supplier-invoice amount due split into the bucket matching its days overdue vs. <paramref name="asOf"/>; invoices fully paid are left out</summary>
+	private async Task<List<SupplierAgingBucket>> LoadOpenSupplierInvoiceAgingAsync(DateTime asOf, CancellationToken cancellationToken)
+	{
+		var invoices = await _db.SupplierInvoices
+			.Select(invoice => new
+			{
+				invoice.Supplier.Id,
+				invoice.Supplier.Name,
+				invoice.ExpirationDate,
+				AmountDue = invoice.Total - invoice.Payments.Sum(payment => payment.Amount)
+			})
+			.ToListAsync(cancellationToken);
+
+		return invoices
+			.Where(invoice => invoice.AmountDue > 0)
+			.Select(invoice =>
+			{
+				var daysOverdue = (asOf.Date - invoice.ExpirationDate.Date).Days;
+				return new SupplierAgingBucket(
+					invoice.Id,
+					invoice.Name,
+					Current: daysOverdue <= 0 ? invoice.AmountDue : 0,
+					Days1To30: daysOverdue is >= 1 and <= 30 ? invoice.AmountDue : 0,
+					Days31To60: daysOverdue is >= 31 and <= 60 ? invoice.AmountDue : 0,
+					Days61To90: daysOverdue is >= 61 and <= 90 ? invoice.AmountDue : 0,
+					Days90Plus: daysOverdue > 90 ? invoice.AmountDue : 0,
+					AmountDue: invoice.AmountDue);
+			})
+			.ToList();
+	}
+
+
+	private sealed record SupplierAgingBucket(string SupplierId, string SupplierName, decimal Current, decimal Days1To30, decimal Days31To60, decimal Days61To90, decimal Days90Plus, decimal AmountDue);
 }

@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
 		services.AddScoped<IUserServiceProvider, EfUserServiceProvider>();
 		services.AddScoped<IImportBatchServiceProvider, EfImportBatchServiceProvider>();
 		services.AddScoped<ISupplierServiceProvider, EfSupplierServiceProvider>();
+		services.AddScoped<ISupplierInvoiceServiceProvider, EfSupplierInvoiceServiceProvider>();
 		services.AddScoped<ISearchServiceProvider, EfSearchServiceProvider>();
 		services.AddScoped<IPendingTransmissionServiceProvider, EfPendingTransmissionServiceProvider>();
 		services.AddScoped<IPaymentLinkServiceProvider, EfPaymentLinkServiceProvider>();

@@ -201,6 +201,12 @@
   <data name="permReportsRead" xml:space="preserve">
     <value>Berichte ansehen</value>
   </data>
+  <data name="permPayablesRead" xml:space="preserve">
+    <value>Verbindlichkeiten ansehen</value>
+  </data>
+  <data name="permPayablesWrite" xml:space="preserve">
+    <value>Verbindlichkeiten verwalten</value>
+  </data>
   <data name="permUsersManage" xml:space="preserve">
     <value>Benutzer verwalten</value>
   </data>

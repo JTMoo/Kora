@@ -212,5 +212,23 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("noOpenInvoices", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Accounts payable aging.
+        /// </summary>
+        public static string accountsPayableAging {
+            get {
+                return ResourceManager.GetString("accountsPayableAging", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No open supplier invoices..
+        /// </summary>
+        public static string noOpenSupplierInvoices {
+            get {
+                return ResourceManager.GetString("noOpenSupplierInvoices", resourceCulture);
+            }
+        }
     }
 }

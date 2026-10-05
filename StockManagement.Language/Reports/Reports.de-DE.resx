@@ -119,4 +119,10 @@
   <data name="noOpenInvoices" xml:space="preserve">
     <value>Keine offenen Rechnungen.</value>
   </data>
+  <data name="accountsPayableAging" xml:space="preserve">
+    <value>Offene Verbindlichkeiten (Fälligkeit)</value>
+  </data>
+  <data name="noOpenSupplierInvoices" xml:space="preserve">
+    <value>Keine offenen Lieferantenrechnungen.</value>
+  </data>
 </root>

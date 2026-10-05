@@ -20,6 +20,10 @@ export type AgingRow = AgingTotals & { customerId: number; customerName: string 
 
 export type AccountsReceivableAgingResult = { totals: AgingTotals; items: AgingRow[]; nextCursor: string | null };
 
+export type PayableAgingRow = AgingTotals & { supplierId: string; supplierName: string };
+
+export type AccountsPayableAgingResult = { totals: AgingTotals; items: PayableAgingRow[]; nextCursor: string | null };
+
 export const reportsApi = {
 	// Totals ride on every page's response; later pages' lines are appended to the first page's totals.
 	getStockValue: (signal?: AbortSignal) => getAllStockValue(signal),
@@ -27,7 +31,9 @@ export const reportsApi = {
 	getSalesByCustomer: (filter: PeriodFilter & { cursor?: string; pageSize: number }, signal?: AbortSignal) =>
 		send<SalesByCustomerResult>(`/reports/sales-by-customer?${periodQuery(filter)}${filter.cursor ? `&cursor=${encodeURIComponent(filter.cursor)}` : ""}&pageSize=${filter.pageSize}`, { signal }),
 	getAccountsReceivableAging: (filter: { cursor?: string; pageSize: number }, signal?: AbortSignal) =>
-		send<AccountsReceivableAgingResult>(`/reports/accounts-receivable-aging?${filter.cursor ? `cursor=${encodeURIComponent(filter.cursor)}&` : ""}pageSize=${filter.pageSize}`, { signal })
+		send<AccountsReceivableAgingResult>(`/reports/accounts-receivable-aging?${filter.cursor ? `cursor=${encodeURIComponent(filter.cursor)}&` : ""}pageSize=${filter.pageSize}`, { signal }),
+	getAccountsPayableAging: (filter: { cursor?: string; pageSize: number }, signal?: AbortSignal) =>
+		send<AccountsPayableAgingResult>(`/reports/accounts-payable-aging?${filter.cursor ? `cursor=${encodeURIComponent(filter.cursor)}&` : ""}pageSize=${filter.pageSize}`, { signal })
 };
 
 async function getAllStockValue(signal?: AbortSignal, pageSize = 100): Promise<Result<StockValueReport>>

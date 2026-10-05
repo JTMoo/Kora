@@ -15,5 +15,7 @@ export const permissionOptions: { value: Permission; label: TextKey }[] = [
 	{ value: "GoodsImports.Read", label: "permGoodsImportsRead" },
 	{ value: "GoodsImports.Write", label: "permGoodsImportsWrite" },
 	{ value: "Reports.Read", label: "permReportsRead" },
+	{ value: "Payables.Read", label: "permPayablesRead" },
+	{ value: "Payables.Write", label: "permPayablesWrite" },
 	{ value: "Users.Manage", label: "permUsersManage" }
 ];
