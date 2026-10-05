@@ -21,4 +21,7 @@ public interface ICashRegisterSessionServiceProvider
 
 	/// <summary>Sum of sale <see cref="Payment.Amount"/> tagged with <paramref name="sessionId"/> (cash received at the till)</summary>
 	public Task<decimal> GetCashPaymentsTotalAsync(string sessionId, CancellationToken cancellationToken = default);
+
+	/// <summary>Sum of sale <see cref="Payment.Amount"/> per session id, in one query; a session with no cash payments is absent from the result</summary>
+	public Task<Dictionary<string, decimal>> GetCashPaymentsTotalsAsync(IReadOnlyCollection<string> sessionIds, CancellationToken cancellationToken = default);
 }

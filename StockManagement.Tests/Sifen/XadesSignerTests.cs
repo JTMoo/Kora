@@ -21,7 +21,7 @@ public sealed class XadesSignerTests
 		using var rsa = RSA.Create(2048);
 		var request = new CertificateRequest("CN=Kora Test", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 		var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-1), DateTimeOffset.UtcNow.AddDays(1));
-		return new X509Certificate2(certificate.Export(X509ContentType.Pfx));
+		return X509CertificateLoader.LoadPkcs12(certificate.Export(X509ContentType.Pfx), password: null);
 	}
 
 	private static System.Xml.Linq.XDocument BuildUnsignedDocument()

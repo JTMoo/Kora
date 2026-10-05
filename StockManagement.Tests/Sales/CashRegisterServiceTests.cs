@@ -5,6 +5,7 @@ using StockManagement.Kernel.Model;
 using StockManagement.Kernel.Model.Types;
 using StockManagement.Sales.Core;
 using StockManagement.Sales.Core.Contracts;
+using StockManagement.Settings.Core.Contracts;
 
 namespace StockManagement.Tests.Sales;
 
@@ -13,6 +14,13 @@ namespace StockManagement.Tests.Sales;
 public sealed class CashRegisterServiceTests
 {
 	private readonly Mock<ICashRegisterSessionServiceProvider> _sessions = new();
+	private readonly Mock<ISettingsService> _settings = new();
+
+	public CashRegisterServiceTests()
+	{
+		_settings.Setup(service => service.GetCompanySettingsAsync(It.IsAny<CancellationToken>()))
+			.ReturnsAsync(new CompanySettings("", "", "", 10m, 30, 1, 1001, 0));
+	}
 
 
 	[TestMethod]
@@ -146,8 +154,26 @@ public sealed class CashRegisterServiceTests
 		_sessions.Verify(provider => provider.UpdateSessionAsync(session, It.IsAny<CancellationToken>()), Times.Once);
 	}
 
+	[TestMethod]
+	public async Task GetExpectedAmountsAsync_MultipleSessions_BatchesIntoOneQuery()
+	{
+		// Arrange
+		var sessionA = new CashRegisterSession { Id = "a", OpeningFloat = 100 };
+		var sessionB = new CashRegisterSession { Id = "b", OpeningFloat = 200 };
+		_sessions.Setup(provider => provider.GetCashPaymentsTotalsAsync(It.Is<IReadOnlyCollection<string>>(ids => ids.Contains("a") && ids.Contains("b")), It.IsAny<CancellationToken>()))
+			.ReturnsAsync(new Dictionary<string, decimal> { ["a"] = 50 });
+
+		// Act
+		var result = await this.CreateService().GetExpectedAmountsAsync([sessionA, sessionB]);
+
+		// Assert
+		Assert.AreEqual(150, result["a"]);
+		Assert.AreEqual(200, result["b"]);
+		_sessions.Verify(provider => provider.GetCashPaymentsTotalAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+	}
+
 	private CashRegisterService CreateService()
 	{
-		return new CashRegisterService(_sessions.Object);
+		return new CashRegisterService(_sessions.Object, _settings.Object);
 	}
 }
