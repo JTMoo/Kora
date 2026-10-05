@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Xml.Linq;
+using StockManagement.Kernel.Util;
 using StockManagement.Sifen.Core.Contracts;
 
 namespace StockManagement.Sifen.Core;
@@ -214,7 +215,7 @@ public sealed class DteXmlBuilder : IDteXmlBuilder
 		return new XElement(Ns + "gDtipDE",
 			data.Items.Select(item =>
 			{
-				var vatAmount = Math.Round(item.Amount * item.VatRatePercent / (100 + item.VatRatePercent), data.CurrencyDecimalDigits, MidpointRounding.AwayFromZero);
+				var vatAmount = VatSplit.VatShare(item.Amount, item.VatRatePercent, data.CurrencyDecimalDigits);
 				var vatAffectation = item.VatRatePercent == 0 ? 3 : 1; // 1 = gravado, 3 = exento
 
 				return new XElement(Ns + "gCamItem",
@@ -245,7 +246,7 @@ public sealed class DteXmlBuilder : IDteXmlBuilder
 
 		foreach (var item in data.Items)
 		{
-			var vatAmount = Math.Round(item.Amount * item.VatRatePercent / (100 + item.VatRatePercent), digits, MidpointRounding.AwayFromZero);
+			var vatAmount = VatSplit.VatShare(item.Amount, item.VatRatePercent, digits);
 
 			if (item.VatRatePercent == 0) exempt += item.Amount;
 			else if (item.VatRatePercent == 5) { sub5 += item.Amount; iva5 += vatAmount; }
@@ -306,7 +307,7 @@ public sealed class DteXmlBuilder : IDteXmlBuilder
 			data.Items.Select(item =>
 			{
 				var lineTotal = Math.Round(item.Quantity * item.UnitPrice, data.CurrencyDecimalDigits, MidpointRounding.AwayFromZero);
-				var vatAmount = Math.Round(lineTotal * item.VatRatePercent / (100 + item.VatRatePercent), data.CurrencyDecimalDigits, MidpointRounding.AwayFromZero);
+				var vatAmount = VatSplit.VatShare(lineTotal, item.VatRatePercent, data.CurrencyDecimalDigits);
 				var vatAffectation = item.VatRatePercent == 0 ? 3 : 1; // 1 = gravado, 3 = exento
 
 				return new XElement(Ns + "gCamItem",
@@ -332,7 +333,7 @@ public sealed class DteXmlBuilder : IDteXmlBuilder
 		foreach (var item in data.Items)
 		{
 			var lineTotal = Math.Round(item.Quantity * item.UnitPrice, digits, MidpointRounding.AwayFromZero);
-			var vatAmount = Math.Round(lineTotal * item.VatRatePercent / (100 + item.VatRatePercent), digits, MidpointRounding.AwayFromZero);
+			var vatAmount = VatSplit.VatShare(lineTotal, item.VatRatePercent, digits);
 
 			if (item.VatRatePercent == 0) exempt += lineTotal;
 			else if (item.VatRatePercent == 5) { sub5 += lineTotal; iva5 += vatAmount; }
