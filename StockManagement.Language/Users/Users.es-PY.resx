@@ -207,6 +207,12 @@
   <data name="permPayablesWrite" xml:space="preserve">
     <value>Gestionar cuentas por pagar</value>
   </data>
+  <data name="permCashRegisterRead" xml:space="preserve">
+    <value>Ver caja</value>
+  </data>
+  <data name="permCashRegisterWrite" xml:space="preserve">
+    <value>Gestionar caja</value>
+  </data>
   <data name="permUsersManage" xml:space="preserve">
     <value>Administrar usuarios</value>
   </data>

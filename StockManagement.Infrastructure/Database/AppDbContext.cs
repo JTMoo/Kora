@@ -61,6 +61,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvid
 
 	public DbSet<InvoiceNumberVoid> InvoiceNumberVoids => this.Set<InvoiceNumberVoid>();
 
+	public DbSet<CashRegisterSession> CashRegisterSessions => this.Set<CashRegisterSession>();
+
 
 	public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
 	{

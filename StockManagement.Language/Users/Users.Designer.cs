@@ -331,6 +331,24 @@ namespace StockManagement.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to View cash register.
+        /// </summary>
+        public static string permCashRegisterRead {
+            get {
+                return ResourceManager.GetString("permCashRegisterRead", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Manage cash register.
+        /// </summary>
+        public static string permCashRegisterWrite {
+            get {
+                return ResourceManager.GetString("permCashRegisterWrite", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Manage users.
         /// </summary>
         public static string permUsersManage {

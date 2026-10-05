@@ -207,6 +207,12 @@
   <data name="permPayablesWrite" xml:space="preserve">
     <value>Manage accounts payable</value>
   </data>
+  <data name="permCashRegisterRead" xml:space="preserve">
+    <value>View cash register</value>
+  </data>
+  <data name="permCashRegisterWrite" xml:space="preserve">
+    <value>Manage cash register</value>
+  </data>
   <data name="permUsersManage" xml:space="preserve">
     <value>Manage users</value>
   </data>

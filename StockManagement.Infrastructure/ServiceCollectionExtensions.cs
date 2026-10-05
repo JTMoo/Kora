@@ -45,6 +45,7 @@ public static class ServiceCollectionExtensions
 		services.AddScoped<IReportServiceProvider, ReportServiceProvider>();
 		services.AddScoped<ICancellationRequestServiceProvider, CancellationRequestServiceProvider>();
 		services.AddScoped<IInvoiceNumberVoidServiceProvider, InvoiceNumberVoidServiceProvider>();
+		services.AddScoped<ICashRegisterSessionServiceProvider, CashRegisterSessionServiceProvider>();
 		return services;
 	}
 }

@@ -207,6 +207,12 @@
   <data name="permPayablesWrite" xml:space="preserve">
     <value>Verbindlichkeiten verwalten</value>
   </data>
+  <data name="permCashRegisterRead" xml:space="preserve">
+    <value>Kasse einsehen</value>
+  </data>
+  <data name="permCashRegisterWrite" xml:space="preserve">
+    <value>Kasse verwalten</value>
+  </data>
   <data name="permUsersManage" xml:space="preserve">
     <value>Benutzer verwalten</value>
   </data>

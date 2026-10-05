@@ -8,6 +8,7 @@ public class Payment : NotificationBase
 	private DateTime date;
 	private decimal amount;
 	private PaymentMethod method;
+	private string? cashRegisterSessionId;
 
 
 	public DateTime Date
@@ -24,5 +25,11 @@ public class Payment : NotificationBase
 	{
 		get { return this.method; }
 		set { this.SetField(ref this.method, value); }
+	}
+	/// <summary>Cash register session open at the time this payment was recorded; <see langword="null"/> for non-cash methods or when no session was open</summary>
+	public string? CashRegisterSessionId
+	{
+		get { return this.cashRegisterSessionId; }
+		set { this.SetField(ref this.cashRegisterSessionId, value); }
 	}
 }
