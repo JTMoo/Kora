@@ -10,7 +10,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="ICustomerServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfCustomerServiceProvider(AppDbContext db) : ICustomerServiceProvider
+public class CustomerServiceProvider(AppDbContext db) : ICustomerServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

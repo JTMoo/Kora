@@ -91,7 +91,7 @@ Repo @ main (42b3afa). Delta since cycle 1 - merged: cursor pagination (ADR-0029
 | # | File | What | Issue |
 |---|------|------|-------|
 | 1 | `StockItems/CheckInStockItemEndpoint.cs`, `CheckOutStockItemEndpoint.cs` | No `Permissions()` call - any authenticated user can mutate stock | #151 |
-| 2 | `IInvoiceServiceProvider`, `ICreditNoteServiceProvider` | Missing `CancellationToken`, same bug class as #113 but excluded from its "6 of 8"; includes the new ADR-0029 cursor-pagination method, so `EfInvoiceServiceProvider`'s `.ToListAsync()` for it also drops the token | #152 |
+| 2 | `IInvoiceServiceProvider`, `ICreditNoteServiceProvider` | Missing `CancellationToken`, same bug class as #113 but excluded from its "6 of 8"; includes the new ADR-0029 cursor-pagination method, so `InvoiceServiceProvider`'s `.ToListAsync()` for it also drops the token | #152 |
 | 3 | `StockItemList.tsx`, `SupplierList.tsx`, `UserList.tsx` | `window.confirm()` / no confirm at all on delete, no `danger` Button exists - cycle-1 finding, #105 closed without fixing it | #153 |
 | 4 | `Invoices.resx` (`cash`, `credit`, `exceptionShoppingCartItemOutOfRange`, `invoice`), `StockItems.resx` (`checkin`, `checkout`) | More of #137's pattern: `Designer.cs` getter, no matching `<data>` entry in any locale | comment on #137 |
 
@@ -161,7 +161,7 @@ Repo @ main (28a831b). Delta since cycle 3 (6ea47fb) - merged: #167-#171 fixes (
 - Dead code: none found; `#178`'s `VatRateGroup` extraction correctly deduped `IvaBreakdown`/`InvoiceCalculator` with no leftover duplicate
 - Permissions: every new endpoint (Remisión x3, Reports x3, barcode, goods-import x3) has `Permissions()`; `GoodsImportsRead`/`Write`/`ReportsRead` all exercised by `PermissionEnforcementTests`
 - `CancellationToken`: threaded through all new providers/endpoints, no regressions
-- Atomicity: `EfGoodsImportDocumentServiceProvider.AddGoodsImportDocumentAsync` - document insert + stock check-in + transaction log in one transaction, rolls back together
+- Atomicity: `GoodsImportDocumentServiceProvider.AddGoodsImportDocumentAsync` - document insert + stock check-in + transaction log in one transaction, rolls back together
 - resx/Designer.cs: new `Reports.resx` set, `Users.resx` additions - `ResxDesignerSyncTests` green, no drift
 - e2e `global-setup.ts` TRUNCATE list extended for all 4 new tables (`RemissionNotes`, `RemissionNoteItems`, `PendingRemisionTransmissions`, `GoodsImportDocuments`, `GoodsImportDocumentItems`)
 - Test coverage: all 4 new feature areas (Remisión, reports, barcode, goods-import) have endpoint + unit tests
@@ -181,7 +181,7 @@ Repo @ main (91f9614). Delta since cycle 4 (28a831b) - merged: #188/#189/#190 fi
 
 | # | File | What | Issue |
 |---|------|------|-------|
-| 1 | `EfReportServiceProvider.LoadOpenInvoiceAgingAsync` | AR aging report loads *all* non-cancelled invoices+payments into memory, buckets/sorts/pages in C# - doc comment claims "keyset (ADR-0029)" but nothing is DB-pushed, unlike `GetSalesByCustomerAsync` in the same file | #209 |
+| 1 | `ReportServiceProvider.LoadOpenInvoiceAgingAsync` | AR aging report loads *all* non-cancelled invoices+payments into memory, buckets/sorts/pages in C# - doc comment claims "keyset (ADR-0029)" but nothing is DB-pushed, unlike `GetSalesByCustomerAsync` in the same file | #209 |
 | 2 | `DteXmlBuilder.cs:217,248,309,335`, `KudeHtmlBuilder.cs:24`, `KudeVerificationUrlBuilder.cs:22` | VAT-split formula (`amount*rate/(100+rate)`) re-duplicated 6x in Sifen.Core - #171's fix (`VatRateGroup`) is `internal` to Sales.Core, unreachable from Sifen.Core | #210 |
 
 ### Verified clean / no new dead code
@@ -192,7 +192,7 @@ Repo @ main (91f9614). Delta since cycle 4 (28a831b) - merged: #188/#189/#190 fi
 - DI lifetimes: all new registrations `AddScoped` (`IDebitNoteService`, `IPurchaseIvaBookExportService`, `IKudeHtmlBuilder`/`IKudeQrCodeGenerator`/`IKudeVerificationUrlBuilder`, `IDebitNoteServiceProvider`, `IReportServiceProvider`)
 - resx/Designer.cs: `GoodsImport`, `Reports`, `Invoices` new keys - all 4 locales + Designer.cs in sync (only pre-existing resgen template placeholders differ, unrelated)
 - SIFEN hardcoded-field regression check (#203/#204 class): `KudeDataMapper.ToEmisor`/`ToReceptor`, `DirectDnitSifenGateway`'s debit-note mapping all pull from real `CompanySettings`/`Customer`/`Invoice` data - no new hardcoded/empty DTE fields
-- Atomicity: `EfDebitNoteServiceProvider.AddAsync` wraps DebitNote + PendingDebitNoteTransmission insert in one transaction, rolls back on duplicate-key (same shape as invoices)
+- Atomicity: `DebitNoteServiceProvider.AddAsync` wraps DebitNote + PendingDebitNoteTransmission insert in one transaction, rolls back on duplicate-key (same shape as invoices)
 - Money/decimal: `decimal` throughout; no `double`
 - No `async void`, fire-and-forget, empty `catch` (new broad catch in debit-note transmission path correctly excludes `OperationCanceledException`, logs via `ILogger`)
 - Test coverage: DebitNote (service + endpoint + XML builder tests), KuDE (data mapper + HTML builder + QR + verification-URL + endpoint tests), AR aging (3 integration tests covering current/90+/paid-exclusion buckets) all present
@@ -211,7 +211,7 @@ Repo @ main (5509f3e). Delta since cycle 5 (91f9614) - merged: #212 (VatSplit de
 
 | # | File | What | Issue |
 |---|------|------|-------|
-| 1 | `EfReportServiceProvider.GetAccountsPayableAgingTotalsAsync`/`LoadOpenSupplierInvoiceAgingAsync` | AP aging (#215) loads *all* `SupplierInvoices` into memory, buckets/sorts/pages in C# - doc comment claims "same shape as `GetAccountsReceivableAgingByCustomerAsync`" but that method was DB-pushed by #213 earlier this same cycle; #215 copied the pre-fix pattern | #216 |
+| 1 | `ReportServiceProvider.GetAccountsPayableAgingTotalsAsync`/`LoadOpenSupplierInvoiceAgingAsync` | AP aging (#215) loads *all* `SupplierInvoices` into memory, buckets/sorts/pages in C# - doc comment claims "same shape as `GetAccountsReceivableAgingByCustomerAsync`" but that method was DB-pushed by #213 earlier this same cycle; #215 copied the pre-fix pattern | #216 |
 | 2 | `StockManagement.Web/e2e/global-setup.ts` | TRUNCATE list not updated for #215's new tables (`SupplierInvoices`, `SupplierPayments`) - every prior table-adding PR updated this list, #215 missed it | #217 |
 
 ### Verified clean / no new dead code
@@ -220,7 +220,7 @@ Repo @ main (5509f3e). Delta since cycle 5 (91f9614) - merged: #212 (VatSplit de
 - #212: `VatSplit.VatShare` correctly extracted to `Kernel.Util`, all 6 duplicate sites (`VatRateGroup`, `DteXmlBuilder` x4, `KudeHtmlBuilder`, `KudeVerificationUrlBuilder`) switched over - #210 fully closed
 - #213: `OpenInvoiceAgingQuery` now pushes bucket computation, cursor filter and `OrderBy`/`Take` into SQL; plain class (not record) used for the grouped `Select` projection, with a comment explaining why (EF can't translate `Sum` through a record ctor) - #209 fully closed, 2 new tests cover the DB-pushed bucketing
 - #214: permissions on all 4 new endpoints (`RequestCancellation`/`RequestNumberVoid` write, `ListCancellations`/`ListNumberVoids` read); `SifenTransmissionWorker` wired for both new outboxes; e2e TRUNCATE list *does* include `CancellationRequests`/`InvoiceNumberVoids` (this PR got it right, #215 didn't); `CancellationToken` threaded throughout; `SifenEventService` validates 48h Cancelación deadline, 1000-range/150-char Inutilización limits, and both overlap checks (in-use numbers, existing voids) before queuing; DNIT response parsing (`dCodRes` 0260) honestly flagged `<remarks>` as unverified, same as existing DTE gateway code
-- #215: `Payables.Read`/`Payables.Write` permissions on all 5 endpoints; present in `permissionOptions.ts` (cycle-4's #189 gap class not repeated); `EfSupplierInvoiceServiceProvider.SaveChangesAsync` catches Postgres 23505 → `SupplierInvoiceNumberAlreadyExistsException`, same shape as `Invoice`; all new registrations `AddScoped`
+- #215: `Payables.Read`/`Payables.Write` permissions on all 5 endpoints; present in `permissionOptions.ts` (cycle-4's #189 gap class not repeated); `SupplierInvoiceServiceProvider.SaveChangesAsync` catches Postgres 23505 → `SupplierInvoiceNumberAlreadyExistsException`, same shape as `Invoice`; all new registrations `AddScoped`
 - CancellationToken: threaded through all new providers/endpoints in both PRs
 - Money/decimal: `decimal` throughout; no `double`
 - No `async void`, fire-and-forget, empty `catch`

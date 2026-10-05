@@ -8,7 +8,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="IPaymentLinkServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfPaymentLinkServiceProvider(AppDbContext db) : IPaymentLinkServiceProvider
+public class PaymentLinkServiceProvider(AppDbContext db) : IPaymentLinkServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

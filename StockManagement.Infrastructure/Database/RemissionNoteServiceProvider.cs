@@ -9,7 +9,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="IRemissionNoteServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfRemissionNoteServiceProvider(AppDbContext db) : IRemissionNoteServiceProvider
+public class RemissionNoteServiceProvider(AppDbContext db) : IRemissionNoteServiceProvider
 {
 	private readonly AppDbContext _db = db;
 
@@ -31,7 +31,7 @@ public class EfRemissionNoteServiceProvider(AppDbContext db) : IRemissionNoteSer
 
 		await using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken);
 
-		// Reuse the tracked instance, same reason as EfInvoiceServiceProvider.TryAddSaleAsync
+		// Reuse the tracked instance, same reason as InvoiceServiceProvider.TryAddSaleAsync
 		remissionNote.Customer = await _db.Customers.FindAsync([remissionNote.Customer.Id], cancellationToken) ?? remissionNote.Customer;
 		_db.RemissionNotes.Add(remissionNote);
 		_db.PendingRemisionTransmissions.Add(new PendingRemisionTransmission(remissionNote, DateTime.Now));

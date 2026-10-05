@@ -9,7 +9,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="ICancellationRequestServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfCancellationRequestServiceProvider(AppDbContext db) : ICancellationRequestServiceProvider
+public class CancellationRequestServiceProvider(AppDbContext db) : ICancellationRequestServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

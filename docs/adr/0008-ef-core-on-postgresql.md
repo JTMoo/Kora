@@ -42,18 +42,18 @@
 
 ## Slice 2 (StockItem)
 
-- `EfStockItemServiceProvider` (Infrastructure) implements Kernel's `IStockItemServiceProvider`; `BaseDocument.Id` made `public` (was `internal`, per ADR-0004's own follow-up) so Infrastructure can update by Id
+- `StockItemServiceProvider` (Infrastructure) implements Kernel's `IStockItemServiceProvider`; `BaseDocument.Id` made `public` (was `internal`, per ADR-0004's own follow-up) so Infrastructure can update by Id
 - `IStockItemServiceProvider` no longer returns Mongo's `ReplaceOneResult`/`DeleteResult`; both writes now return `int` (1 on success, throws otherwise)
 - Migrations: `dotnet ef migrations add`, `StockManagement.Infrastructure/Database/Migrations`, design-time factory since `AppDbContext` takes `IServiceProvider`
 - `Transaction.Time` mapped `timestamp without time zone`: `DateTime.Now` is local, Npgsql only accepts UTC for `timestamptz`
 - `Transaction.Invoice` not mapped yet (Invoice isn't in Postgres); ignored in `TransactionConfiguration`
-- Gotcha: adding a dependent entity before updating/removing its principal marks the principal `Added` via graph fixup; `EfStockItemServiceProvider` updates/removes the `StockItem` first, then adds the `Transaction`
-- **Not done**: `EfStockItemServiceProvider` isn't wired into the API or GUI. `InvoiceServiceProvider.TryAddSaleAsync` decrements stock and writes the invoice in one Mongo session transaction (ADR-0007); moving `StockItem` alone would split that atomic write across two databases. Wiring StockItem into the running app needs that crossing solved first — customers/invoices next, or an outbox/saga for the sale — asked the owner rather than picking silently
+- Gotcha: adding a dependent entity before updating/removing its principal marks the principal `Added` via graph fixup; `StockItemServiceProvider` updates/removes the `StockItem` first, then adds the `Transaction`
+- **Not done**: `StockItemServiceProvider` isn't wired into the API or GUI. `InvoiceServiceProvider.TryAddSaleAsync` decrements stock and writes the invoice in one Mongo session transaction (ADR-0007); moving `StockItem` alone would split that atomic write across two databases. Wiring StockItem into the running app needs that crossing solved first — customers/invoices next, or an outbox/saga for the sale — asked the owner rather than picking silently
 
 ## Slice 3 (full API cutover: Customer, Invoice, atomic sale)
 
 - Owner decision: move all of it to Postgres, no production data to migrate ("not in production yet") — supersedes ADR-0007's Mongo session transaction
-- `EfCustomerServiceProvider`, `EfInvoiceServiceProvider` added alongside `EfStockItemServiceProvider`; API host (`Program.cs`) wired fully onto `AppDbContext`, Mongo removed from the API and its tests
+- `CustomerServiceProvider`, `InvoiceServiceProvider` added alongside `StockItemServiceProvider`; API host (`Program.cs`) wired fully onto `AppDbContext`, Mongo removed from the API and its tests
 - `Invoice.Items` (`List<ShoppingCartItem>`, not a `BaseDocument`) mapped `OwnsMany`, own `InvoiceItems` table, shadow `Guid Id`, required FK to `StockItem` (a non-owned entity — an owned type can still reference a regular one); `AutoInclude()` on `Invoice.Items`, `Invoice.Customer`, and the owned item's `StockItem` navigation, so a read returns the full graph
 - Sale atomicity (replaces ADR-0007's Mongo session transaction): explicit `Database.BeginTransactionAsync`, one conditional `ExecuteUpdateAsync` per line (`WHERE Code == code AND Amount >= amount`, oversell-safe under concurrency — verified with a real concurrent `Task.WhenAll` test), then `SaveChangesAsync` for the `Transaction`/`Invoice` inserts, then `CommitAsync`; any line short → `RollbackAsync`, nothing written
 - Duplicate invoice number → `DbUpdateException` (Postgres `23505`) → `InvoiceNumberAlreadyExistsException`, same pattern as `StockItemCodeAlreadyExistsException`/`CustomerIdAlreadyExistsException`

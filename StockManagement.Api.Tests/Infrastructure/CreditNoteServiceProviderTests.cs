@@ -12,7 +12,7 @@ namespace StockManagement.Api.Tests.Infrastructure;
 
 
 [TestClass]
-public sealed class EfCreditNoteServiceProviderTests
+public sealed class CreditNoteServiceProviderTests
 {
 	private ServiceProvider _services;
 
@@ -49,11 +49,11 @@ public sealed class EfCreditNoteServiceProviderTests
 		db.StockItems.Add(stockItem);
 		db.Customers.Add(customer);
 		await db.SaveChangesAsync();
-		await new EfInvoiceServiceProvider(db).TryAddSaleAsync(new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 4 }] });
+		await new InvoiceServiceProvider(db).TryAddSaleAsync(new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 4 }] });
 		var invoice = await db.Invoices.SingleAsync();
 
 		var creditNote = new CreditNote { Number = 1, Reason = "Customer returned the goods", Invoice = invoice, Total = invoice.Total, Tax = invoice.Tax };
-		var provider = new EfCreditNoteServiceProvider(db);
+		var provider = new CreditNoteServiceProvider(db);
 
 		// Act
 		var succeeded = await provider.TryAddCreditNoteAsync(creditNote);
@@ -80,9 +80,9 @@ public sealed class EfCreditNoteServiceProviderTests
 		db.StockItems.Add(stockItem);
 		db.Customers.Add(customer);
 		await db.SaveChangesAsync();
-		await new EfInvoiceServiceProvider(db).TryAddSaleAsync(new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 4 }] });
+		await new InvoiceServiceProvider(db).TryAddSaleAsync(new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 4 }] });
 		var invoice = await db.Invoices.SingleAsync();
-		var provider = new EfCreditNoteServiceProvider(db);
+		var provider = new CreditNoteServiceProvider(db);
 		await provider.TryAddCreditNoteAsync(new CreditNote { Number = 1, Reason = "First cancellation", Invoice = invoice, Total = invoice.Total, Tax = invoice.Tax });
 
 		// Act
@@ -106,10 +106,10 @@ public sealed class EfCreditNoteServiceProviderTests
 		db.StockItems.Add(stockItem);
 		db.Customers.Add(customer);
 		await db.SaveChangesAsync();
-		var invoiceProvider = new EfInvoiceServiceProvider(db);
+		var invoiceProvider = new InvoiceServiceProvider(db);
 		await invoiceProvider.TryAddSaleAsync(new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 1 }] });
 		await invoiceProvider.TryAddSaleAsync(new Invoice { Number = "2", Customer = await db.Customers.SingleAsync(), SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(await db.StockItems.SingleAsync()) { Amount = 1 }] });
-		var provider = new EfCreditNoteServiceProvider(db);
+		var provider = new CreditNoteServiceProvider(db);
 		var firstInvoice = await db.Invoices.SingleAsync(invoice => invoice.Number == "1");
 		await provider.TryAddCreditNoteAsync(new CreditNote { Number = 1, Reason = "First", Invoice = firstInvoice, Total = firstInvoice.Total, Tax = firstInvoice.Tax });
 

@@ -12,7 +12,7 @@ namespace StockManagement.Api.Tests.Infrastructure;
 
 
 [TestClass]
-public sealed class EfInvoiceServiceProviderTests
+public sealed class InvoiceServiceProviderTests
 {
 	private ServiceProvider _services;
 
@@ -51,7 +51,7 @@ public sealed class EfInvoiceServiceProviderTests
 		await db.SaveChangesAsync();
 
 		var invoice = new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 4 }] };
-		var provider = new EfInvoiceServiceProvider(db);
+		var provider = new InvoiceServiceProvider(db);
 
 		// Act
 		var shortages = await provider.TryAddSaleAsync(invoice);
@@ -79,7 +79,7 @@ public sealed class EfInvoiceServiceProviderTests
 		await db.SaveChangesAsync();
 
 		var invoice = new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 4 }] };
-		var provider = new EfInvoiceServiceProvider(db);
+		var provider = new InvoiceServiceProvider(db);
 
 		// Act
 		await provider.TryAddSaleAsync(invoice);
@@ -107,7 +107,7 @@ public sealed class EfInvoiceServiceProviderTests
 		await db.SaveChangesAsync();
 
 		var invoice = new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [line] };
-		var provider = new EfInvoiceServiceProvider(db);
+		var provider = new InvoiceServiceProvider(db);
 
 		// Act
 		var shortages = await provider.TryAddSaleAsync(invoice);
@@ -137,7 +137,7 @@ public sealed class EfInvoiceServiceProviderTests
 			var localStockItem = await db.StockItems.AsNoTracking().SingleAsync(item => item.Code == "A1");
 			var localCustomer = await db.Customers.AsNoTracking().SingleAsync();
 			var invoice = new Invoice { Number = number.ToString(), Customer = localCustomer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(localStockItem) { Amount = 6 }] };
-			return await new EfInvoiceServiceProvider(db).TryAddSaleAsync(invoice);
+			return await new InvoiceServiceProvider(db).TryAddSaleAsync(invoice);
 		}
 
 		// Act
@@ -166,7 +166,7 @@ public sealed class EfInvoiceServiceProviderTests
 			new Invoice { Number = "1", Customer = ann, Date = new DateTime(2026, 1, 1), Items = [] },
 			new Invoice { Number = "2", Customer = bob, Date = new DateTime(2026, 1, 2), Items = [] });
 		await db.SaveChangesAsync();
-		var provider = new EfInvoiceServiceProvider(db);
+		var provider = new InvoiceServiceProvider(db);
 
 		// Act
 		var result = await provider.GetInvoicesAsync(customerId: 1001, from: null, to: null, cursor: null, pageSize: 20);
@@ -189,7 +189,7 @@ public sealed class EfInvoiceServiceProviderTests
 			new Invoice { Number = "2", Customer = customer, Date = new DateTime(2026, 6, 1), Items = [] },
 			new Invoice { Number = "3", Customer = customer, Date = new DateTime(2026, 12, 1), Items = [] });
 		await db.SaveChangesAsync();
-		var provider = new EfInvoiceServiceProvider(db);
+		var provider = new InvoiceServiceProvider(db);
 
 		// Act
 		var result = await provider.GetInvoicesAsync(customerId: null, from: new DateTime(2026, 3, 1), to: new DateTime(2026, 9, 1), cursor: null, pageSize: 20);
@@ -211,7 +211,7 @@ public sealed class EfInvoiceServiceProviderTests
 			new Invoice { Number = "2", Customer = customer, Date = new DateTime(2026, 1, 2), Items = [] },
 			new Invoice { Number = "3", Customer = customer, Date = new DateTime(2026, 1, 3), Items = [] });
 		await db.SaveChangesAsync();
-		var provider = new EfInvoiceServiceProvider(db);
+		var provider = new InvoiceServiceProvider(db);
 
 		// Act
 		var firstPage = await provider.GetInvoicesAsync(customerId: null, from: null, to: null, cursor: null, pageSize: 2);
@@ -233,7 +233,7 @@ public sealed class EfInvoiceServiceProviderTests
 		db.StockItems.Add(stockItem);
 		db.Customers.Add(customer);
 		await db.SaveChangesAsync();
-		await new EfInvoiceServiceProvider(db).TryAddSaleAsync(new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 1 }] });
+		await new InvoiceServiceProvider(db).TryAddSaleAsync(new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 1 }] });
 
 		// Act + Assert
 		await using var otherScope = _services.CreateAsyncScope();
@@ -241,7 +241,7 @@ public sealed class EfInvoiceServiceProviderTests
 		var otherStockItem = await otherDb.StockItems.AsNoTracking().SingleAsync();
 		var otherCustomer = await otherDb.Customers.AsNoTracking().SingleAsync();
 		var duplicate = new Invoice { Number = "1", Customer = otherCustomer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(otherStockItem) { Amount = 1 }] };
-		await Assert.ThrowsExceptionAsync<InvoiceNumberAlreadyExistsException>(() => new EfInvoiceServiceProvider(otherDb).TryAddSaleAsync(duplicate));
+		await Assert.ThrowsExceptionAsync<InvoiceNumberAlreadyExistsException>(() => new InvoiceServiceProvider(otherDb).TryAddSaleAsync(duplicate));
 		// Rolled back with the rest of the transaction, so only the first sale's decrement (10 - 1) sticks
 		Assert.AreEqual(9, (await otherDb.StockItems.AsNoTracking().SingleAsync()).Amount);
 	}

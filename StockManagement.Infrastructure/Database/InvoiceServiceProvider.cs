@@ -11,7 +11,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="IInvoiceServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfInvoiceServiceProvider(AppDbContext db) : IInvoiceServiceProvider
+public class InvoiceServiceProvider(AppDbContext db) : IInvoiceServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

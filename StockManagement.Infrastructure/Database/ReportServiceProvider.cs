@@ -9,7 +9,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="IReportServiceProvider"/> via EF aggregate queries on <see cref="AppDbContext"/>
 /// </summary>
-public class EfReportServiceProvider(AppDbContext db) : IReportServiceProvider
+public class ReportServiceProvider(AppDbContext db) : IReportServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

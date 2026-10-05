@@ -9,7 +9,7 @@
 - #8: every check-in/check-out should carry a reason, for traceability
 - #29: transaction data already has stock item, time, kind, amount (`Transaction`, added with the EF Core cutover); no reason, no requirement yet that amount changes go through it
 - Today `UpdateStockItemAsync` records a `Transaction.Kind.Amount` row automatically whenever `Amount` differs, with no reason: a side effect of editing the item, not an explicit stock movement
-- Sale checkout (`EfInvoiceServiceProvider.TryAddSaleAsync`) already decrements stock with a conditional `UPDATE ... WHERE Amount >= @amount` per line to avoid oversell under concurrent writes
+- Sale checkout (`InvoiceServiceProvider.TryAddSaleAsync`) already decrements stock with a conditional `UPDATE ... WHERE Amount >= @amount` per line to avoid oversell under concurrent writes
 
 ## Options
 

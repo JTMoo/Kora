@@ -9,7 +9,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="IPendingTransmissionServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfPendingTransmissionServiceProvider(AppDbContext db) : IPendingTransmissionServiceProvider
+public class PendingTransmissionServiceProvider(AppDbContext db) : IPendingTransmissionServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

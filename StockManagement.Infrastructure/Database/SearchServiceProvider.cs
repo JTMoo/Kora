@@ -10,7 +10,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <see cref="ISearchServiceProvider"/> via raw SQL against the generated <c>SearchVector</c>/<c>SearchText</c>
 /// columns from the <c>AddCrossDomainSearchVectors</c> migration (ADR-0026) - unmapped in <see cref="AppDbContext"/>'s model
 /// </summary>
-public class EfSearchServiceProvider(AppDbContext db) : ISearchServiceProvider
+public class SearchServiceProvider(AppDbContext db) : ISearchServiceProvider
 {
 	private const int MaxHitsPerDomain = 5;
 	private const double TrigramThreshold = 0.3;

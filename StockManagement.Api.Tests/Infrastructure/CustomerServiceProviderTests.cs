@@ -27,7 +27,7 @@ public sealed class CustomerServiceProviderTests
 
 		_services = new ServiceCollection()
 			.AddInfrastructure(configuration)
-			.AddScoped<ICustomerServiceProvider, EfCustomerServiceProvider>()
+			.AddScoped<ICustomerServiceProvider, CustomerServiceProvider>()
 			.BuildServiceProvider();
 
 		await using var scope = _services.CreateAsyncScope();

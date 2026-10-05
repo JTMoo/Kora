@@ -9,7 +9,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="IDebitNoteServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfDebitNoteServiceProvider(AppDbContext db) : IDebitNoteServiceProvider
+public class DebitNoteServiceProvider(AppDbContext db) : IDebitNoteServiceProvider
 {
 	private readonly AppDbContext _db = db;
 
@@ -31,7 +31,7 @@ public class EfDebitNoteServiceProvider(AppDbContext db) : IDebitNoteServiceProv
 
 		await using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken);
 
-		// Reuse the tracked instance, same reason as EfInvoiceServiceProvider.TryAddSaleAsync
+		// Reuse the tracked instance, same reason as InvoiceServiceProvider.TryAddSaleAsync
 		debitNote.Invoice = await _db.Invoices.FindAsync([debitNote.Invoice.Id], cancellationToken) ?? debitNote.Invoice;
 		_db.DebitNotes.Add(debitNote);
 		_db.PendingDebitNoteTransmissions.Add(new PendingDebitNoteTransmission(debitNote, DateTime.Now));

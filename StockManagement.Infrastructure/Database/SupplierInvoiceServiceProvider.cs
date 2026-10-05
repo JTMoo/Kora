@@ -10,7 +10,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <summary>
 /// <see cref="ISupplierInvoiceServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
-public class EfSupplierInvoiceServiceProvider(AppDbContext db) : ISupplierInvoiceServiceProvider
+public class SupplierInvoiceServiceProvider(AppDbContext db) : ISupplierInvoiceServiceProvider
 {
 	private readonly AppDbContext _db = db;
 

@@ -11,7 +11,7 @@ namespace StockManagement.Infrastructure.Database;
 /// <see cref="IStockItemServiceProvider"/> on <see cref="AppDbContext"/>
 /// </summary>
 /// <remarks>Every write records a <see cref="Transaction"/> in the same <c>SaveChangesAsync</c> call</remarks>
-public class EfStockItemServiceProvider(AppDbContext db) : IStockItemServiceProvider
+public class StockItemServiceProvider(AppDbContext db) : IStockItemServiceProvider
 {
 	private readonly AppDbContext _db = db;
 
@@ -129,7 +129,7 @@ public class EfStockItemServiceProvider(AppDbContext db) : IStockItemServiceProv
 		stockItem.Amount += amount;
 	}
 
-	/// <remarks>Conditional <c>UPDATE ... WHERE Amount &gt;= @amount</c>, same oversell guard as <see cref="EfInvoiceServiceProvider.TryAddSaleAsync"/></remarks>
+	/// <remarks>Conditional <c>UPDATE ... WHERE Amount &gt;= @amount</c>, same oversell guard as <see cref="InvoiceServiceProvider.TryAddSaleAsync"/></remarks>
 	public async Task<bool> TryCheckOutStockItemAsync(StockItem stockItem, int amount, string reason, CancellationToken cancellationToken = default)
 	{
 		await using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken);
