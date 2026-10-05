@@ -166,5 +166,167 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("leadTimeNegative", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Accounts payable.
+        /// </summary>
+        public static string payables {
+            get {
+                return ResourceManager.GetString("payables", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Supplier invoice.
+        /// </summary>
+        public static string supplierInvoice {
+            get {
+                return ResourceManager.GetString("supplierInvoice", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Supplier invoices.
+        /// </summary>
+        public static string supplierInvoices {
+            get {
+                return ResourceManager.GetString("supplierInvoices", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Invoice number.
+        /// </summary>
+        public static string supplierInvoiceNumber {
+            get {
+                return ResourceManager.GetString("supplierInvoiceNumber", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Create supplier invoice.
+        /// </summary>
+        public static string createSupplierInvoice {
+            get {
+                return ResourceManager.GetString("createSupplierInvoice", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Record payment.
+        /// </summary>
+        public static string recordPayment {
+            get {
+                return ResourceManager.GetString("recordPayment", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Supplier invoice not found..
+        /// </summary>
+        public static string supplierInvoiceNotFound {
+            get {
+                return ResourceManager.GetString("supplierInvoiceNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to A supplier invoice with this number already exists:.
+        /// </summary>
+        public static string supplierInvoiceNumberAlreadyExists {
+            get {
+                return ResourceManager.GetString("supplierInvoiceNumberAlreadyExists", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Amount.
+        /// </summary>
+        public static string paymentAmount {
+            get {
+                return ResourceManager.GetString("paymentAmount", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Date.
+        /// </summary>
+        public static string paymentDate {
+            get {
+                return ResourceManager.GetString("paymentDate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Method.
+        /// </summary>
+        public static string paymentMethod {
+            get {
+                return ResourceManager.GetString("paymentMethod", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Bank transfer.
+        /// </summary>
+        public static string bankTransfer {
+            get {
+                return ResourceManager.GetString("bankTransfer", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Check.
+        /// </summary>
+        public static string check {
+            get {
+                return ResourceManager.GetString("check", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Bancard QR.
+        /// </summary>
+        public static string bancardQr {
+            get {
+                return ResourceManager.GetString("bancardQr", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Other.
+        /// </summary>
+        public static string other {
+            get {
+                return ResourceManager.GetString("other", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Payments.
+        /// </summary>
+        public static string payments {
+            get {
+                return ResourceManager.GetString("payments", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Amount due.
+        /// </summary>
+        public static string amountDue {
+            get {
+                return ResourceManager.GetString("amountDue", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Amount paid.
+        /// </summary>
+        public static string amountPaid {
+            get {
+                return ResourceManager.GetString("amountPaid", resourceCulture);
+            }
+        }
     }
 }

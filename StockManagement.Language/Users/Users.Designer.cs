@@ -313,6 +313,24 @@ namespace StockManagement.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to View accounts payable.
+        /// </summary>
+        public static string permPayablesRead {
+            get {
+                return ResourceManager.GetString("permPayablesRead", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Manage accounts payable.
+        /// </summary>
+        public static string permPayablesWrite {
+            get {
+                return ResourceManager.GetString("permPayablesWrite", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Manage users.
         /// </summary>
         public static string permUsersManage {

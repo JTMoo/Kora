@@ -104,4 +104,58 @@
   <data name="leadTimeNegative" xml:space="preserve">
     <value>Die Lieferzeit darf nicht negativ sein.</value>
   </data>
+  <data name="payables" xml:space="preserve">
+    <value>Verbindlichkeiten</value>
+  </data>
+  <data name="supplierInvoice" xml:space="preserve">
+    <value>Lieferantenrechnung</value>
+  </data>
+  <data name="supplierInvoices" xml:space="preserve">
+    <value>Lieferantenrechnungen</value>
+  </data>
+  <data name="supplierInvoiceNumber" xml:space="preserve">
+    <value>Rechnungsnummer</value>
+  </data>
+  <data name="createSupplierInvoice" xml:space="preserve">
+    <value>Lieferantenrechnung anlegen</value>
+  </data>
+  <data name="recordPayment" xml:space="preserve">
+    <value>Zahlung erfassen</value>
+  </data>
+  <data name="supplierInvoiceNotFound" xml:space="preserve">
+    <value>Lieferantenrechnung nicht gefunden.</value>
+  </data>
+  <data name="supplierInvoiceNumberAlreadyExists" xml:space="preserve">
+    <value>Eine Lieferantenrechnung mit dieser Nummer existiert bereits:</value>
+  </data>
+  <data name="paymentAmount" xml:space="preserve">
+    <value>Betrag</value>
+  </data>
+  <data name="paymentDate" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="paymentMethod" xml:space="preserve">
+    <value>Zahlungsart</value>
+  </data>
+  <data name="bankTransfer" xml:space="preserve">
+    <value>Banküberweisung</value>
+  </data>
+  <data name="check" xml:space="preserve">
+    <value>Scheck</value>
+  </data>
+  <data name="bancardQr" xml:space="preserve">
+    <value>Bancard QR</value>
+  </data>
+  <data name="other" xml:space="preserve">
+    <value>Sonstiges</value>
+  </data>
+  <data name="payments" xml:space="preserve">
+    <value>Zahlungen</value>
+  </data>
+  <data name="amountDue" xml:space="preserve">
+    <value>Offener Betrag</value>
+  </data>
+  <data name="amountPaid" xml:space="preserve">
+    <value>Bezahlter Betrag</value>
+  </data>
 </root>

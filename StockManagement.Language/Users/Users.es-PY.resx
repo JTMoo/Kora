@@ -201,6 +201,12 @@
   <data name="permReportsRead" xml:space="preserve">
     <value>Ver reportes</value>
   </data>
+  <data name="permPayablesRead" xml:space="preserve">
+    <value>Ver cuentas por pagar</value>
+  </data>
+  <data name="permPayablesWrite" xml:space="preserve">
+    <value>Gestionar cuentas por pagar</value>
+  </data>
   <data name="permUsersManage" xml:space="preserve">
     <value>Administrar usuarios</value>
   </data>

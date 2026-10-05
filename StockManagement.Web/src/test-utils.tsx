@@ -6,7 +6,7 @@ import { AuthProvider } from "./auth";
 import { I18nProvider } from "./i18n";
 import { ToastProvider } from "./Toast";
 
-export const allPermissions: Permission[] = ["Users.Manage", "Customers.Read", "Customers.Write", "StockItems.Read", "StockItems.Write", "Sales.Read", "Sales.Write", "Settings.Read", "Settings.Write", "Suppliers.Read", "Suppliers.Write", "GoodsImports.Read", "GoodsImports.Write", "Reports.Read"];
+export const allPermissions: Permission[] = ["Users.Manage", "Customers.Read", "Customers.Write", "StockItems.Read", "StockItems.Write", "Sales.Read", "Sales.Write", "Settings.Read", "Settings.Write", "Suppliers.Read", "Suppliers.Write", "GoodsImports.Read", "GoodsImports.Write", "Reports.Read", "Payables.Read", "Payables.Write"];
 
 export type Route = { status?: number; body?: unknown };
 

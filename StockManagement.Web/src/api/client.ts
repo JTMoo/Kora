@@ -90,12 +90,13 @@ async function handleResponse<T>(fetchCall: () => Promise<Response>): Promise<Re
 	}
 	if (response.status === 409)
 	{
-		const body = (await response.json()) as { unavailableItems?: string[]; code?: string; name?: string; barcode?: string; proformaNumber?: string; inStock?: number; reason?: string };
+		const body = (await response.json()) as { unavailableItems?: string[]; code?: string; name?: string; barcode?: string; proformaNumber?: string; number?: string; inStock?: number; reason?: string };
 		if (body.unavailableItems) return { ok: false, failure: { kind: "conflict", unavailableItems: body.unavailableItems } };
 		if (body.code) return { ok: false, failure: { kind: "duplicate", code: body.code } };
 		if (body.name) return { ok: false, failure: { kind: "duplicate", code: body.name } };
 		if (body.barcode) return { ok: false, failure: { kind: "duplicate", code: body.barcode } };
 		if (body.proformaNumber) return { ok: false, failure: { kind: "duplicate", code: body.proformaNumber } };
+		if (body.number) return { ok: false, failure: { kind: "duplicate", code: body.number } };
 		if (body.inStock !== undefined) return { ok: false, failure: { kind: "insufficientStock", inStock: body.inStock } };
 		if (body.reason !== undefined) return { ok: false, failure: { kind: "invalidState", reason: body.reason } };
 		return { ok: false, failure: { kind: "cannotDeleteSelf" } };

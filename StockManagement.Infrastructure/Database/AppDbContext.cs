@@ -39,6 +39,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvid
 
 	public DbSet<Supplier> Suppliers => this.Set<Supplier>();
 
+	public DbSet<SupplierInvoice> SupplierInvoices => this.Set<SupplierInvoice>();
+
 	public DbSet<PendingTransmission> PendingTransmissions => this.Set<PendingTransmission>();
 
 	public DbSet<PaymentLink> PaymentLinks => this.Set<PaymentLink>();

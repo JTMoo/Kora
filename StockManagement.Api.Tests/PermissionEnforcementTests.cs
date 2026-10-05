@@ -92,6 +92,36 @@ public sealed class PermissionEnforcementTests
 	}
 
 	[TestMethod]
+	public async Task StandardUser_WithoutPayablesWrite_CannotCreateSupplierInvoice()
+	{
+		// Arrange
+		var supplier = new Supplier("Acme");
+		await _factory.ScopedServices.GetRequiredService<ISupplierServiceProvider>().AddSupplierAsync(supplier);
+		var client = await this.CreateStandardUserClientAsync("plain5", []);
+
+		// Act
+		var response = await client.PostAsJsonAsync("/api/supplier-invoices", new { Number = "SI-1", SupplierId = supplier.Id, Date = DateTime.Now, ExpirationDate = DateTime.Now.AddDays(30), Total = 1000 });
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task StandardUser_WithPayablesWrite_CanCreateSupplierInvoice()
+	{
+		// Arrange
+		var supplier = new Supplier("Acme");
+		await _factory.ScopedServices.GetRequiredService<ISupplierServiceProvider>().AddSupplierAsync(supplier);
+		var client = await this.CreateStandardUserClientAsync("payables-clerk", [Permission.PayablesWrite]);
+
+		// Act
+		var response = await client.PostAsJsonAsync("/api/supplier-invoices", new { Number = "SI-2", SupplierId = supplier.Id, Date = DateTime.Now, ExpirationDate = DateTime.Now.AddDays(30), Total = 1000 });
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task StandardUser_WithoutGoodsImportsWrite_CannotCreateGoodsImportDocument()
 	{
 		// Arrange

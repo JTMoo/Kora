@@ -41,6 +41,7 @@ public sealed class ServiceRegistrationTests
 			.AddScoped(_ => new Mock<IRemissionNoteServiceProvider>().Object)
 			.AddScoped(_ => new Mock<IGoodsImportDocumentServiceProvider>().Object)
 			.AddScoped(_ => new Mock<IDebitNoteServiceProvider>().Object)
+			.AddScoped(_ => new Mock<ISupplierInvoiceServiceProvider>().Object)
 			.AddScoped(_ => new Mock<ICancellationRequestServiceProvider>().Object)
 			.AddScoped(_ => new Mock<IInvoiceNumberVoidServiceProvider>().Object)
 			.AddSalesCore(new ConfigurationBuilder().Build())
@@ -56,6 +57,7 @@ public sealed class ServiceRegistrationTests
 		// Assert
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<ISaleService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IPaymentService>());
+		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<ISupplierPaymentService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IPaymentLinkService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<ICreditNoteService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IRemissionNoteService>());
