@@ -98,4 +98,25 @@
   <data name="noLowStockItems" xml:space="preserve">
     <value>No items below their minimum stock.</value>
   </data>
+  <data name="accountsReceivableAging" xml:space="preserve">
+    <value>Accounts receivable aging</value>
+  </data>
+  <data name="current" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="days1To30" xml:space="preserve">
+    <value>1-30 days</value>
+  </data>
+  <data name="days31To60" xml:space="preserve">
+    <value>31-60 days</value>
+  </data>
+  <data name="days61To90" xml:space="preserve">
+    <value>61-90 days</value>
+  </data>
+  <data name="days90Plus" xml:space="preserve">
+    <value>90+ days</value>
+  </data>
+  <data name="noOpenInvoices" xml:space="preserve">
+    <value>No open invoices.</value>
+  </data>
 </root>
