@@ -38,6 +38,8 @@ public static class ServiceCollectionExtensions
 		services.AddScoped<IContingencyCdcRangeServiceProvider, EfContingencyCdcRangeServiceProvider>();
 		services.AddScoped<IRemissionNoteServiceProvider, EfRemissionNoteServiceProvider>();
 		services.AddScoped<IPendingRemisionTransmissionServiceProvider, EfPendingRemisionTransmissionServiceProvider>();
+		services.AddScoped<IDebitNoteServiceProvider, EfDebitNoteServiceProvider>();
+		services.AddScoped<IPendingDebitNoteTransmissionServiceProvider, EfPendingDebitNoteTransmissionServiceProvider>();
 		services.AddScoped<IGoodsImportDocumentServiceProvider, EfGoodsImportDocumentServiceProvider>();
 		services.AddScoped<IReportServiceProvider, EfReportServiceProvider>();
 		return services;
