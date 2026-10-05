@@ -202,3 +202,30 @@ Repo @ main (91f9614). Delta since cycle 4 (28a831b) - merged: #188/#189/#190 fi
 
 - No dead code to remove
 - Findings above filed as #209-#210
+
+## Cycle 6, 2026-10-05
+
+Repo @ main (5509f3e). Delta since cycle 5 (91f9614) - merged: #212 (VatSplit dedup, closes #210), #213 (AR aging DB-pushdown, closes #209), #214 (SIFEN Cancelación/Inutilización, ADR per #206), #215 (accounts payable: SupplierInvoice/SupplierPayment, AP aging report).
+
+### Findings (new)
+
+| # | File | What | Issue |
+|---|------|------|-------|
+| 1 | `EfReportServiceProvider.GetAccountsPayableAgingTotalsAsync`/`LoadOpenSupplierInvoiceAgingAsync` | AP aging (#215) loads *all* `SupplierInvoices` into memory, buckets/sorts/pages in C# - doc comment claims "same shape as `GetAccountsReceivableAgingByCustomerAsync`" but that method was DB-pushed by #213 earlier this same cycle; #215 copied the pre-fix pattern | #216 |
+| 2 | `StockManagement.Web/e2e/global-setup.ts` | TRUNCATE list not updated for #215's new tables (`SupplierInvoices`, `SupplierPayments`) - every prior table-adding PR updated this list, #215 missed it | #217 |
+
+### Verified clean / no new dead code
+
+- Dead code: none found
+- #212: `VatSplit.VatShare` correctly extracted to `Kernel.Util`, all 6 duplicate sites (`VatRateGroup`, `DteXmlBuilder` x4, `KudeHtmlBuilder`, `KudeVerificationUrlBuilder`) switched over - #210 fully closed
+- #213: `OpenInvoiceAgingQuery` now pushes bucket computation, cursor filter and `OrderBy`/`Take` into SQL; plain class (not record) used for the grouped `Select` projection, with a comment explaining why (EF can't translate `Sum` through a record ctor) - #209 fully closed, 2 new tests cover the DB-pushed bucketing
+- #214: permissions on all 4 new endpoints (`RequestCancellation`/`RequestNumberVoid` write, `ListCancellations`/`ListNumberVoids` read); `SifenTransmissionWorker` wired for both new outboxes; e2e TRUNCATE list *does* include `CancellationRequests`/`InvoiceNumberVoids` (this PR got it right, #215 didn't); `CancellationToken` threaded throughout; `SifenEventService` validates 48h Cancelación deadline, 1000-range/150-char Inutilización limits, and both overlap checks (in-use numbers, existing voids) before queuing; DNIT response parsing (`dCodRes` 0260) honestly flagged `<remarks>` as unverified, same as existing DTE gateway code
+- #215: `Payables.Read`/`Payables.Write` permissions on all 5 endpoints; present in `permissionOptions.ts` (cycle-4's #189 gap class not repeated); `EfSupplierInvoiceServiceProvider.SaveChangesAsync` catches Postgres 23505 → `SupplierInvoiceNumberAlreadyExistsException`, same shape as `Invoice`; all new registrations `AddScoped`
+- CancellationToken: threaded through all new providers/endpoints in both PRs
+- Money/decimal: `decimal` throughout; no `double`
+- No `async void`, fire-and-forget, empty `catch`
+
+### Actions taken this cycle
+
+- No dead code to remove
+- Findings above filed as #216-#217
