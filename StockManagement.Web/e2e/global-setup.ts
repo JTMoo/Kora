@@ -8,7 +8,7 @@ export default async function globalSetup()
 {
 	const client = new Client(postgres);
 	await client.connect();
-	await client.query('TRUNCATE "StockItems", "Customers", "Invoices", "InvoiceItems", "Payments", "Transactions", "CreditNotes", "PendingTransmissions", "PaymentLinks", "RemissionNotes", "RemissionNoteItems", "PendingRemisionTransmissions", "GoodsImportDocuments", "GoodsImportDocumentItems", "DebitNotes", "DebitNoteItems", "PendingDebitNoteTransmissions"');
+	await client.query('TRUNCATE "StockItems", "Customers", "Invoices", "InvoiceItems", "Payments", "Transactions", "CreditNotes", "PendingTransmissions", "PaymentLinks", "RemissionNotes", "RemissionNoteItems", "PendingRemisionTransmissions", "GoodsImportDocuments", "GoodsImportDocumentItems", "DebitNotes", "DebitNoteItems", "PendingDebitNoteTransmissions", "CancellationRequests", "InvoiceNumberVoids"');
 	await client.query(
 		'INSERT INTO "StockItems" ("Id", "Name", "Code", "Amount", "Description", "Location", "Price", "Factor", "Manufacturer", "Miscellaneous") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10), ($11, $12, $13, $14, $15, $16, $17, $18, $19, $20)',
 		[

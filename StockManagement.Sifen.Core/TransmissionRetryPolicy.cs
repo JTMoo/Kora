@@ -1,3 +1,5 @@
+using StockManagement.Sifen.Core.Contracts;
+
 namespace StockManagement.Sifen.Core;
 
 
@@ -19,7 +21,16 @@ public static class TransmissionRetryPolicy
 	/// </returns>
 	public static DateTime? NextAttempt(DateTime invoiceDate, int attempts, DateTime now)
 	{
-		var deadline = invoiceDate + Deadline;
+		return NextAttemptBefore(invoiceDate + Deadline, attempts, now);
+	}
+
+	/// <summary>
+	/// Same backoff as <see cref="NextAttempt"/>, against an explicit <paramref name="deadline"/> instead of one
+	/// derived from a document date - used for Cancelación events, whose 48h window anchors on
+	/// <see cref="Kernel.Model.Invoice.AcceptedAt"/> rather than the document's own date (#206).
+	/// </summary>
+	public static DateTime? NextAttemptBefore(DateTime deadline, int attempts, DateTime now)
+	{
 		if (now >= deadline) return null;
 
 		var delayMs = Math.Min(BaseDelay.TotalMilliseconds * Math.Pow(2, Math.Max(attempts, 0)), MaxDelay.TotalMilliseconds);

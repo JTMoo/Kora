@@ -38,6 +38,52 @@ public sealed class SifenTransmissionWorker(IServiceScopeFactory scopeFactory, I
 		await this.ProcessDueInvoicesAsync(scope.ServiceProvider.GetRequiredService<IPendingTransmissionServiceProvider>(), gateway, cancellationToken);
 		await this.ProcessDueRemisionesAsync(scope.ServiceProvider.GetRequiredService<IPendingRemisionTransmissionServiceProvider>(), gateway, cancellationToken);
 		await this.ProcessDueDebitNotesAsync(scope.ServiceProvider.GetRequiredService<IPendingDebitNoteTransmissionServiceProvider>(), gateway, cancellationToken);
+		await this.ProcessDueCancellationsAsync(scope.ServiceProvider.GetRequiredService<ICancellationRequestServiceProvider>(), gateway, cancellationToken);
+		await this.ProcessDueNumberVoidsAsync(scope.ServiceProvider.GetRequiredService<IInvoiceNumberVoidServiceProvider>(), gateway, cancellationToken);
+	}
+
+	/// <summary>
+	/// Same polling loop for the <see cref="Kernel.Model.CancellationRequest"/> outbox (#206).
+	/// </summary>
+	private async Task ProcessDueCancellationsAsync(ICancellationRequestServiceProvider cancellationRequests, ISifenGateway gateway, CancellationToken cancellationToken)
+	{
+		var due = await cancellationRequests.GetDueAsync(DateTime.Now, BatchSize, cancellationToken);
+		foreach (var request in due)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+
+			try
+			{
+				var result = await gateway.SendCancellationEventAsync(request, cancellationToken);
+				await SifenTransmissionProcessor.ApplyCancellationAsync(cancellationRequests, request, result, DateTime.Now, cancellationToken);
+			}
+			catch (Exception ex) when (ex is not OperationCanceledException)
+			{
+				_logger.LogError(ex, "SIFEN Cancelación failed for invoice {InvoiceNumber}", request.Invoice.Number);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Same polling loop for the <see cref="Kernel.Model.InvoiceNumberVoid"/> outbox (#206).
+	/// </summary>
+	private async Task ProcessDueNumberVoidsAsync(IInvoiceNumberVoidServiceProvider numberVoids, ISifenGateway gateway, CancellationToken cancellationToken)
+	{
+		var due = await numberVoids.GetDueAsync(DateTime.Now, BatchSize, cancellationToken);
+		foreach (var numberVoid in due)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+
+			try
+			{
+				var result = await gateway.SendInutilizacionEventAsync(numberVoid, cancellationToken);
+				await SifenTransmissionProcessor.ApplyInutilizacionAsync(numberVoids, numberVoid, result, DateTime.Now, cancellationToken);
+			}
+			catch (Exception ex) when (ex is not OperationCanceledException)
+			{
+				_logger.LogError(ex, "SIFEN Inutilización failed for range {RangeStart}-{RangeEnd}", numberVoid.RangeStart, numberVoid.RangeEnd);
+			}
+		}
 	}
 
 	private async Task ProcessDueInvoicesAsync(IPendingTransmissionServiceProvider pendingTransmissions, ISifenGateway gateway, CancellationToken cancellationToken)

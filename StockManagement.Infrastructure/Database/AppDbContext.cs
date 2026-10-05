@@ -57,6 +57,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvid
 
 	public DbSet<PendingDebitNoteTransmission> PendingDebitNoteTransmissions => this.Set<PendingDebitNoteTransmission>();
 
+	public DbSet<CancellationRequest> CancellationRequests => this.Set<CancellationRequest>();
+
+	public DbSet<InvoiceNumberVoid> InvoiceNumberVoids => this.Set<InvoiceNumberVoid>();
+
 
 	public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
 	{

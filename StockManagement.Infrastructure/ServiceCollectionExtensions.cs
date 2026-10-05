@@ -43,6 +43,8 @@ public static class ServiceCollectionExtensions
 		services.AddScoped<IPendingDebitNoteTransmissionServiceProvider, EfPendingDebitNoteTransmissionServiceProvider>();
 		services.AddScoped<IGoodsImportDocumentServiceProvider, EfGoodsImportDocumentServiceProvider>();
 		services.AddScoped<IReportServiceProvider, EfReportServiceProvider>();
+		services.AddScoped<ICancellationRequestServiceProvider, EfCancellationRequestServiceProvider>();
+		services.AddScoped<IInvoiceNumberVoidServiceProvider, EfInvoiceNumberVoidServiceProvider>();
 		return services;
 	}
 }

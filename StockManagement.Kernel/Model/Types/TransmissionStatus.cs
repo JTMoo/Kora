@@ -20,5 +20,10 @@ public enum TransmissionStatus
 	/// <summary>
 	/// Network/timeout error; auto-retried until the 72h deadline
 	/// </summary>
-	Error
+	Error,
+
+	/// <summary>
+	/// SIFEN accepted a Cancelación event against this document (#206) - terminal, distinct from <see cref="Rejected"/>
+	/// </summary>
+	Cancelled
 }

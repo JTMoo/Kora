@@ -30,6 +30,8 @@ public class EfPendingTransmissionServiceProvider(AppDbContext db) : IPendingTra
 		await using var dbTransaction = await _db.Database.BeginTransactionAsync(cancellationToken);
 		transmission.Invoice.TransmissionStatus = status;
 		if (!string.IsNullOrEmpty(cdc)) transmission.Invoice.Cdc = cdc;
+		// Anchors the 48h Cancelación window (#206)
+		if (status == TransmissionStatus.Accepted) transmission.Invoice.AcceptedAt = DateTime.Now;
 		_db.PendingTransmissions.Remove(transmission);
 		await _db.SaveChangesAsync(cancellationToken);
 		await dbTransaction.CommitAsync(cancellationToken);

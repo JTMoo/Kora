@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StockManagement.Infrastructure.Database;
@@ -11,9 +12,11 @@ using StockManagement.Infrastructure.Database;
 namespace StockManagement.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261005062634_AddSifenCancellationAndInutilizacion")]
+    partial class AddSifenCancellationAndInutilizacion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -741,40 +744,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.ToTable("Suppliers");
                 });
 
-            modelBuilder.Entity("StockManagement.Kernel.Model.SupplierInvoice", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SupplierId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Total")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Number")
-                        .IsUnique();
-
-                    b.HasIndex("SupplierId");
-
-                    b.ToTable("SupplierInvoices");
-                });
-
             modelBuilder.Entity("StockManagement.Kernel.Model.Transaction", b =>
                 {
                     b.Property<string>("Id")
@@ -1189,49 +1158,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.HasOne("StockManagement.Kernel.Model.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId");
-
-                    b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("StockManagement.Kernel.Model.SupplierInvoice", b =>
-                {
-                    b.HasOne("StockManagement.Kernel.Model.Supplier", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsMany("StockManagement.Kernel.Model.Payment", "Payments", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uuid");
-
-                            b1.Property<decimal>("Amount")
-                                .HasPrecision(18, 2)
-                                .HasColumnType("numeric(18,2)");
-
-                            b1.Property<DateTime>("Date")
-                                .HasColumnType("timestamp without time zone");
-
-                            b1.Property<int>("Method")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("SupplierInvoiceId")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("SupplierInvoiceId");
-
-                            b1.ToTable("SupplierPayments", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("SupplierInvoiceId");
-                        });
-
-                    b.Navigation("Payments");
 
                     b.Navigation("Supplier");
                 });

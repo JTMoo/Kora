@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using StockManagement.Kernel.Util;
 using StockManagement.Sifen.Core.Contracts;
 
 namespace StockManagement.Sifen.Core;
@@ -19,7 +20,7 @@ public sealed class KudeVerificationUrlBuilder : IKudeVerificationUrlBuilder
 		{
 			var lineTotal = Math.Round(item.Quantity * item.UnitPrice, data.CurrencyDecimalDigits, MidpointRounding.AwayFromZero);
 			total += lineTotal;
-			iva += Math.Round(lineTotal * item.VatRatePercent / (100 + item.VatRatePercent), data.CurrencyDecimalDigits, MidpointRounding.AwayFromZero);
+			iva += VatSplit.VatShare(lineTotal, item.VatRatePercent, data.CurrencyDecimalDigits);
 		}
 
 		return Build(data.Cdc, data.IssueDate, data.Receptor.RucBase ?? data.Receptor.DocumentNumber ?? "", total, iva, data.Items.Count);

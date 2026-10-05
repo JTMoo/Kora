@@ -17,6 +17,7 @@ public class Invoice : BaseDocument
 	private bool isCancelled;
 	private string cdc = "";
 	private TransmissionStatus transmissionStatus = TransmissionStatus.Pending;
+	private DateTime? acceptedAt;
 
 
 	public Invoice()
@@ -91,6 +92,15 @@ public class Invoice : BaseDocument
 	{
 		get { return this.transmissionStatus; }
 		set { this.SetField(ref this.transmissionStatus, value); }
+	}
+	/// <summary>
+	/// When SIFEN accepted this DE; null until then. Anchors the 48h Cancelación window (#206) - distinct from
+	/// <see cref="Date"/>, which anchors the 72h transmission deadline instead.
+	/// </summary>
+	public DateTime? AcceptedAt
+	{
+		get { return this.acceptedAt; }
+		set { this.SetField(ref this.acceptedAt, value); }
 	}
 	#endregion Properties
 }

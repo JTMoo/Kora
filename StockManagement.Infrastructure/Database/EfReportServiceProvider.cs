@@ -61,53 +61,58 @@ public class EfReportServiceProvider(AppDbContext db) : IReportServiceProvider
 
 	public async Task<AccountsReceivableAgingTotals> GetAccountsReceivableAgingTotalsAsync(DateTime asOf, CancellationToken cancellationToken = default)
 	{
-		var buckets = await this.LoadOpenInvoiceAgingAsync(asOf, cancellationToken);
+		var asOfDate = asOf.Date;
+
+		// Each bucket summed in its own call: EF won't translate Sum() reached through a Select() projecting into another type's member (same reason the per-customer query below groups into an anonymous type first)
+		var query = this.OpenInvoiceAgingQuery(asOfDate);
 		return new(
-			buckets.Sum(bucket => bucket.Current),
-			buckets.Sum(bucket => bucket.Days1To30),
-			buckets.Sum(bucket => bucket.Days31To60),
-			buckets.Sum(bucket => bucket.Days61To90),
-			buckets.Sum(bucket => bucket.Days90Plus),
-			buckets.Sum(bucket => bucket.AmountDue));
+			await query.SumAsync(invoice => invoice.Current, cancellationToken),
+			await query.SumAsync(invoice => invoice.Days1To30, cancellationToken),
+			await query.SumAsync(invoice => invoice.Days31To60, cancellationToken),
+			await query.SumAsync(invoice => invoice.Days61To90, cancellationToken),
+			await query.SumAsync(invoice => invoice.Days90Plus, cancellationToken),
+			await query.SumAsync(invoice => invoice.AmountDue, cancellationToken));
 	}
 
 	/// <remarks>Keyset page by amount due descending then <see cref="SalesByCustomerRow.CustomerId"/> (ADR-0029), same shape as <see cref="GetSalesByCustomerAsync"/></remarks>
 	public async Task<CursorPage<AccountsReceivableAgingRow>> GetAccountsReceivableAgingByCustomerAsync(DateTime asOf, string? cursor, int pageSize, CancellationToken cancellationToken = default)
 	{
-		var grouped = (await this.LoadOpenInvoiceAgingAsync(asOf, cancellationToken))
-			.GroupBy(bucket => new { bucket.CustomerId, bucket.CustomerName })
-			.Select(group => new AccountsReceivableAgingRow(
+		var query = this.OpenInvoiceAgingQuery(asOf.Date)
+			.GroupBy(invoice => new { invoice.CustomerId, invoice.CustomerName })
+			.Select(group => new
+			{
 				group.Key.CustomerId,
 				group.Key.CustomerName,
-				group.Sum(bucket => bucket.Current),
-				group.Sum(bucket => bucket.Days1To30),
-				group.Sum(bucket => bucket.Days31To60),
-				group.Sum(bucket => bucket.Days61To90),
-				group.Sum(bucket => bucket.Days90Plus),
-				group.Sum(bucket => bucket.AmountDue)))
-			.OrderByDescending(row => row.Total).ThenBy(row => row.CustomerId)
-			.ToList();
+				Current = group.Sum(invoice => invoice.Current),
+				Days1To30 = group.Sum(invoice => invoice.Days1To30),
+				Days31To60 = group.Sum(invoice => invoice.Days31To60),
+				Days61To90 = group.Sum(invoice => invoice.Days61To90),
+				Days90Plus = group.Sum(invoice => invoice.Days90Plus),
+				Total = group.Sum(invoice => invoice.AmountDue)
+			});
 
-		var startIndex = 0;
 		if (Cursor.TryDecode(cursor, 2) is [var lastTotalText, var lastCustomerIdText]
 			&& decimal.TryParse(lastTotalText, NumberStyles.Number, CultureInfo.InvariantCulture, out var lastTotal)
 			&& int.TryParse(lastCustomerIdText, out var lastCustomerId))
 		{
-			startIndex = grouped.FindIndex(row => row.Total < lastTotal || (row.Total == lastTotal && row.CustomerId > lastCustomerId));
-			if (startIndex < 0) startIndex = grouped.Count;
+			query = query.Where(row => row.Total < lastTotal || (row.Total == lastTotal && row.CustomerId > lastCustomerId));
 		}
 
-		var items = grouped.Skip(startIndex).Take(pageSize).ToList();
-		var nextCursor = startIndex + items.Count < grouped.Count
+		var page = await query.OrderByDescending(row => row.Total).ThenBy(row => row.CustomerId).Take(pageSize + 1).ToListAsync(cancellationToken);
+
+		var items = page.Take(pageSize)
+			.Select(row => new AccountsReceivableAgingRow(row.CustomerId, row.CustomerName, row.Current, row.Days1To30, row.Days31To60, row.Days61To90, row.Days90Plus, row.Total))
+			.ToList();
+		var nextCursor = page.Count > pageSize
 			? Cursor.Encode(items[^1].Total.ToString(CultureInfo.InvariantCulture), items[^1].CustomerId.ToString(CultureInfo.InvariantCulture))
 			: null;
 		return new(items, nextCursor);
 	}
 
-	/// <summary>Per-invoice amount due (zero once cancelled, same rule as <c>InvoiceStatusCalculator</c>) split into the bucket matching its days overdue vs. <paramref name="asOf"/>; invoices fully paid or with no amount due are left out</summary>
-	private async Task<List<InvoiceAgingBucket>> LoadOpenInvoiceAgingAsync(DateTime asOf, CancellationToken cancellationToken)
+	/// <summary>Per-invoice amount due (zero once cancelled, same rule as <c>InvoiceStatusCalculator</c>) split into the bucket matching its days overdue vs. <paramref name="asOfDate"/>, computed and filtered server-side; invoices fully paid or with no amount due are left out</summary>
+	private IQueryable<AccountsReceivableAgingBucket> OpenInvoiceAgingQuery(DateTime asOfDate)
 	{
-		var invoices = await _db.Invoices
+		return _db.Invoices
 			.Where(invoice => !invoice.IsCancelled)
 			.Select(invoice => new
 			{
@@ -116,28 +121,19 @@ public class EfReportServiceProvider(AppDbContext db) : IReportServiceProvider
 				invoice.ExpirationDate,
 				AmountDue = invoice.Total - invoice.Payments.Sum(payment => payment.Amount)
 			})
-			.ToListAsync(cancellationToken);
-
-		return invoices
 			.Where(invoice => invoice.AmountDue > 0)
-			.Select(invoice =>
+			.Select(invoice => new AccountsReceivableAgingBucket
 			{
-				var daysOverdue = (asOf.Date - invoice.ExpirationDate.Date).Days;
-				return new InvoiceAgingBucket(
-					invoice.CustomerId,
-					invoice.Name,
-					Current: daysOverdue <= 0 ? invoice.AmountDue : 0,
-					Days1To30: daysOverdue is >= 1 and <= 30 ? invoice.AmountDue : 0,
-					Days31To60: daysOverdue is >= 31 and <= 60 ? invoice.AmountDue : 0,
-					Days61To90: daysOverdue is >= 61 and <= 90 ? invoice.AmountDue : 0,
-					Days90Plus: daysOverdue > 90 ? invoice.AmountDue : 0,
-					AmountDue: invoice.AmountDue);
-			})
-			.ToList();
+				CustomerId = invoice.CustomerId,
+				CustomerName = invoice.Name,
+				Current = invoice.ExpirationDate.Date >= asOfDate ? invoice.AmountDue : 0,
+				Days1To30 = invoice.ExpirationDate.Date < asOfDate && invoice.ExpirationDate.Date >= asOfDate.AddDays(-30) ? invoice.AmountDue : 0,
+				Days31To60 = invoice.ExpirationDate.Date < asOfDate.AddDays(-30) && invoice.ExpirationDate.Date >= asOfDate.AddDays(-60) ? invoice.AmountDue : 0,
+				Days61To90 = invoice.ExpirationDate.Date < asOfDate.AddDays(-60) && invoice.ExpirationDate.Date >= asOfDate.AddDays(-90) ? invoice.AmountDue : 0,
+				Days90Plus = invoice.ExpirationDate.Date < asOfDate.AddDays(-90) ? invoice.AmountDue : 0,
+				AmountDue = invoice.AmountDue
+			});
 	}
-
-
-	private sealed record InvoiceAgingBucket(int CustomerId, string CustomerName, decimal Current, decimal Days1To30, decimal Days31To60, decimal Days61To90, decimal Days90Plus, decimal AmountDue);
 
 
 	public async Task<AccountsPayableAgingTotals> GetAccountsPayableAgingTotalsAsync(DateTime asOf, CancellationToken cancellationToken = default)
@@ -217,4 +213,17 @@ public class EfReportServiceProvider(AppDbContext db) : IReportServiceProvider
 
 
 	private sealed record SupplierAgingBucket(string SupplierId, string SupplierName, decimal Current, decimal Days1To30, decimal Days31To60, decimal Days61To90, decimal Days90Plus, decimal AmountDue);
+
+	/// <summary>Plain class, not a record: EF maps a <c>Sum(x => x.Current)</c> reached through a prior <c>Select</c> back to that Select's constructor arguments only via an object-initializer's member assignments, not a positional record's constructor</summary>
+	private sealed class AccountsReceivableAgingBucket
+	{
+		public int CustomerId { get; set; }
+		public string CustomerName { get; set; } = "";
+		public decimal Current { get; set; }
+		public decimal Days1To30 { get; set; }
+		public decimal Days31To60 { get; set; }
+		public decimal Days61To90 { get; set; }
+		public decimal Days90Plus { get; set; }
+		public decimal AmountDue { get; set; }
+	}
 }
