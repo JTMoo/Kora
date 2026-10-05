@@ -123,6 +123,120 @@ public sealed class DirectDnitSifenGateway(
 		}
 	}
 
+	/// <summary>
+	/// Builds, signs and transmits a Cancelación event (#206). Unlike a DTE, an event never reuses a prior id -
+	/// one is generated fresh for every attempt, including retries.
+	/// </summary>
+	public async Task<SifenTransmissionResult> SendCancellationEventAsync(CancellationRequest request, CancellationToken cancellationToken = default)
+	{
+		ArgumentNullException.ThrowIfNull(request);
+
+		try
+		{
+			var companySettings = await _settingsService.GetCompanySettingsAsync(cancellationToken);
+			var data = BuildCancellationEventData(request, companySettings);
+			var unsignedEvent = _xmlBuilder.BuildCancellationEvent(data);
+
+			using var certificate = LoadCertificate();
+			var signedEvent = _signer.Sign(unsignedEvent, certificate);
+
+			using var client = _httpClientFactory.CreateClient(nameof(DirectDnitSifenGateway));
+			using var content = new StringContent(signedEvent.ToString(SaveOptions.DisableFormatting), Encoding.UTF8, "text/xml");
+			using var response = await client.PostAsync(_options.ServiceUrl, content, cancellationToken);
+
+			return ParseEventResponse(await response.Content.ReadAsStringAsync(cancellationToken));
+		}
+		catch (Exception ex) when (ex is not ArgumentException and not InvalidOperationException)
+		{
+			return SifenTransmissionResult.Error(ex.Message);
+		}
+	}
+
+	/// <summary>
+	/// Builds, signs and transmits an Inutilización event (#206). Same fresh-id-per-attempt reasoning as
+	/// <see cref="SendCancellationEventAsync"/>.
+	/// </summary>
+	public async Task<SifenTransmissionResult> SendInutilizacionEventAsync(InvoiceNumberVoid numberVoid, CancellationToken cancellationToken = default)
+	{
+		ArgumentNullException.ThrowIfNull(numberVoid);
+
+		try
+		{
+			var companySettings = await _settingsService.GetCompanySettingsAsync(cancellationToken);
+			var data = BuildInutilizacionEventData(numberVoid, companySettings);
+			var unsignedEvent = _xmlBuilder.BuildInutilizacionEvent(data);
+
+			using var certificate = LoadCertificate();
+			var signedEvent = _signer.Sign(unsignedEvent, certificate);
+
+			using var client = _httpClientFactory.CreateClient(nameof(DirectDnitSifenGateway));
+			using var content = new StringContent(signedEvent.ToString(SaveOptions.DisableFormatting), Encoding.UTF8, "text/xml");
+			using var response = await client.PostAsync(_options.ServiceUrl, content, cancellationToken);
+
+			return ParseEventResponse(await response.Content.ReadAsStringAsync(cancellationToken));
+		}
+		catch (Exception ex) when (ex is not ArgumentException and not InvalidOperationException)
+		{
+			return SifenTransmissionResult.Error(ex.Message);
+		}
+	}
+
+	/// <exception cref="InvalidOperationException">Company settings are missing data an event needs, or the invoice has no Cdc yet</exception>
+	private static DteCancellationEventData BuildCancellationEventData(CancellationRequest request, CompanySettings companySettings)
+	{
+		if (string.IsNullOrEmpty(request.Invoice.Cdc))
+			throw new InvalidOperationException($"Invoice '{request.Invoice.Number}' has no Cdc yet; it must be transmitted to SIFEN before it can be cancelled.");
+
+		if (!RucValidator.TryNormalize(companySettings.Ruc, out var normalizedRuc))
+			throw new InvalidOperationException("Company settings RUC is missing or invalid; set it before transmitting to SIFEN.");
+
+		var rucParts = normalizedRuc.Split('-');
+		var emisor = new DteEmisor(
+			rucParts[0],
+			int.Parse(rucParts[1]),
+			companySettings.CompanyName,
+			companySettings.EstablishmentCode,
+			companySettings.PointOfSaleCode,
+			companySettings.EstablishmentAddress,
+			companySettings.TimbradoNumber,
+			DateOnly.FromDateTime(companySettings.TimbradoValidFrom ?? DateTime.Today));
+
+		return new DteCancellationEventData(Guid.NewGuid().ToString("N"), emisor, DateTime.Now, request.Invoice.Cdc, request.Reason);
+	}
+
+	/// <exception cref="InvalidOperationException">Company settings are missing data an event needs</exception>
+	private static DteInutilizacionEventData BuildInutilizacionEventData(InvoiceNumberVoid numberVoid, CompanySettings companySettings)
+	{
+		if (!RucValidator.TryNormalize(companySettings.Ruc, out var normalizedRuc))
+			throw new InvalidOperationException("Company settings RUC is missing or invalid; set it before transmitting to SIFEN.");
+
+		var rucParts = normalizedRuc.Split('-');
+		var emisor = new DteEmisor(
+			rucParts[0],
+			int.Parse(rucParts[1]),
+			companySettings.CompanyName,
+			companySettings.EstablishmentCode,
+			companySettings.PointOfSaleCode,
+			companySettings.EstablishmentAddress,
+			companySettings.TimbradoNumber,
+			DateOnly.FromDateTime(companySettings.TimbradoValidFrom ?? DateTime.Today));
+
+		return new DteInutilizacionEventData(Guid.NewGuid().ToString("N"), emisor, DateTime.Now, SifenDocumentType.FacturaElectronica, numberVoid.RangeStart, numberVoid.RangeEnd, numberVoid.Reason);
+	}
+
+	/// <remarks>
+	/// Same <c>dCodRes</c> parsing as <see cref="ParseResponse"/>; kept separate since an event response carries no
+	/// Cdc to attach to the result (unverified against a real DNIT event response, same flag as <see cref="ParseResponse"/>).
+	/// </remarks>
+	private static SifenTransmissionResult ParseEventResponse(string responseBody)
+	{
+		if (string.IsNullOrWhiteSpace(responseBody)) return SifenTransmissionResult.Error("Empty response from DNIT.");
+
+		return responseBody.Contains("<dCodRes>0260</dCodRes>", StringComparison.Ordinal)
+			? SifenTransmissionResult.Accepted("")
+			: SifenTransmissionResult.Rejected("", responseBody);
+	}
+
 	/// <exception cref="InvalidOperationException">Company settings, the debit note, or its invoice are missing data a DE needs</exception>
 	private DteDebitNoteData BuildDebitNoteData(DebitNote debitNote, CompanySettings companySettings)
 	{
