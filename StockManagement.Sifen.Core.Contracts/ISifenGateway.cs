@@ -27,4 +27,17 @@ public interface ISifenGateway
 	/// contract as <see cref="SendAsync(Invoice, CancellationToken)"/>.
 	/// </summary>
 	Task<SifenTransmissionResult> SendDebitNoteAsync(DebitNote debitNote, CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Builds, signs and transmits a Cancelación event against <paramref name="request"/>'s invoice (#206). Same
+	/// never-throws-for-SIFEN-outcomes contract as <see cref="SendAsync(Invoice, CancellationToken)"/>;
+	/// <see cref="SifenTransmissionResult.Cdc"/> is unused for an event and always null.
+	/// </summary>
+	Task<SifenTransmissionResult> SendCancellationEventAsync(CancellationRequest request, CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Builds, signs and transmits an Inutilización event for <paramref name="numberVoid"/>'s range (#206). Same
+	/// contract as <see cref="SendCancellationEventAsync"/>.
+	/// </summary>
+	Task<SifenTransmissionResult> SendInutilizacionEventAsync(InvoiceNumberVoid numberVoid, CancellationToken cancellationToken = default);
 }

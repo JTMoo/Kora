@@ -58,4 +58,15 @@ public sealed class TransmissionRetryPolicyTests
 		// Assert
 		Assert.AreEqual(InvoiceDate.AddHours(72), next!.Value);
 	}
+
+	[TestMethod]
+	public void NextAttemptBefore_UsesGivenDeadlineInsteadOfInvoiceDatePlus72h()
+	{
+		// Arrange: an explicit 48h-style deadline unrelated to the 72h invoice-date default
+		var deadline = InvoiceDate.AddHours(48);
+
+		// Act + Assert
+		Assert.AreEqual(InvoiceDate.AddMinutes(1), TransmissionRetryPolicy.NextAttemptBefore(deadline, attempts: 0, now: InvoiceDate)!.Value);
+		Assert.IsNull(TransmissionRetryPolicy.NextAttemptBefore(deadline, attempts: 0, now: deadline));
+	}
 }

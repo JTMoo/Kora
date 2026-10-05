@@ -352,4 +352,67 @@ public sealed class DteXmlBuilder : IDteXmlBuilder
 			new XElement(Ns + "dIVA10", iva10),
 			new XElement(Ns + "dTotIVA", iva5 + iva10));
 	}
+
+	/// <remarks>
+	/// Reproduces the <c>rEnviEvento</c>/<c>rGesEve</c>/<c>gGroupGesEve</c>/<c>rEve</c>/<c>gGroupTiEvt</c>/<c>gCanc</c>
+	/// group shape per DNIT's published "Evento de Cancelación" documentation; not checked against the published
+	/// DNIT XSD or a sandbox endpoint in this session (no network access to dnit.gov.py) - same unverified flag as
+	/// <see cref="BuildInvoice"/> (#206).
+	/// </remarks>
+	public XDocument BuildCancellationEvent(DteCancellationEventData data)
+	{
+		ArgumentNullException.ThrowIfNull(data);
+		if (data.TargetCdc.Length != 44 || !data.TargetCdc.All(char.IsDigit))
+			throw new ArgumentException("TargetCdc must be 44 digits.", nameof(data));
+
+		return BuildEventEnvelope(data.EventId, data.Emisor, data.SignatureDate,
+			new XElement(Ns + "gGroupTiEvt",
+				new XElement(Ns + "gCanc",
+					new XElement(Ns + "dCdCDERef", data.TargetCdc),
+					new XElement(Ns + "dMotCan", data.Reason))));
+	}
+
+	/// <remarks>
+	/// Reproduces the <c>rEnviEvento</c>/.../<c>gInut</c> group shape per DNIT's published "Evento de Inutilización"
+	/// documentation; same unverified flag as <see cref="BuildCancellationEvent"/> (#206).
+	/// </remarks>
+	public XDocument BuildInutilizacionEvent(DteInutilizacionEventData data)
+	{
+		ArgumentNullException.ThrowIfNull(data);
+		if (data.RangeStart <= 0 || data.RangeEnd < data.RangeStart)
+			throw new ArgumentException("RangeEnd must be at or after RangeStart, both positive.", nameof(data));
+
+		return BuildEventEnvelope(data.EventId, data.Emisor, data.SignatureDate,
+			new XElement(Ns + "gGroupTiEvt",
+				new XElement(Ns + "gInut",
+					new XElement(Ns + "dEst", data.Emisor.EstablishmentCode),
+					new XElement(Ns + "dPunExp", data.Emisor.PointOfSaleCode),
+					new XElement(Ns + "iTiDE", (int)data.DocumentType),
+					new XElement(Ns + "dNumIn", data.RangeStart.ToString("D7", CultureInfo.InvariantCulture)),
+					new XElement(Ns + "dNumFin", data.RangeEnd.ToString("D7", CultureInfo.InvariantCulture)),
+					new XElement(Ns + "dMotInu", data.Reason))));
+	}
+
+	private XDocument BuildEventEnvelope(string eventId, DteEmisor emisor, DateTime signatureDate, XElement typeGroup)
+	{
+		var eve = new XElement(Ns + "rEve",
+			new XAttribute("Id", "EVE" + eventId),
+			new XElement(Ns + "dFecFirma", signatureDate.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture)),
+			new XElement(Ns + "dVerFor", "150"),
+			new XElement(Ns + "gGroupGeneEve",
+				new XElement(Ns + "Id", eventId),
+				new XElement(Ns + "dFecEve", signatureDate.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture)),
+				new XElement(Ns + "gGroupEmiEvent",
+					new XElement(Ns + "dRucEm", emisor.RucBase),
+					new XElement(Ns + "dDVEmi", emisor.RucCheckDigit),
+					new XElement(Ns + "dNomEmi", emisor.RazonSocial))),
+			typeGroup);
+
+		return new XDocument(
+			new XDeclaration("1.0", "UTF-8", null),
+			new XElement(Ns + "rEnviEvento",
+				new XElement(Ns + "dIdEve", eventId),
+				new XElement(Ns + "rGesEve",
+					new XElement(Ns + "gGroupGesEve", eve))));
+	}
 }

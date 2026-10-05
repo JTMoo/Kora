@@ -19,6 +19,7 @@ internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
 		// DateTime.Now (Kind=Local); Npgsql only accepts UTC for "timestamp with time zone"
 		builder.Property(invoice => invoice.Date).HasColumnType("timestamp without time zone");
 		builder.Property(invoice => invoice.ExpirationDate).HasColumnType("timestamp without time zone");
+		builder.Property(invoice => invoice.AcceptedAt).HasColumnType("timestamp without time zone");
 
 		builder.OwnsMany(invoice => invoice.Items, item =>
 		{
