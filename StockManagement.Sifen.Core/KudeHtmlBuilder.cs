@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net;
 using System.Text;
+using StockManagement.Kernel.Util;
 using StockManagement.Sifen.Core.Contracts;
 
 namespace StockManagement.Sifen.Core;
@@ -21,7 +22,7 @@ public sealed class KudeHtmlBuilder : IKudeHtmlBuilder
 		foreach (var item in data.Items)
 		{
 			var lineTotal = Math.Round(item.Quantity * item.UnitPrice, digits, MidpointRounding.AwayFromZero);
-			var vatAmount = Math.Round(lineTotal * item.VatRatePercent / (100 + item.VatRatePercent), digits, MidpointRounding.AwayFromZero);
+			var vatAmount = VatSplit.VatShare(lineTotal, item.VatRatePercent, digits);
 			total += lineTotal;
 			iva += vatAmount;
 
