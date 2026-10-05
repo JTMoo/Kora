@@ -17,7 +17,7 @@ namespace StockManagement.Infrastructure.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "10.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -132,6 +132,45 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.HasIndex("InvoiceId");
 
                     b.ToTable("CancellationRequests");
+                });
+
+            modelBuilder.Entity("StockManagement.Kernel.Model.CashRegisterSession", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ClosedByUserId")
+                        .HasColumnType("text");
+
+                    b.Property<decimal?>("CountedAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OpenedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("OpenedByUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("OpeningFloat")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CashRegisterSessions");
                 });
 
             modelBuilder.Entity("StockManagement.Kernel.Model.ContingencyCdcRange", b =>
@@ -823,7 +862,7 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string[]>("Permissions")
+                    b.PrimitiveCollection<string[]>("Permissions")
                         .IsRequired()
                         .HasColumnType("text[]");
 
@@ -859,6 +898,49 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("StockManagement.Kernel.Model.CashRegisterSession", b =>
+                {
+                    b.OwnsMany("StockManagement.Kernel.Model.CashMovement", "Movements", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid");
+
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("numeric(18,2)");
+
+                            b1.Property<string>("CashRegisterSessionId")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("CreatedByUserId")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<DateTime>("Date")
+                                .HasColumnType("timestamp without time zone");
+
+                            b1.Property<string>("Reason")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<int>("Type")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("CashRegisterSessionId");
+
+                            b1.ToTable("CashMovements", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("CashRegisterSessionId");
+                        });
+
+                    b.Navigation("Movements");
                 });
 
             modelBuilder.Entity("StockManagement.Kernel.Model.CreditNote", b =>
@@ -1022,6 +1104,9 @@ namespace StockManagement.Infrastructure.Database.Migrations
                             b1.Property<decimal>("Amount")
                                 .HasPrecision(18, 2)
                                 .HasColumnType("numeric(18,2)");
+
+                            b1.Property<string>("CashRegisterSessionId")
+                                .HasColumnType("text");
 
                             b1.Property<DateTime>("Date")
                                 .HasColumnType("timestamp without time zone");
@@ -1210,6 +1295,9 @@ namespace StockManagement.Infrastructure.Database.Migrations
                             b1.Property<decimal>("Amount")
                                 .HasPrecision(18, 2)
                                 .HasColumnType("numeric(18,2)");
+
+                            b1.Property<string>("CashRegisterSessionId")
+                                .HasColumnType("text");
 
                             b1.Property<DateTime>("Date")
                                 .HasColumnType("timestamp without time zone");

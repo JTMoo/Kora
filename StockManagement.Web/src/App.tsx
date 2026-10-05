@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { Invoice } from "./api";
 import { useAuth } from "./auth";
 import { LoginPage } from "./features/auth/LoginPage";
+import { cashRegisterRoute } from "./features/cash-register/route";
 import { customersRoute } from "./features/customers/route";
 import { goodsImportsRoute } from "./features/goods-imports/route";
 import { invoicesRoute } from "./features/invoices/route";
@@ -20,7 +21,7 @@ import { useI18n } from "./i18n";
 import type { NavRoute, View } from "./routes";
 
 // Same order and icons as the WPF menu (FontAwesome Wrench, AddressBook, Inbox)
-const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, goodsImportsRoute, marangatuExportRoute, payablesRoute, reportsRoute, companySettingsRoute, settingsRoute, usersRoute];
+const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, goodsImportsRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, companySettingsRoute, settingsRoute, usersRoute];
 
 export function App()
 {

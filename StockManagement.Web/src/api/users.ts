@@ -11,7 +11,8 @@ export type Permission =
 	| "Suppliers.Read" | "Suppliers.Write"
 	| "GoodsImports.Read" | "GoodsImports.Write"
 	| "Reports.Read"
-	| "Payables.Read" | "Payables.Write";
+	| "Payables.Read" | "Payables.Write"
+	| "CashRegister.Read" | "CashRegister.Write";
 
 export type User = { id: string; username: string; fullName: string; email: string; phone: string; position: string; role: UserRole; permissions: Permission[] };
 

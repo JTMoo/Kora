@@ -8,10 +8,11 @@ using StockManagement.Settings.Core.Contracts;
 namespace StockManagement.Sales.Core;
 
 
-internal class PaymentService(IInvoiceServiceProvider invoiceServiceProvider, ISettingsService settingsService) : IPaymentService
+internal class PaymentService(IInvoiceServiceProvider invoiceServiceProvider, ISettingsService settingsService, ICashRegisterService cashRegisterService) : IPaymentService
 {
 	private readonly IInvoiceServiceProvider _invoiceServiceProvider = invoiceServiceProvider;
 	private readonly ISettingsService _settingsService = settingsService;
+	private readonly ICashRegisterService _cashRegisterService = cashRegisterService;
 
 
 	public decimal GetAmountPaid(Invoice invoice)
@@ -40,7 +41,8 @@ internal class PaymentService(IInvoiceServiceProvider invoiceServiceProvider, IS
 		if (roundedAmount <= 0) return RecordPaymentResult.Failure(RecordPaymentError.InvalidAmount);
 		if (roundedAmount > InvoiceStatusCalculator.AmountDue(invoice)) return RecordPaymentResult.Failure(RecordPaymentError.ExceedsAmountDue);
 
-		var payment = new Payment { Date = date, Amount = roundedAmount, Method = method };
+		var openSession = method == PaymentMethod.Cash ? await _cashRegisterService.GetOpenSessionAsync(cancellationToken) : null;
+		var payment = new Payment { Date = date, Amount = roundedAmount, Method = method, CashRegisterSessionId = openSession?.Id };
 		invoice.Payments.Add(payment);
 		await _invoiceServiceProvider.UpdateInvoiceAsync(invoice, cancellationToken);
 

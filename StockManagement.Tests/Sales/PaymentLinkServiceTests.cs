@@ -213,6 +213,6 @@ public sealed class PaymentLinkServiceTests
 
 	private PaymentLinkService CreateService()
 	{
-		return new PaymentLinkService(_invoices.Object, _paymentLinks.Object, _gateway.Object, new PaymentService(_invoices.Object, _settings.Object));
+		return new PaymentLinkService(_invoices.Object, _paymentLinks.Object, _gateway.Object, new PaymentService(_invoices.Object, _settings.Object, Mock.Of<ICashRegisterService>()));
 	}
 }

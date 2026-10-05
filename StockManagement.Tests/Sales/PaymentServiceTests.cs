@@ -15,6 +15,7 @@ public sealed class PaymentServiceTests
 {
 	private readonly Mock<IInvoiceServiceProvider> _invoices = new();
 	private readonly Mock<ISettingsService> _settings = new();
+	private readonly Mock<ICashRegisterService> _cashRegister = new();
 
 
 	[TestInitialize]
@@ -88,6 +89,37 @@ public sealed class PaymentServiceTests
 	}
 
 	[TestMethod]
+	public async Task RecordPaymentAsync_CashWithOpenSession_TagsPaymentWithSessionId()
+	{
+		// Arrange
+		var invoice = new Invoice { Number = "1", Total = 1000 };
+		_invoices.Setup(provider => provider.GetInvoiceAync("1", It.IsAny<CancellationToken>())).ReturnsAsync(invoice);
+		_cashRegister.Setup(service => service.GetOpenSessionAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new CashRegisterSession { Id = "session-1" });
+
+		// Act
+		var result = await this.CreateService().RecordPaymentAsync("1", 400, PaymentMethod.Cash, DateTime.Now);
+
+		// Assert
+		Assert.AreEqual("session-1", result.Payment!.CashRegisterSessionId);
+	}
+
+	[TestMethod]
+	public async Task RecordPaymentAsync_NonCashMethod_DoesNotTagWithSessionId()
+	{
+		// Arrange
+		var invoice = new Invoice { Number = "1", Total = 1000 };
+		_invoices.Setup(provider => provider.GetInvoiceAync("1", It.IsAny<CancellationToken>())).ReturnsAsync(invoice);
+		_cashRegister.Setup(service => service.GetOpenSessionAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new CashRegisterSession { Id = "session-1" });
+
+		// Act
+		var result = await this.CreateService().RecordPaymentAsync("1", 400, PaymentMethod.BankTransfer, DateTime.Now);
+
+		// Assert
+		Assert.IsNull(result.Payment!.CashRegisterSessionId);
+		_cashRegister.Verify(service => service.GetOpenSessionAsync(It.IsAny<CancellationToken>()), Times.Never);
+	}
+
+	[TestMethod]
 	public async Task RecordPaymentAsync_AmountRoundedToCurrencyDigits_RoundsBeforeValidating()
 	{
 		// Arrange
@@ -158,6 +190,6 @@ public sealed class PaymentServiceTests
 
 	private PaymentService CreateService()
 	{
-		return new PaymentService(_invoices.Object, _settings.Object);
+		return new PaymentService(_invoices.Object, _settings.Object, _cashRegister.Object);
 	}
 }

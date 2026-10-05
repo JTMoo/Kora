@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="cashRegister" xml:space="preserve">
+    <value>Kasse</value>
+  </data>
+  <data name="cashRegisterSessions" xml:space="preserve">
+    <value>Kassensitzungen</value>
+  </data>
+  <data name="openSession" xml:space="preserve">
+    <value>Sitzung eröffnen</value>
+  </data>
+  <data name="closeSession" xml:space="preserve">
+    <value>Sitzung schließen</value>
+  </data>
+  <data name="openingFloat" xml:space="preserve">
+    <value>Anfangsbestand</value>
+  </data>
+  <data name="countedAmount" xml:space="preserve">
+    <value>Gezählter Betrag</value>
+  </data>
+  <data name="expectedAmount" xml:space="preserve">
+    <value>Erwarteter Betrag</value>
+  </data>
+  <data name="difference" xml:space="preserve">
+    <value>Differenz</value>
+  </data>
+  <data name="cashIn" xml:space="preserve">
+    <value>Bareinzahlung</value>
+  </data>
+  <data name="cashOut" xml:space="preserve">
+    <value>Barauszahlung</value>
+  </data>
+  <data name="amount" xml:space="preserve">
+    <value>Betrag</value>
+  </data>
+  <data name="addMovement" xml:space="preserve">
+    <value>Bewegung hinzufügen</value>
+  </data>
+  <data name="movementType" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="openedAt" xml:space="preserve">
+    <value>Eröffnet am</value>
+  </data>
+  <data name="closedAt" xml:space="preserve">
+    <value>Geschlossen am</value>
+  </data>
+  <data name="note" xml:space="preserve">
+    <value>Notiz</value>
+  </data>
+  <data name="openedBy" xml:space="preserve">
+    <value>Eröffnet von</value>
+  </data>
+  <data name="closedBy" xml:space="preserve">
+    <value>Geschlossen von</value>
+  </data>
+  <data name="movements" xml:space="preserve">
+    <value>Bewegungen</value>
+  </data>
+  <data name="noOpenSession" xml:space="preserve">
+    <value>Keine Sitzung geöffnet.</value>
+  </data>
+  <data name="cashRegisterSessionAlreadyOpen" xml:space="preserve">
+    <value>Es ist bereits eine Sitzung geöffnet.</value>
+  </data>
+  <data name="invalidOpeningFloat" xml:space="preserve">
+    <value>Der Anfangsbestand darf nicht negativ sein.</value>
+  </data>
+  <data name="negativeCountedAmount" xml:space="preserve">
+    <value>Der gezählte Betrag darf nicht negativ sein.</value>
+  </data>
+  <data name="closeOutReport" xml:space="preserve">
+    <value>Kassenabschlussbericht</value>
+  </data>
+  <data name="statusOpen" xml:space="preserve">
+    <value>Offen</value>
+  </data>
+  <data name="statusClosed" xml:space="preserve">
+    <value>Geschlossen</value>
+  </data>
+  <data name="viewDetails" xml:space="preserve">
+    <value>Ansehen</value>
+  </data>
+</root>
