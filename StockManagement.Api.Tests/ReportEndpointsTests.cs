@@ -93,6 +93,59 @@ public sealed class ReportEndpointsTests
 	}
 
 	[TestMethod]
+	public async Task GetAccountsReceivableAging_NotYetDue_BucketedAsCurrent()
+	{
+		// Arrange
+		await this.CreateCustomerAndSaleAsync("Ana", "Gomez", 1, 5000m);
+
+		// Act
+		var response = await _client.GetAsync("/api/reports/accounts-receivable-aging");
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+		var body = await response.Content.ReadAsAsync<AccountsReceivableAgingResponse>();
+		Assert.AreEqual(5000m, body.Totals.Current);
+		Assert.AreEqual(0m, body.Totals.Days90Plus);
+		Assert.AreEqual(5000m, body.Totals.Total);
+		var row = body.Items.Single();
+		Assert.AreEqual("Ana Gomez", row.CustomerName);
+		Assert.AreEqual(5000m, row.Current);
+	}
+
+	[TestMethod]
+	public async Task GetAccountsReceivableAging_FarPastDue_BucketedAsDays90Plus()
+	{
+		// Arrange: default payment term is 30 days (SettingsEndpointsTests), so 121 days out is 91 days overdue
+		await this.CreateCustomerAndSaleAsync("Beto", "Diaz", 1, 3000m);
+		var asOf = DateTime.Now.AddDays(121);
+
+		// Act
+		var response = await _client.GetAsync($"/api/reports/accounts-receivable-aging?asOf={Uri.EscapeDataString(asOf.ToString("O"))}");
+
+		// Assert
+		var body = await response.Content.ReadAsAsync<AccountsReceivableAgingResponse>();
+		Assert.AreEqual(0m, body.Totals.Current);
+		Assert.AreEqual(3000m, body.Totals.Days90Plus);
+		Assert.AreEqual(3000m, body.Totals.Total);
+	}
+
+	[TestMethod]
+	public async Task GetAccountsReceivableAging_FullyPaidInvoice_ExcludedFromTotals()
+	{
+		// Arrange
+		var (_, invoiceNumber) = await this.CreateCustomerAndSaleAsync("Carla", "Lopez", 1, 2000m);
+		await _client.PostAsJsonAsync($"/api/invoices/{invoiceNumber}/payments", new { Amount = 2000m, Method = "Cash", Date = DateTime.Now });
+
+		// Act
+		var response = await _client.GetAsync("/api/reports/accounts-receivable-aging");
+
+		// Assert
+		var body = await response.Content.ReadAsAsync<AccountsReceivableAgingResponse>();
+		Assert.AreEqual(0m, body.Totals.Total);
+		Assert.IsFalse(body.Items.Any());
+	}
+
+	[TestMethod]
 	public async Task StandardUser_WithoutReportsRead_CannotViewStockValue()
 	{
 		// Arrange

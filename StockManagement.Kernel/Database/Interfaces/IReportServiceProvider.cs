@@ -14,6 +14,12 @@ public interface IReportServiceProvider
 
 	/// <summary>Same invoices grouped by customer, highest total first, one page at a time</summary>
 	Task<CursorPage<SalesByCustomerRow>> GetSalesByCustomerAsync(DateTime from, DateTime to, string? cursor, int pageSize, CancellationToken cancellationToken = default);
+
+	/// <summary>Open invoices (#55), amount due bucketed by days overdue vs. <paramref name="asOf"/>, summed across every customer</summary>
+	Task<AccountsReceivableAgingTotals> GetAccountsReceivableAgingTotalsAsync(DateTime asOf, CancellationToken cancellationToken = default);
+
+	/// <summary>Same buckets per customer, highest total due first, one page at a time</summary>
+	Task<CursorPage<AccountsReceivableAgingRow>> GetAccountsReceivableAgingByCustomerAsync(DateTime asOf, string? cursor, int pageSize, CancellationToken cancellationToken = default);
 }
 
 
@@ -24,3 +30,10 @@ public sealed record SalesByPeriodRow(DateTime Date, int InvoiceCount, decimal T
 
 
 public sealed record SalesByCustomerRow(int CustomerId, string CustomerName, int InvoiceCount, decimal Total);
+
+
+/// <summary>Amount due split by age: not yet due, 1-30/31-60/61-90 days overdue, 90+ days overdue</summary>
+public sealed record AccountsReceivableAgingTotals(decimal Current, decimal Days1To30, decimal Days31To60, decimal Days61To90, decimal Days90Plus, decimal Total);
+
+
+public sealed record AccountsReceivableAgingRow(int CustomerId, string CustomerName, decimal Current, decimal Days1To30, decimal Days31To60, decimal Days61To90, decimal Days90Plus, decimal Total);
