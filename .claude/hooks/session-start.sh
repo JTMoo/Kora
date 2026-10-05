@@ -5,10 +5,10 @@ if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
 	exit 0
 fi
 
-# .NET 8 SDK (dot.net's own installer is network-blocked here; apt works)
+# .NET 10 SDK (dot.net's own installer is network-blocked here; apt works)
 if ! command -v dotnet >/dev/null 2>&1; then
 	apt-get update -qq
-	apt-get install -y -qq dotnet-sdk-8.0
+	apt-get install -y -qq dotnet-sdk-10.0
 fi
 
 dotnet restore StockManagement.sln
