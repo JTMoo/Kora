@@ -172,3 +172,33 @@ Repo @ main (28a831b). Delta since cycle 3 (6ea47fb) - merged: #167-#171 fixes (
 
 - No dead code to remove
 - Findings above filed as #188-#190
+
+## Cycle 5, 2026-10-05
+
+Repo @ main (91f9614). Delta since cycle 4 (28a831b) - merged: #188/#189/#190 fixes (contingency CDC for Remisión, permission-picker fix, Remisión/goods-import/payment-link/Marangatu web pages), Libro de Compras export (#186), Nota de Débito (#184, ADR-0036), SIFEN KuDE generation (#183, ADR-0035), accounts-receivable aging report (#185).
+
+### Findings (new)
+
+| # | File | What | Issue |
+|---|------|------|-------|
+| 1 | `EfReportServiceProvider.LoadOpenInvoiceAgingAsync` | AR aging report loads *all* non-cancelled invoices+payments into memory, buckets/sorts/pages in C# - doc comment claims "keyset (ADR-0029)" but nothing is DB-pushed, unlike `GetSalesByCustomerAsync` in the same file | #209 |
+| 2 | `DteXmlBuilder.cs:217,248,309,335`, `KudeHtmlBuilder.cs:24`, `KudeVerificationUrlBuilder.cs:22` | VAT-split formula (`amount*rate/(100+rate)`) re-duplicated 6x in Sifen.Core - #171's fix (`VatRateGroup`) is `internal` to Sales.Core, unreachable from Sifen.Core | #210 |
+
+### Verified clean / no new dead code
+
+- Dead code: none found
+- Permissions: all 7 new endpoints (DebitNotes x3, KuDE x2, AR aging, purchase IVA book) have `Permissions()`
+- `CancellationToken`: threaded through all new providers/endpoints
+- DI lifetimes: all new registrations `AddScoped` (`IDebitNoteService`, `IPurchaseIvaBookExportService`, `IKudeHtmlBuilder`/`IKudeQrCodeGenerator`/`IKudeVerificationUrlBuilder`, `IDebitNoteServiceProvider`, `IReportServiceProvider`)
+- resx/Designer.cs: `GoodsImport`, `Reports`, `Invoices` new keys - all 4 locales + Designer.cs in sync (only pre-existing resgen template placeholders differ, unrelated)
+- SIFEN hardcoded-field regression check (#203/#204 class): `KudeDataMapper.ToEmisor`/`ToReceptor`, `DirectDnitSifenGateway`'s debit-note mapping all pull from real `CompanySettings`/`Customer`/`Invoice` data - no new hardcoded/empty DTE fields
+- Atomicity: `EfDebitNoteServiceProvider.AddAsync` wraps DebitNote + PendingDebitNoteTransmission insert in one transaction, rolls back on duplicate-key (same shape as invoices)
+- Money/decimal: `decimal` throughout; no `double`
+- No `async void`, fire-and-forget, empty `catch` (new broad catch in debit-note transmission path correctly excludes `OperationCanceledException`, logs via `ILogger`)
+- Test coverage: DebitNote (service + endpoint + XML builder tests), KuDE (data mapper + HTML builder + QR + verification-URL + endpoint tests), AR aging (3 integration tests covering current/90+/paid-exclusion buckets) all present
+- `PurchaseIvaBookRow.SupplierRuc` always `""` (no RUC field on `Supplier` yet) - honestly flagged in `<remarks>` as unverified/placeholder, not a silent hardcode (not a new instance of the #203/#204 bug class)
+
+### Actions taken this cycle
+
+- No dead code to remove
+- Findings above filed as #209-#210
