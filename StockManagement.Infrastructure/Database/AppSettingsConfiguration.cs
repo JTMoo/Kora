@@ -15,6 +15,7 @@ internal sealed class AppSettingsConfiguration : IEntityTypeConfiguration<AppSet
 		builder.Property(settings => settings.CurrencyDecimalDigits).HasDefaultValue(0);
 		builder.Property(settings => settings.EstablishmentCode).HasDefaultValue("001");
 		builder.Property(settings => settings.PointOfSaleCode).HasDefaultValue("001");
+		builder.Property(settings => settings.EstablishmentAddress).HasDefaultValue("");
 
 		// DateTime.Now (Kind=Local); Npgsql only accepts UTC for "timestamp with time zone"
 		builder.Property(settings => settings.TimbradoValidFrom).HasColumnType("timestamp without time zone");

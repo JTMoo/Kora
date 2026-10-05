@@ -40,7 +40,7 @@ internal class SettingsService(ISettingsServiceProvider settingsServiceProvider)
 
 		var settings = await _settingsServiceProvider.GetSettingsAsync(cancellationToken) ?? new AppSettings();
 		return new CompanySettings(settings.CompanyName, settings.TaxId, settings.Currency, settings.VatRatePercent, settings.PaymentTermInDays, settings.FirstInvoiceNumber, settings.FirstCustomerId, settings.CurrencyDecimalDigits,
-			settings.Ruc, settings.TimbradoNumber, settings.TimbradoValidFrom, settings.TimbradoValidTo, settings.EstablishmentCode, settings.PointOfSaleCode);
+			settings.Ruc, settings.TimbradoNumber, settings.TimbradoValidFrom, settings.TimbradoValidTo, settings.EstablishmentCode, settings.PointOfSaleCode, settings.EstablishmentAddress);
 	}
 
 	public async Task SetCompanySettingsAsync(CompanySettings companySettings, CancellationToken cancellationToken = default)
@@ -64,6 +64,7 @@ internal class SettingsService(ISettingsServiceProvider settingsServiceProvider)
 			settings.TimbradoValidTo = companySettings.TimbradoValidTo;
 			settings.EstablishmentCode = companySettings.EstablishmentCode;
 			settings.PointOfSaleCode = companySettings.PointOfSaleCode;
+			settings.EstablishmentAddress = companySettings.EstablishmentAddress;
 			await _settingsServiceProvider.UpdateSettingsAsync(settings, cancellationToken);
 		}
 		else
@@ -83,7 +84,8 @@ internal class SettingsService(ISettingsServiceProvider settingsServiceProvider)
 				TimbradoValidFrom = companySettings.TimbradoValidFrom,
 				TimbradoValidTo = companySettings.TimbradoValidTo,
 				EstablishmentCode = companySettings.EstablishmentCode,
-				PointOfSaleCode = companySettings.PointOfSaleCode
+				PointOfSaleCode = companySettings.PointOfSaleCode,
+				EstablishmentAddress = companySettings.EstablishmentAddress
 			}, cancellationToken);
 		}
 	}

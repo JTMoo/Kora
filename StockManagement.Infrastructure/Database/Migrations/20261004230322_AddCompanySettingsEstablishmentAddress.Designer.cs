@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StockManagement.Infrastructure.Database;
@@ -11,9 +12,11 @@ using StockManagement.Infrastructure.Database;
 namespace StockManagement.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261004230322_AddCompanySettingsEstablishmentAddress")]
+    partial class AddCompanySettingsEstablishmentAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,50 +216,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("StockManagement.Kernel.Model.DebitNote", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Cdc")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("InvoiceId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Tax")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("Total")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("TransmissionStatus")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InvoiceId");
-
-                    b.HasIndex("Number")
-                        .IsUnique();
-
-                    b.ToTable("DebitNotes");
-                });
-
             modelBuilder.Entity("StockManagement.Kernel.Model.GoodsImportDocument", b =>
                 {
                     b.Property<string>("Id")
@@ -422,33 +381,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.HasIndex("InvoiceId");
 
                     b.ToTable("PaymentLinks");
-                });
-
-            modelBuilder.Entity("StockManagement.Kernel.Model.PendingDebitNoteTransmission", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Attempts")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("DebitNoteId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastError")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("NextAttemptAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DebitNoteId");
-
-                    b.ToTable("PendingDebitNoteTransmissions");
                 });
 
             modelBuilder.Entity("StockManagement.Kernel.Model.PendingRemisionTransmission", b =>
@@ -750,49 +682,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.Navigation("Invoice");
                 });
 
-            modelBuilder.Entity("StockManagement.Kernel.Model.DebitNote", b =>
-                {
-                    b.HasOne("StockManagement.Kernel.Model.Invoice", "Invoice")
-                        .WithMany()
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsMany("StockManagement.Kernel.Model.DebitNoteItem", "Items", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uuid");
-
-                            b1.Property<decimal>("Amount")
-                                .HasColumnType("numeric");
-
-                            b1.Property<string>("DebitNoteId")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Description")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<int>("VatRatePercent")
-                                .HasColumnType("integer");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("DebitNoteId");
-
-                            b1.ToTable("DebitNoteItems", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("DebitNoteId");
-                        });
-
-                    b.Navigation("Invoice");
-
-                    b.Navigation("Items");
-                });
-
             modelBuilder.Entity("StockManagement.Kernel.Model.GoodsImportDocument", b =>
                 {
                     b.HasOne("StockManagement.Kernel.Model.Supplier", "Supplier")
@@ -977,17 +866,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("Invoice");
-                });
-
-            modelBuilder.Entity("StockManagement.Kernel.Model.PendingDebitNoteTransmission", b =>
-                {
-                    b.HasOne("StockManagement.Kernel.Model.DebitNote", "DebitNote")
-                        .WithMany()
-                        .HasForeignKey("DebitNoteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DebitNote");
                 });
 
             modelBuilder.Entity("StockManagement.Kernel.Model.PendingRemisionTransmission", b =>

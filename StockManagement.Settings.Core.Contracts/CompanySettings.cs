@@ -18,5 +18,6 @@ namespace StockManagement.Settings.Core.Contracts;
 /// <param name="TimbradoValidTo">Last day the timbrado may be used</param>
 /// <param name="EstablishmentCode">DNIT establishment code (3 digits), part of the composite invoice number</param>
 /// <param name="PointOfSaleCode">DNIT point-of-sale code (3 digits), part of the composite invoice number</param>
+/// <param name="EstablishmentAddress">Street address of the establishment issuing the DTE (SIFEN <c>dDirEmi</c>)</param>
 public sealed record CompanySettings(string CompanyName, string TaxId, string Currency, decimal VatRatePercent, int PaymentTermInDays, int FirstInvoiceNumber, int FirstCustomerId, int CurrencyDecimalDigits,
-	string Ruc = "", string TimbradoNumber = "", DateTime? TimbradoValidFrom = null, DateTime? TimbradoValidTo = null, string EstablishmentCode = "001", string PointOfSaleCode = "001");
+	string Ruc = "", string TimbradoNumber = "", DateTime? TimbradoValidFrom = null, DateTime? TimbradoValidTo = null, string EstablishmentCode = "001", string PointOfSaleCode = "001", string EstablishmentAddress = "");
