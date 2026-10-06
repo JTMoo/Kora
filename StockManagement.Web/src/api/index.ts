@@ -19,10 +19,12 @@ export * from "./remissionNotes";
 export * from "./payments";
 export * from "./payables";
 export * from "./cashRegister";
+export * from "./feedback";
 
 import { authApi } from "./auth";
 import { companySettingsApi } from "./companySettings";
 import { customersApi } from "./customers";
+import { feedbackApi } from "./feedback";
 import { goodsImportApi } from "./goodsImports";
 import { importApi } from "./import";
 import { invoicesApi } from "./invoices";
@@ -55,5 +57,6 @@ export const api = {
 	...remissionNotesApi,
 	...paymentsApi,
 	...payablesApi,
-	...cashRegisterApi
+	...cashRegisterApi,
+	...feedbackApi
 };

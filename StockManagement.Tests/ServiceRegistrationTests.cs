@@ -5,6 +5,8 @@ using StockManagement.Auth.Core;
 using StockManagement.Auth.Core.Contracts;
 using StockManagement.Customers.Core;
 using StockManagement.Customers.Core.Contracts;
+using StockManagement.Feedback.Core;
+using StockManagement.Feedback.Core.Contracts;
 using StockManagement.Import.Core;
 using StockManagement.Import.Core.Contracts;
 using StockManagement.Kernel.Database.Interfaces;
@@ -49,7 +51,8 @@ public sealed class ServiceRegistrationTests
 			.AddCustomersCore()
 			.AddImportCore()
 			.AddAuthCore()
-			.AddSettingsCore();
+			.AddSettingsCore()
+			.AddFeedbackCore(new ConfigurationBuilder().Build());
 
 		// Act
 		using var provider = services.BuildServiceProvider(new ServiceProviderOptions() { ValidateOnBuild = true, ValidateScopes = true });
@@ -71,5 +74,6 @@ public sealed class ServiceRegistrationTests
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IImportBatchService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IAuthService>());
 		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<ISettingsService>());
+		Assert.IsNotNull(scope.ServiceProvider.GetRequiredService<IFeedbackService>());
 	}
 }
