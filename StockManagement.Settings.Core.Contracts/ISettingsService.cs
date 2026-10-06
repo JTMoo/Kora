@@ -24,4 +24,14 @@ public interface ISettingsService
 	/// Stores the company's settings
 	/// </summary>
 	public Task SetCompanySettingsAsync(CompanySettings settings, CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// The printer settings used for receipts, or defaults if none were stored yet
+	/// </summary>
+	public Task<PrinterSettings> GetPrinterSettingsAsync(CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Stores the printer settings used for receipts
+	/// </summary>
+	public Task SetPrinterSettingsAsync(PrinterSettings settings, CancellationToken cancellationToken = default);
 }

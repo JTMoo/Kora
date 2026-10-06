@@ -41,6 +41,22 @@ public sealed class KudeHtmlBuilderTests
 	}
 
 	[TestMethod]
+	public void BuildInvoice_TicketFormat_UsesPaperWidth()
+	{
+		// Arrange
+		var data = new DteInvoiceData(
+			ValidCdc, Emisor, new DteReceptor("Juan Perez", "80012345", 6, null),
+			new DateTime(2026, 10, 3, 9, 30, 0), 123,
+			[new DteItem("SKU-1", "Widget", 2, 1000, 10)], CurrencyDecimalDigits: 0);
+
+		// Act
+		var html = new KudeHtmlBuilder().BuildInvoice(data, "data:image/png;base64,ABC", KudeFormat.Ticket, 58);
+
+		// Assert
+		StringAssert.Contains(html, "width: 58mm");
+	}
+
+	[TestMethod]
 	public void BuildRemision_ValidData_ContainsCdcAndItem()
 	{
 		// Arrange

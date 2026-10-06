@@ -140,6 +140,39 @@ public sealed class SettingsServiceTests
 		_settings.Verify(provider => provider.AddSettingsAsync(It.IsAny<AppSettings>(), It.IsAny<CancellationToken>()), Times.Never);
 	}
 
+	[TestMethod]
+	public async Task GetPrinterSettingsAsync_NothingStored_ReturnsDefaults()
+	{
+		// Arrange
+		_settings.Setup(provider => provider.GetSettingsAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AppSettings?)null);
+
+		// Act
+		var result = await this.CreateService().GetPrinterSettingsAsync();
+
+		// Assert
+		Assert.AreEqual(new PrinterSettings("", 80, KudeFormat.Ticket, false), result);
+	}
+
+	[TestMethod]
+	public async Task SetPrinterSettingsAsync_AlreadyStored_UpdatesExisting()
+	{
+		// Arrange
+		var stored = new AppSettings { Language = AvailableLanguages.Spanish };
+		_settings.Setup(provider => provider.GetSettingsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(stored);
+		var settings = new PrinterSettings("Front counter", 58, KudeFormat.Ticket, true);
+
+		// Act
+		await this.CreateService().SetPrinterSettingsAsync(settings);
+
+		// Assert
+		Assert.AreEqual("Front counter", stored.DefaultPrinterName);
+		Assert.AreEqual(58, stored.ReceiptPaperWidthMm);
+		Assert.AreEqual(KudeFormat.Ticket, stored.KudeFormat);
+		Assert.IsTrue(stored.PrintOnSaleComplete);
+		Assert.AreEqual(AvailableLanguages.Spanish, stored.Language);
+		_settings.Verify(provider => provider.UpdateSettingsAsync(stored, It.IsAny<CancellationToken>()), Times.Once);
+	}
+
 	private SettingsService CreateService()
 	{
 		return new SettingsService(_settings.Object);
