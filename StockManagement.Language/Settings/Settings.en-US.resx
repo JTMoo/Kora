@@ -210,4 +210,31 @@
   <data name="timbradoDateRangeInvalid" xml:space="preserve">
     <value>Timbrado valid-to date cannot be before valid-from.</value>
   </data>
+  <data name="printerSettings" xml:space="preserve">
+    <value>Printer settings</value>
+  </data>
+  <data name="defaultPrinterName" xml:space="preserve">
+    <value>Default printer name</value>
+  </data>
+  <data name="receiptPaperWidthMm" xml:space="preserve">
+    <value>Receipt paper width (mm)</value>
+  </data>
+  <data name="kudeFormat" xml:space="preserve">
+    <value>KuDE format</value>
+  </data>
+  <data name="ticket" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="a4" xml:space="preserve">
+    <value>A4</value>
+  </data>
+  <data name="printOnSaleComplete" xml:space="preserve">
+    <value>Print receipt automatically after sale</value>
+  </data>
+  <data name="printTestPage" xml:space="preserve">
+    <value>Print test page</value>
+  </data>
+  <data name="receiptPaperWidthMmOutOfRange" xml:space="preserve">
+    <value>Receipt paper width must be between 20 and 300 mm.</value>
+  </data>
 </root>

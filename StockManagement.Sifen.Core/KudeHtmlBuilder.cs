@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net;
 using System.Text;
+using StockManagement.Kernel.Model.Types;
 using StockManagement.Kernel.Util;
 using StockManagement.Sifen.Core.Contracts;
 
@@ -10,7 +11,7 @@ namespace StockManagement.Sifen.Core;
 /// <inheritdoc cref="IKudeHtmlBuilder"/>
 public sealed class KudeHtmlBuilder : IKudeHtmlBuilder
 {
-	public string BuildInvoice(DteInvoiceData data, string qrDataUri)
+	public string BuildInvoice(DteInvoiceData data, string qrDataUri, KudeFormat format = KudeFormat.A4, int paperWidthMm = 80)
 	{
 		ArgumentNullException.ThrowIfNull(data);
 		ArgumentException.ThrowIfNullOrEmpty(qrDataUri);
@@ -51,7 +52,7 @@ public sealed class KudeHtmlBuilder : IKudeHtmlBuilder
 			</div>
 			""";
 
-		return Wrap("Factura Electrónica", data.Cdc, data.Emisor, body, qrDataUri);
+		return Wrap("Factura Electrónica", data.Cdc, data.Emisor, body, qrDataUri, format, paperWidthMm);
 	}
 
 	public string BuildRemision(DteRemisionData data, string qrDataUri)
@@ -85,8 +86,7 @@ public sealed class KudeHtmlBuilder : IKudeHtmlBuilder
 		return Wrap("Nota de Remisión Electrónica", data.Cdc, data.Emisor, body, qrDataUri);
 	}
 
-	private const string Css = """
-		body { font-family: Arial, sans-serif; font-size: 12px; color: #111; margin: 24px; }
+	private const string BaseCss = """
 		h1 { font-size: 16px; margin: 0 0 4px; }
 		.header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 8px; }
 		.header img { width: 110px; height: 110px; }
@@ -99,10 +99,17 @@ public sealed class KudeHtmlBuilder : IKudeHtmlBuilder
 		@media print { body { margin: 0; } }
 		""";
 
-	private static string Wrap(string docTypeLabel, string cdc, DteEmisor emisor, string bodyHtml, string qrDataUri)
+	private static string A4Css => "body { font-family: Arial, sans-serif; font-size: 12px; color: #111; margin: 24px; }\n" + BaseCss;
+
+	private static string TicketCss(int paperWidthMm) => $"body {{ font-family: Arial, sans-serif; font-size: 10px; color: #111; margin: 4px; width: {paperWidthMm}mm; }}\n" +
+		".header { flex-direction: column; }\n.header img { width: 72px; height: 72px; }\n" + BaseCss;
+
+	private static string Wrap(string docTypeLabel, string cdc, DteEmisor emisor, string bodyHtml, string qrDataUri, KudeFormat format = KudeFormat.A4, int paperWidthMm = 80)
 	{
 		var cdcGrouped = string.Join(" ", Enumerable.Range(0, cdc.Length / 4 + (cdc.Length % 4 == 0 ? 0 : 1))
 			.Select(i => cdc.Substring(i * 4, Math.Min(4, cdc.Length - i * 4))));
+
+		var css = format == KudeFormat.Ticket ? TicketCss(paperWidthMm) : A4Css;
 
 		return $"""
 			<!doctype html>
@@ -111,7 +118,7 @@ public sealed class KudeHtmlBuilder : IKudeHtmlBuilder
 			<meta charset="utf-8"/>
 			<title>{Enc(docTypeLabel)}</title>
 			<style>
-			{Css}
+			{css}
 			</style>
 			</head>
 			<body>

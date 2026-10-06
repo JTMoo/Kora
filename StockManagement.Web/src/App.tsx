@@ -13,7 +13,7 @@ import { remissionNotesRoute } from "./features/remission-notes/route";
 import { salesRoute } from "./features/sales/route";
 import { reportsRoute } from "./features/reports/route";
 import { CommandPalette } from "./features/search/CommandPalette";
-import { companySettingsRoute, settingsRoute } from "./features/settings/routes";
+import { companySettingsRoute, printerSettingsRoute, settingsRoute } from "./features/settings/routes";
 import { stockItemsRoute } from "./features/stock-items/route";
 import { suppliersRoute } from "./features/suppliers/route";
 import { usersRoute } from "./features/users/route";
@@ -21,7 +21,7 @@ import { useI18n } from "./i18n";
 import type { NavRoute, View } from "./routes";
 
 // Same order and icons as the WPF menu (FontAwesome Wrench, AddressBook, Inbox)
-const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, goodsImportsRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, companySettingsRoute, settingsRoute, usersRoute];
+const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, goodsImportsRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, companySettingsRoute, printerSettingsRoute, settingsRoute, usersRoute];
 
 export function App()
 {

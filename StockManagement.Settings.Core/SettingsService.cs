@@ -89,4 +89,37 @@ internal class SettingsService(ISettingsServiceProvider settingsServiceProvider)
 			}, cancellationToken);
 		}
 	}
+
+	public async Task<PrinterSettings> GetPrinterSettingsAsync(CancellationToken cancellationToken = default)
+	{
+		cancellationToken.ThrowIfCancellationRequested();
+
+		var settings = await _settingsServiceProvider.GetSettingsAsync(cancellationToken) ?? new AppSettings();
+		return new PrinterSettings(settings.DefaultPrinterName, settings.ReceiptPaperWidthMm, settings.KudeFormat, settings.PrintOnSaleComplete);
+	}
+
+	public async Task SetPrinterSettingsAsync(PrinterSettings printerSettings, CancellationToken cancellationToken = default)
+	{
+		cancellationToken.ThrowIfCancellationRequested();
+		ArgumentNullException.ThrowIfNull(printerSettings);
+
+		if (await _settingsServiceProvider.GetSettingsAsync(cancellationToken) is AppSettings settings)
+		{
+			settings.DefaultPrinterName = printerSettings.DefaultPrinterName;
+			settings.ReceiptPaperWidthMm = printerSettings.ReceiptPaperWidthMm;
+			settings.KudeFormat = printerSettings.KudeFormat;
+			settings.PrintOnSaleComplete = printerSettings.PrintOnSaleComplete;
+			await _settingsServiceProvider.UpdateSettingsAsync(settings, cancellationToken);
+		}
+		else
+		{
+			await _settingsServiceProvider.AddSettingsAsync(new AppSettings
+			{
+				DefaultPrinterName = printerSettings.DefaultPrinterName,
+				ReceiptPaperWidthMm = printerSettings.ReceiptPaperWidthMm,
+				KudeFormat = printerSettings.KudeFormat,
+				PrintOnSaleComplete = printerSettings.PrintOnSaleComplete
+			}, cancellationToken);
+		}
+	}
 }

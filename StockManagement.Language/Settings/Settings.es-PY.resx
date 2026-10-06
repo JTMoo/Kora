@@ -210,4 +210,31 @@
   <data name="timbradoDateRangeInvalid" xml:space="preserve">
     <value>La fecha de timbrado válido hasta no puede ser anterior a válido desde.</value>
   </data>
+  <data name="printerSettings" xml:space="preserve">
+    <value>Configuración de impresora</value>
+  </data>
+  <data name="defaultPrinterName" xml:space="preserve">
+    <value>Impresora predeterminada</value>
+  </data>
+  <data name="receiptPaperWidthMm" xml:space="preserve">
+    <value>Ancho de papel del recibo (mm)</value>
+  </data>
+  <data name="kudeFormat" xml:space="preserve">
+    <value>Formato de KuDE</value>
+  </data>
+  <data name="ticket" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="a4" xml:space="preserve">
+    <value>A4</value>
+  </data>
+  <data name="printOnSaleComplete" xml:space="preserve">
+    <value>Imprimir recibo automáticamente al completar la venta</value>
+  </data>
+  <data name="printTestPage" xml:space="preserve">
+    <value>Imprimir página de prueba</value>
+  </data>
+  <data name="receiptPaperWidthMmOutOfRange" xml:space="preserve">
+    <value>El ancho de papel del recibo debe estar entre 20 y 300 mm.</value>
+  </data>
 </root>
