@@ -1,12 +1,15 @@
 import { LogOut, Menu, Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { Invoice } from "./api";
+import { api, setLicenseLockedHandler, type Invoice, type LicenseInfo } from "./api";
 import { useAuth } from "./auth";
 import { LoginPage } from "./features/auth/LoginPage";
 import { cashRegisterRoute } from "./features/cash-register/route";
 import { customersRoute } from "./features/customers/route";
 import { goodsImportsRoute } from "./features/goods-imports/route";
 import { invoicesRoute } from "./features/invoices/route";
+import { LicenseBanner } from "./features/licensing/LicenseBanner";
+import { LicenseLockedScreen } from "./features/licensing/LicenseLockedScreen";
+import { licensingRoute } from "./features/licensing/route";
 import { marangatuExportRoute } from "./features/marangatu/route";
 import { payablesRoute } from "./features/payables/route";
 import { remissionNotesRoute } from "./features/remission-notes/route";
@@ -19,23 +22,42 @@ import { suppliersRoute } from "./features/suppliers/route";
 import { usersRoute } from "./features/users/route";
 import { useI18n } from "./i18n";
 import type { NavRoute, View } from "./routes";
+import { useLoad } from "./useLoad";
 
 // Same order and icons as the WPF menu (FontAwesome Wrench, AddressBook, Inbox)
-const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, goodsImportsRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, companySettingsRoute, settingsRoute, usersRoute];
+const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, goodsImportsRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, companySettingsRoute, settingsRoute, usersRoute, licensingRoute];
 
 export function App()
 {
+	const { username } = useAuth();
+
+	// A separate component, mounted only once logged in: its hooks (the license fetch below) must not run,
+	// and so must not fetch with a missing auth token, while the login screen is still showing.
+	if (!username) return <LoginPage />;
+	return <AuthenticatedApp />;
+}
+
+function AuthenticatedApp()
+{
 	const { t } = useI18n();
-	const { username, logout, hasPermission } = useAuth();
+	const { logout, hasPermission } = useAuth();
 	const [view, setView] = useState<View>("stockItems");
 	const [invoice, setInvoice] = useState<Invoice>();
 	const [menuExtended, setMenuExtended] = useState(true);
 	const [paletteOpen, setPaletteOpen] = useState(false);
+	const { data: license, setData: setLicense } = useLoad(api.getLicense);
+	const [forceLocked, setForceLocked] = useState(false);
 
 	function onSold(sold: Invoice)
 	{
 		setInvoice(sold);
 		setView("invoices");
+	}
+
+	function onLicenseActivated(activated: LicenseInfo)
+	{
+		setLicense(activated);
+		setForceLocked(false);
 	}
 
 	const visibleRoutes = routes.filter(route => !route.permission || hasPermission(route.permission));
@@ -54,7 +76,14 @@ export function App()
 		return () => window.removeEventListener("keydown", onKeyDown);
 	}, []);
 
-	if (!username) return <LoginPage />;
+	// Any API call can trip the 402 lockout mid-session, not just the GET /license poll below
+	useEffect(() =>
+	{
+		setLicenseLockedHandler(() => setForceLocked(true));
+		return () => setLicenseLockedHandler(null);
+	}, []);
+
+	if (forceLocked || license?.status === "Locked") return <LicenseLockedScreen onActivated={onLicenseActivated} />;
 
 	const activeRoute = visibleRoutes.find(route => route.name === view) ?? visibleRoutes[0];
 
@@ -83,7 +112,10 @@ export function App()
 					</button>
 				</div>
 			</nav>
-			<main>{activeRoute.render({ invoice, onSold })}</main>
+			<div className="content">
+				{license && <LicenseBanner license={license} onManage={() => setView("licensing")} />}
+				<main>{activeRoute.render({ invoice, onSold })}</main>
+			</div>
 		</div>
 	);
 }

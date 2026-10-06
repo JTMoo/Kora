@@ -10,7 +10,14 @@ h1, h2, h3, h4 { margin: 0; font-weight: inherit; font-size: inherit; }
 
 /* Shell: Sidebar fixed left, content right */
 .shell { display: grid; grid-template-columns: auto 1fr; min-height: 100vh; }
+.content { display: flex; flex-direction: column; min-width: 0; }
 main { padding: var(--space-7); min-width: 0; }
+
+/* License banner: trial/grace countdown above the shell content */
+.license-banner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-7); font-size: 14px; font-weight: 600; }
+.license-banner.warning { background: var(--warning-subtle); color: var(--warning); }
+.license-banner.danger { background: var(--danger-subtle); color: var(--danger); }
+.license-banner button.quiet { color: inherit; }
 
 /* Sidebar */
 .sidebar { display: flex; flex-direction: column; width: calc(4 * var(--space-7)); box-sizing: border-box; padding: var(--space-3); background: var(--surface-raised); border-right: 1px solid var(--border); }

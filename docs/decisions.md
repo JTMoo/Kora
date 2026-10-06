@@ -43,6 +43,7 @@ Generated from `docs/adr/*.md` by `scripts/generate-adr-index.sh`. Don't hand-ed
 | [0034](adr/0034-open-invoice-import.md) | Open invoices as an import target | Proposed |
 | [0035](adr/0035-kude-generation.md) | KuDE generation for SIFEN documents | Accepted |
 | [0036](adr/0036-debit-notes.md) | Nota de Débito Electrónica | Proposed |
+| [0041](adr/0041-licensing.md) | Licensing (trial + subscription) | Proposed |
 <!-- ADR-INDEX:END -->
 
 ## Standing decisions
