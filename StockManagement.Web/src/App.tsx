@@ -1,7 +1,8 @@
-import { LogOut, Menu, Search } from "lucide-react";
+import { LogOut, MessageSquare, Menu, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, setLicenseLockedHandler, type Invoice, type LicenseInfo } from "./api";
 import { useAuth } from "./auth";
+import { useFeedback } from "./Feedback";
 import { LoginPage } from "./features/auth/LoginPage";
 import { cashRegisterRoute } from "./features/cash-register/route";
 import { customersRoute } from "./features/customers/route";
@@ -41,6 +42,7 @@ function AuthenticatedApp()
 {
 	const { t } = useI18n();
 	const { logout, hasPermission } = useAuth();
+	const { openFeedbackDialog } = useFeedback();
 	const [view, setView] = useState<View>("stockItems");
 	const [invoice, setInvoice] = useState<Invoice>();
 	const [menuExtended, setMenuExtended] = useState(true);
@@ -107,6 +109,9 @@ function AuthenticatedApp()
 					))}
 				</div>
 				<div className="sidebar-bottom">
+					<button className="sidebar-item" aria-label={t("reportProblem")} onClick={openFeedbackDialog}>
+						<MessageSquare />{menuExtended && <span>{t("reportProblem")}</span>}
+					</button>
 					<button className="sidebar-item" aria-label={t("logout")} onClick={logout}>
 						<LogOut />{menuExtended && <span>{t("logout")}</span>}
 					</button>

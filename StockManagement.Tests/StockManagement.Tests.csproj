@@ -24,6 +24,7 @@
     <ProjectReference Include="..\StockManagement.Sifen.Core\StockManagement.Sifen.Core.csproj" />
     <ProjectReference Include="..\StockManagement.Licensing.Core\StockManagement.Licensing.Core.csproj" />
     <ProjectReference Include="..\StockManagement.Kernel\StockManagement.Kernel.csproj" />
+    <ProjectReference Include="..\StockManagement.Feedback.Core\StockManagement.Feedback.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

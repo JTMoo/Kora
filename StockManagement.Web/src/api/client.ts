@@ -15,12 +15,13 @@ export type ApiFailure =
 
 export type Result<T> = { ok: true; value: T } | { ok: false; failure: ApiFailure };
 
-type ProblemDetails = { errors?: { reason: string }[] };
+type ProblemDetails = { errors?: { reason: string }[]; correlationId?: string };
 
 // Set by AuthProvider; kept out of React so the api client has no framework dependency
 let authToken: string | null = null;
 let onUnauthorized: (() => void) | null = null;
 let onLicenseLocked: (() => void) | null = null;
+let onServerError: ((correlationId: string) => void) | null = null;
 
 export function setAuthToken(token: string | null)
 {
@@ -36,6 +37,12 @@ export function setUnauthorizedHandler(handler: (() => void) | null)
 export function setLicenseLockedHandler(handler: (() => void) | null)
 {
 	onLicenseLocked = handler;
+}
+
+// Set by FeedbackProvider: offers to send a report for an unhandled 5xx (ADR-0042)
+export function setServerErrorHandler(handler: ((correlationId: string) => void) | null)
+{
+	onServerError = handler;
 }
 
 export function authHeaders(): Record<string, string>
@@ -116,5 +123,10 @@ async function handleResponse<T>(fetchCall: () => Promise<Response>): Promise<Re
 	}
 	if (response.status === 400) return { ok: false, failure: { kind: "invalid", codes: ((await response.json()) as ProblemDetails).errors?.map(error => error.reason) ?? [] } };
 	if (response.status === 422) return { ok: false, failure: { kind: "invalidState", reason: ((await response.json()) as { reason: string }).reason } };
+	if (response.status >= 500)
+	{
+		const body = await response.json().catch(() => undefined) as ProblemDetails | undefined;
+		onServerError?.(body?.correlationId ?? crypto.randomUUID());
+	}
 	return { ok: false, failure: { kind: "unexpected" } };
 }
