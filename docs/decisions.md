@@ -45,6 +45,7 @@ Generated from `docs/adr/*.md` by `scripts/generate-adr-index.sh`. Don't hand-ed
 | [0036](adr/0036-debit-notes.md) | Nota de Débito Electrónica | Proposed |
 | [0041](adr/0041-licensing.md) | Licensing (trial + subscription) | Proposed |
 | [0042](adr/0042-feedback-and-error-reporting.md) | Feedback and error reporting | Proposed |
+| [0044](adr/0044-licensing-security-and-discounts.md) | Licensing security hardening and owner discounts | Proposed |
 <!-- ADR-INDEX:END -->
 
 ## Standing decisions

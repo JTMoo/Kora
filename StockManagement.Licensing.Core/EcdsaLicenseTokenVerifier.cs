@@ -9,7 +9,9 @@ namespace StockManagement.Licensing.Core;
 
 /// <summary>
 /// Verifies license keys signed by the (future, out of scope) license server's ECDsa P-256 private key.
-/// Key format: <c>base64url(payloadJson).base64url(signature)</c>, ES256-style. See ADR-0041.
+/// Key format: <c>kid.base64url(payloadJson).base64url(signature)</c>, ES256-style. <c>kid</c> selects which
+/// configured public key verifies the signature, so the server can rotate keys (see ADR-0044) without
+/// invalidating keys already issued under an older one.
 /// </summary>
 /// <remarks>ECDsa over Ed25519: both are in the BCL (<see cref="System.Security.Cryptography"/>) on every platform Kora ships on; Ed25519 needs a third-party library.</remarks>
 internal sealed class EcdsaLicenseTokenVerifier(IOptions<LicensingOptions> options) : ILicenseTokenVerifier
@@ -20,19 +22,24 @@ internal sealed class EcdsaLicenseTokenVerifier(IOptions<LicensingOptions> optio
 	public bool TryVerify(string licenseKey, out LicenseToken? token)
 	{
 		token = null;
-		if (string.IsNullOrEmpty(_options.PublicKey)) return false;
 
 		var parts = licenseKey.Split('.');
-		if (parts.Length != 2) return false;
+		if (parts.Length != 3) return false;
+		var (kid, encodedPayload, encodedSignature) = (parts[0], parts[1], parts[2]);
 
-		if (!TryDecodeBase64Url(parts[0], out var payloadBytes) || !TryDecodeBase64Url(parts[1], out var signatureBytes)) return false;
+		if (!_options.PublicKeys.TryGetValue(kid, out var publicKey) || string.IsNullOrEmpty(publicKey)) return false;
+		if (!TryDecodeBase64Url(encodedPayload, out var payloadBytes) || !TryDecodeBase64Url(encodedSignature, out var signatureBytes)) return false;
 
 		using var ecdsa = ECDsa.Create();
 		try
 		{
-			ecdsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(_options.PublicKey), out _);
+			ecdsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(publicKey), out _);
 		}
 		catch (CryptographicException)
+		{
+			return false;
+		}
+		catch (FormatException)
 		{
 			return false;
 		}
@@ -63,8 +70,9 @@ internal sealed class EcdsaLicenseTokenVerifier(IOptions<LicensingOptions> optio
 		{
 			var payload = JsonSerializer.Deserialize<TokenPayload>(payloadBytes);
 			if (payload is null || string.IsNullOrEmpty(payload.Licensee)) return false;
+			if (payload.DiscountPercent is < 0 or > 100) return false;
 
-			token = new LicenseToken(payload.Licensee, payload.Plan, payload.IssuedAtUtc, payload.ExpiresAtUtc);
+			token = new LicenseToken(payload.Licensee, payload.Plan, payload.IssuedAtUtc, payload.ExpiresAtUtc, payload.MachineId, payload.DiscountPercent, payload.EffectivePricePyg);
 			return true;
 		}
 		catch (JsonException)
@@ -73,5 +81,5 @@ internal sealed class EcdsaLicenseTokenVerifier(IOptions<LicensingOptions> optio
 		}
 	}
 
-	private sealed record TokenPayload(string Licensee, LicensePlan Plan, DateTime IssuedAtUtc, DateTime ExpiresAtUtc);
+	private sealed record TokenPayload(string Licensee, LicensePlan Plan, DateTime IssuedAtUtc, DateTime ExpiresAtUtc, string? MachineId = null, int? DiscountPercent = null, int? EffectivePricePyg = null);
 }
