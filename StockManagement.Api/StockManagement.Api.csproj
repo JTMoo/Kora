@@ -16,6 +16,7 @@
     <ProjectReference Include="..\StockManagement.Infrastructure\StockManagement.Infrastructure.csproj" />
     <ProjectReference Include="..\StockManagement.Import.Core\StockManagement.Import.Core.csproj" />
     <ProjectReference Include="..\StockManagement.Sifen.Core\StockManagement.Sifen.Core.csproj" />
+    <ProjectReference Include="..\StockManagement.Feedback.Core\StockManagement.Feedback.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
