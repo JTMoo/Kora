@@ -253,4 +253,32 @@ Repo @ main (13833ea). Delta since cycle 6 (5509f3e): #221 (.NET 10 upgrade), #2
 ### Actions taken this cycle
 
 - #224-#226 fixed directly (small, same PR): `CashRegisterService` now rounds via `ISettingsService`; `ListCashRegisterSessionsEndpoint` batches expected-amount lookup through a new `GetExpectedAmountsAsync`/`GetCashPaymentsTotalsAsync` (one query instead of N); `X509Certificate2` ctors replaced with `X509CertificateLoader`
+
+## Cycle 8, 2026-10-07
+
+Repo @ main (47616d8). Delta since cycle 7: #228 (printer settings #220), #229 (licensing, ADR-0041), #230 (feedback/error reporting, ADR-0042). Extra scrutiny: relay/token handling security, middleware ordering/bypass, permission checks on new endpoints, N+1, rounding, resx/i18n drift, test gaps.
+
+### Findings (new)
+
+| # | File | What | Issue |
+|---|------|------|-------|
+| 1 | `LicenseEnforcementMiddleware.RequiresLicense` | Exempted only `/api/auth`/`/api/license` - `/api/feedback` was blocked with 402 once `Locked`, so a locked-out user had no way to report it (contradicts ADR-0042: manual report + global error handler share this one path). `LicenseLockedScreen` also had no "report a problem" entry point at all. | #231 (fixed this cycle) |
+
+### Verified clean / no new dead code
+
+- Dead code: none found in `StockManagement.Licensing.Core(.Contracts)`, `StockManagement.Feedback.Core(.Contracts)`, `StockManagement.Feedback.Relay` - every type/member has a live caller
+- `EcdsaLicenseTokenVerifier`: public key empty → fails closed (no key, no activation); signature verified before payload trusted; expiry checked against `TimeProvider`, not wall clock, so tests are deterministic
+- `GetLicenseStatusEndpoint` intentionally has no `.Permissions()` call - FastEndpoints requires authentication by default (confirmed: only `LoginEndpoint` calls `AllowAnonymous()` repo-wide), so this is "any authenticated user", not "no auth", matching its own doc comment
+- Middleware order (`Program.cs`): `UseAuthentication` → `UseAuthorization` → `LicenseEnforcementMiddleware` → FastEndpoints - no bypass of auth via the license check
+- `GetPrinterSettingsEndpoint`/`UpdatePrinterSettingsEndpoint`: `Settings.Read`/`Settings.Write` gates present and already in `permissionOptions.ts` (cycle-4's #189 gap class not repeated); `ReceiptPaperWidthMm` validated `InclusiveBetween(20, 300)`
+- `StockManagement.Feedback.Relay`: GitHub PAT never reaches a customer install (ADR-0042 design C); shared-secret header + per-IP rate limit is a known, documented limitation (ADR-0042 Consequences), not re-reported; message/log excerpt truncated server-side before leaving `FeedbackService`, no auth headers/tokens in the report body
+- No rounding/money involved in this delta (printer settings, license dates/plans, feedback text - no currency fields)
+- No N+1 introduced: license status is a single-row read per request, printer settings is a single-row read/write
+- resx/Designer.cs: `Licensing`/`Feedback` resx sets present in all 3 cultures with matching Designer.cs, no drift
+- `dotnet build StockManagement.sln`: 0 errors, only pre-existing `SharpCompress`/`Snappier` advisories (cycle-6, out of scope)
+
+### Actions taken this cycle
+
+- #231 fixed directly (small, same PR): `/api/feedback` exempted from `LicenseEnforcementMiddleware`; "Report a problem" button added to `LicenseLockedScreen`; new tests `LicenseEndpointsTests.Locked_FeedbackEndpointStillWorks`, `LicenseLockedScreen.test.tsx`
+- No dead code to remove
 - No dead code to remove

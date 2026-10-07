@@ -112,6 +112,20 @@ public sealed class LicenseEndpointsTests
 		Assert.AreEqual(LicenseStatus.Locked, (await licenseResponse.Content.ReadAsAsync<LicenseStatusResponse>()).Status);
 	}
 
+	[TestMethod]
+	public async Task Locked_FeedbackEndpointStillWorks()
+	{
+		// Arrange: trial + grace long lapsed, no activation - a locked-out user must still be able to report it (ADR-0042)
+		var provider = _factory.ScopedServices.GetRequiredService<ILicenseServiceProvider>();
+		await provider.AddAsync(new LicenseState { TrialStartedAtUtc = DateTime.UtcNow.AddDays(-30) });
+
+		// Act
+		var response = await _client.PostAsJsonAsync("/api/feedback", new { Category = "Bug", Message = "stuck", LogExcerpt = (string?)null, CorrelationId = Guid.NewGuid().ToString() });
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+	}
+
 	private static string SignKey(ECDsa signingKey, string licensee, LicensePlan plan, DateTime expiresAtUtc)
 	{
 		var payloadBytes = JsonSerializer.SerializeToUtf8Bytes(new { Licensee = licensee, Plan = plan, IssuedAtUtc = DateTime.UtcNow, ExpiresAtUtc = expiresAtUtc });

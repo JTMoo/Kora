@@ -1,5 +1,6 @@
 import type { LicenseInfo } from "../../api";
 import { useAuth } from "../../auth";
+import { useFeedback } from "../../Feedback";
 import { useI18n } from "../../i18n";
 import { ActivateLicenseForm } from "./ActivateLicenseForm";
 
@@ -7,6 +8,7 @@ export function LicenseLockedScreen({ onActivated }: { onActivated: (license: Li
 {
 	const { t } = useI18n();
 	const { logout, hasPermission } = useAuth();
+	const { openFeedbackDialog } = useFeedback();
 
 	return (
 		<div className="login">
@@ -17,6 +19,7 @@ export function LicenseLockedScreen({ onActivated }: { onActivated: (license: Li
 					? <ActivateLicenseForm onActivated={onActivated} />
 					: <p>{t("contactToSubscribe")}</p>}
 				<div className="form-actions">
+					<button type="button" className="quiet" onClick={openFeedbackDialog}>{t("reportProblem")}</button>
 					<button type="button" className="quiet" onClick={logout}>{t("logout")}</button>
 				</div>
 			</div>

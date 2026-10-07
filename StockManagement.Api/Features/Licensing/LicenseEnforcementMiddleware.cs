@@ -5,7 +5,8 @@ namespace StockManagement.Api.Features.Licensing;
 
 /// <summary>
 /// Blocks API calls once the trial and any grace period have lapsed with no active subscription (ADR-0041).
-/// Auth, the license endpoints themselves, and non-API requests (the React build, health check) stay reachable.
+/// Auth, the license endpoints, feedback (ADR-0042 - must stay reachable so a locked-out user can report it),
+/// and non-API requests (the React build, health check) stay reachable.
 /// </summary>
 public sealed class LicenseEnforcementMiddleware(RequestDelegate next)
 {
@@ -33,6 +34,9 @@ public sealed class LicenseEnforcementMiddleware(RequestDelegate next)
 
 	private bool RequiresLicense(PathString path)
 	{
-		return path.StartsWithSegments("/api") && !path.StartsWithSegments("/api/auth") && !path.StartsWithSegments("/api/license");
+		return path.StartsWithSegments("/api")
+			&& !path.StartsWithSegments("/api/auth")
+			&& !path.StartsWithSegments("/api/license")
+			&& !path.StartsWithSegments("/api/feedback");
 	}
 }
