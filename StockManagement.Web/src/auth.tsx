@@ -56,14 +56,18 @@ function readPermissions(): Permission[]
 
 export function AuthProvider({ children }: { children: ReactNode })
 {
-	const [username, setUsername] = useState<string | null>(() => readStorage(usernameKey));
+	// Set during render (not an effect): a child's own mount effect - e.g. a license status fetch - can otherwise run before the token is applied and 401
+	const [username, setUsername] = useState<string | null>(() =>
+	{
+		const token = readStorage(tokenKey);
+		if (token) setAuthToken(token);
+		return readStorage(usernameKey);
+	});
 	const [role, setRole] = useState<UserRole | null>(() => readStorage(roleKey) as UserRole | null);
 	const [permissions, setPermissions] = useState<Permission[]>(readPermissions);
 
 	useEffect(() =>
 	{
-		const token = readStorage(tokenKey);
-		if (token) setAuthToken(token);
 		setUnauthorizedHandler(logout);
 		return () => setUnauthorizedHandler(null);
 	}, []);

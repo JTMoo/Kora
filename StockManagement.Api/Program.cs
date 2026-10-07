@@ -6,10 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StockManagement.Auth.Core;
 using StockManagement.Customers.Core;
+using StockManagement.Api.Features.Licensing;
 using StockManagement.Feedback.Core;
 using StockManagement.Import.Core;
 using StockManagement.Infrastructure;
 using StockManagement.Infrastructure.Database;
+using StockManagement.Licensing.Core;
 using StockManagement.Sales.Core;
 using StockManagement.Settings.Core;
 using StockManagement.Sifen.Core;
@@ -30,6 +32,7 @@ builder.Services
 	.AddImportCore()
 	.AddAuthCore()
 	.AddSifenCore(builder.Configuration)
+	.AddLicensingCore(builder.Configuration)
 	.AddFeedbackCore(builder.Configuration)
 	.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
@@ -70,6 +73,8 @@ app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<LicenseEnforcementMiddleware>();
 
 app.UseFastEndpoints(config =>
 {

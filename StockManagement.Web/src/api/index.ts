@@ -20,6 +20,7 @@ export * from "./remissionNotes";
 export * from "./payments";
 export * from "./payables";
 export * from "./cashRegister";
+export * from "./license";
 export * from "./feedback";
 
 import { authApi } from "./auth";
@@ -30,6 +31,7 @@ import { feedbackApi } from "./feedback";
 import { goodsImportApi } from "./goodsImports";
 import { importApi } from "./import";
 import { invoicesApi } from "./invoices";
+import { licenseApi } from "./license";
 import { paymentsApi } from "./payments";
 import { payablesApi } from "./payables";
 import { cashRegisterApi } from "./cashRegister";
@@ -61,5 +63,6 @@ export const api = {
 	...paymentsApi,
 	...payablesApi,
 	...cashRegisterApi,
+	...licenseApi,
 	...feedbackApi
 };

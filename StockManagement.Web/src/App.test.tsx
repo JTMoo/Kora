@@ -58,4 +58,32 @@ describe("App", () =>
 		// Assert
 		expect(screen.queryByRole("button", { name: "Users" })).not.toBeInTheDocument();
 	});
+
+	it("LicenseTrialing_ShowsBannerWithDaysRemaining", async () =>
+	{
+		// Arrange
+		mockApi({
+			"GET /api/stock-items?pageSize=100": { body: { items: [], nextCursor: null } },
+			"GET /api/license": { body: { status: "Trial", plan: "None", trialEndsAtUtc: "2026-01-20T00:00:00Z", graceEndsAtUtc: null, subscriptionExpiresAtUtc: null, daysRemaining: 3, monthlyPricePyg: 150000, yearlyPricePyg: 1500000 } }
+		});
+		renderEnglish(<App />);
+
+		// Assert
+		expect(await screen.findByText("3 days left in your free trial.")).toBeInTheDocument();
+		expect(screen.getByRole("button", { name: "Settings" })).toBeInTheDocument();
+	});
+
+	it("LicenseLocked_ShowsLockScreenInsteadOfShell", async () =>
+	{
+		// Arrange
+		mockApi({
+			"GET /api/stock-items?pageSize=100": { body: { items: [], nextCursor: null } },
+			"GET /api/license": { body: { status: "Locked", plan: "None", trialEndsAtUtc: "2026-01-10T00:00:00Z", graceEndsAtUtc: "2026-01-13T00:00:00Z", subscriptionExpiresAtUtc: null, daysRemaining: 0, monthlyPricePyg: 150000, yearlyPricePyg: 1500000 } }
+		});
+		renderEnglish(<App />);
+
+		// Assert
+		expect(await screen.findByText("Your trial has ended")).toBeInTheDocument();
+		expect(screen.queryByRole("button", { name: "Settings" })).not.toBeInTheDocument();
+	});
 });

@@ -10,6 +10,7 @@ export type ApiFailure =
 	| { kind: "invalidState"; reason: string }
 	| { kind: "cannotDeleteSelf" }
 	| { kind: "unauthorized" }
+	| { kind: "licenseLocked" }
 	| { kind: "unexpected" };
 
 export type Result<T> = { ok: true; value: T } | { ok: false; failure: ApiFailure };
@@ -19,6 +20,7 @@ type ProblemDetails = { errors?: { reason: string }[]; correlationId?: string };
 // Set by AuthProvider; kept out of React so the api client has no framework dependency
 let authToken: string | null = null;
 let onUnauthorized: (() => void) | null = null;
+let onLicenseLocked: (() => void) | null = null;
 let onServerError: ((correlationId: string) => void) | null = null;
 
 export function setAuthToken(token: string | null)
@@ -29,6 +31,12 @@ export function setAuthToken(token: string | null)
 export function setUnauthorizedHandler(handler: (() => void) | null)
 {
 	onUnauthorized = handler;
+}
+
+// Called whenever any request is blocked by the license enforcement middleware (402), so the shell can show the lock screen regardless of which call tripped it
+export function setLicenseLockedHandler(handler: (() => void) | null)
+{
+	onLicenseLocked = handler;
 }
 
 // Set by FeedbackProvider: offers to send a report for an unhandled 5xx (ADR-0042)
@@ -95,6 +103,11 @@ async function handleResponse<T>(fetchCall: () => Promise<Response>): Promise<Re
 		onUnauthorized?.();
 		return { ok: false, failure: { kind: "unauthorized" } };
 	}
+	if (response.status === 402)
+	{
+		onLicenseLocked?.();
+		return { ok: false, failure: { kind: "licenseLocked" } };
+	}
 	if (response.status === 409)
 	{
 		const body = (await response.json()) as { unavailableItems?: string[]; code?: string; name?: string; barcode?: string; proformaNumber?: string; number?: string; inStock?: number; reason?: string };
@@ -109,6 +122,7 @@ async function handleResponse<T>(fetchCall: () => Promise<Response>): Promise<Re
 		return { ok: false, failure: { kind: "cannotDeleteSelf" } };
 	}
 	if (response.status === 400) return { ok: false, failure: { kind: "invalid", codes: ((await response.json()) as ProblemDetails).errors?.map(error => error.reason) ?? [] } };
+	if (response.status === 422) return { ok: false, failure: { kind: "invalidState", reason: ((await response.json()) as { reason: string }).reason } };
 	if (response.status >= 500)
 	{
 		const body = await response.json().catch(() => undefined) as ProblemDetails | undefined;

@@ -24,7 +24,15 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
 	public static JsonSerializerOptions JsonOptions { get; } = new(JsonSerializerDefaults.Web) { Converters = { new JsonStringEnumConverter() } };
 
+	private readonly IReadOnlyDictionary<string, string?> _extraSettings;
 	private IServiceScope _scope;
+
+
+	/// <param name="extraSettings">Config overrides applied on top of appsettings.json, e.g. a test-only signing key</param>
+	public ApiFactory(IReadOnlyDictionary<string, string?>? extraSettings = null)
+	{
+		_extraSettings = extraSettings ?? new Dictionary<string, string?>();
+	}
 
 	/// <summary>
 	/// Scoped service provider; the Kernel service providers are Scoped (EF's AppDbContext), so <c>Services</c> (the root provider) can't resolve them directly
@@ -56,6 +64,8 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 	{
 		var connectionString = new NpgsqlConnectionStringBuilder(PostgresContainer.ConnectionString) { Database = $"test_{Guid.NewGuid():N}", Pooling = false }.ConnectionString;
 		builder.UseSetting("ConnectionStrings:Postgres", connectionString);
+
+		foreach (var (key, value) in _extraSettings) builder.UseSetting(key, value);
 	}
 
 	protected override void Dispose(bool disposing)
