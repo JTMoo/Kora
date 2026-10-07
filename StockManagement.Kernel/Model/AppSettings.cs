@@ -25,6 +25,10 @@ public class AppSettings : BaseDocument
 	private string _establishmentCode = "001";
 	private string _pointOfSaleCode = "001";
 	private string _establishmentAddress = "";
+	private string _defaultPrinterName = "";
+	private int _receiptPaperWidthMm = 80;
+	private KudeFormat _kudeFormat = KudeFormat.Ticket;
+	private bool _printOnSaleComplete;
 
 
 	public AvailableLanguages Language
@@ -158,5 +162,41 @@ public class AppSettings : BaseDocument
 	{
 		get => this._establishmentAddress;
 		set => this.SetField(ref this._establishmentAddress, value);
+	}
+
+	/// <summary>
+	/// Name of the printer to use for receipts; informational only, the browser's print dialog picks the actual printer
+	/// </summary>
+	public string DefaultPrinterName
+	{
+		get => this._defaultPrinterName;
+		set => this.SetField(ref this._defaultPrinterName, value);
+	}
+
+	/// <summary>
+	/// Paper width the receipt layout is formatted for, in mm (e.g. 80 or 58 for a ticket printer)
+	/// </summary>
+	public int ReceiptPaperWidthMm
+	{
+		get => this._receiptPaperWidthMm;
+		set => this.SetField(ref this._receiptPaperWidthMm, value);
+	}
+
+	/// <summary>
+	/// Layout the KuDE is printed in
+	/// </summary>
+	public KudeFormat KudeFormat
+	{
+		get => this._kudeFormat;
+		set => this.SetField(ref this._kudeFormat, value);
+	}
+
+	/// <summary>
+	/// Whether the receipt print dialog opens automatically once a sale completes
+	/// </summary>
+	public bool PrintOnSaleComplete
+	{
+		get => this._printOnSaleComplete;
+		set => this.SetField(ref this._printOnSaleComplete, value);
 	}
 }

@@ -39,6 +39,7 @@ public class GetInvoiceKudeEndpoint(
 		if (await _invoiceServiceProvider.GetInvoiceAync(request.Number, cancellationToken) is not Invoice invoice) return TypedResults.NotFound();
 
 		var companySettings = await _settingsService.GetCompanySettingsAsync(cancellationToken);
+		var printerSettings = await _settingsService.GetPrinterSettingsAsync(cancellationToken);
 
 		DteInvoiceData data;
 		try
@@ -51,6 +52,6 @@ public class GetInvoiceKudeEndpoint(
 		}
 
 		var qrDataUri = _qrCodeGenerator.GenerateDataUri(_verificationUrlBuilder.BuildForInvoice(data));
-		return TypedResults.Text(_htmlBuilder.BuildInvoice(data, qrDataUri), "text/html");
+		return TypedResults.Text(_htmlBuilder.BuildInvoice(data, qrDataUri, printerSettings.KudeFormat, printerSettings.ReceiptPaperWidthMm), "text/html");
 	}
 }

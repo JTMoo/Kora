@@ -9,6 +9,7 @@ export * from "./sales";
 export * from "./invoices";
 export * from "./settings";
 export * from "./companySettings";
+export * from "./printerSettings";
 export * from "./users";
 export * from "./auth";
 export * from "./import";
@@ -23,6 +24,7 @@ export * from "./license";
 
 import { authApi } from "./auth";
 import { companySettingsApi } from "./companySettings";
+import { printerSettingsApi } from "./printerSettings";
 import { customersApi } from "./customers";
 import { goodsImportApi } from "./goodsImports";
 import { importApi } from "./import";
@@ -48,6 +50,7 @@ export const api = {
 	...invoicesApi,
 	...settingsApi,
 	...companySettingsApi,
+	...printerSettingsApi,
 	...usersApi,
 	...authApi,
 	...importApi,

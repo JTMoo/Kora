@@ -113,4 +113,51 @@ public sealed class SettingsEndpointsTests
 		Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 		StringAssert.Contains(await response.Content.ReadAsStringAsync(), "vatRateOutOfRange");
 	}
+
+	[TestMethod]
+	public async Task GetPrinterSettings_NothingStored_ReturnsDefaults()
+	{
+		// Act
+		var response = await _client.GetAsync("/api/printer-settings");
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+		var settings = await response.Content.ReadAsAsync<PrinterSettingsResponse>();
+		Assert.AreEqual("", settings.DefaultPrinterName);
+		Assert.AreEqual(80, settings.ReceiptPaperWidthMm);
+		Assert.AreEqual(KudeFormat.Ticket, settings.KudeFormat);
+		Assert.IsFalse(settings.PrintOnSaleComplete);
+	}
+
+	[TestMethod]
+	public async Task UpdatePrinterSettings_ValidRequest_PersistsAndReturnsIt()
+	{
+		// Arrange
+		var request = new UpdatePrinterSettingsRequest("Front counter", 58, KudeFormat.A4, true);
+
+		// Act
+		var response = await _client.PutAsJsonAsync("/api/printer-settings", request);
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+		var settings = await response.Content.ReadAsAsync<PrinterSettingsResponse>();
+		Assert.AreEqual("Front counter", settings.DefaultPrinterName);
+		Assert.AreEqual(58, settings.ReceiptPaperWidthMm);
+		Assert.AreEqual(KudeFormat.A4, settings.KudeFormat);
+		Assert.IsTrue(settings.PrintOnSaleComplete);
+
+		var stored = await (await _client.GetAsync("/api/printer-settings")).Content.ReadAsAsync<PrinterSettingsResponse>();
+		Assert.AreEqual("Front counter", stored.DefaultPrinterName);
+	}
+
+	[TestMethod]
+	public async Task UpdatePrinterSettings_PaperWidthOutOfRange_ReturnsBadRequest()
+	{
+		// Act
+		var response = await _client.PutAsJsonAsync("/api/printer-settings", new UpdatePrinterSettingsRequest("", 5, KudeFormat.Ticket, false));
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+		StringAssert.Contains(await response.Content.ReadAsStringAsync(), "receiptPaperWidthMmOutOfRange");
+	}
 }

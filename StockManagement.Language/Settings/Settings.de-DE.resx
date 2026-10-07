@@ -210,4 +210,31 @@
   <data name="timbradoDateRangeInvalid" xml:space="preserve">
     <value>Timbrado gültig-bis darf nicht vor gültig-von liegen.</value>
   </data>
+  <data name="printerSettings" xml:space="preserve">
+    <value>Druckereinstellungen</value>
+  </data>
+  <data name="defaultPrinterName" xml:space="preserve">
+    <value>Standarddrucker</value>
+  </data>
+  <data name="receiptPaperWidthMm" xml:space="preserve">
+    <value>Bonpapierbreite (mm)</value>
+  </data>
+  <data name="kudeFormat" xml:space="preserve">
+    <value>KuDE-Format</value>
+  </data>
+  <data name="ticket" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="a4" xml:space="preserve">
+    <value>A4</value>
+  </data>
+  <data name="printOnSaleComplete" xml:space="preserve">
+    <value>Beleg nach Verkauf automatisch drucken</value>
+  </data>
+  <data name="printTestPage" xml:space="preserve">
+    <value>Testseite drucken</value>
+  </data>
+  <data name="receiptPaperWidthMmOutOfRange" xml:space="preserve">
+    <value>Die Bonpapierbreite muss zwischen 20 und 300 mm liegen.</value>
+  </data>
 </root>

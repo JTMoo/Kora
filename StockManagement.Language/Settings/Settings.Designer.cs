@@ -337,5 +337,86 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("timbradoDateRangeInvalid", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Printer settings...
+        /// </summary>
+        public static string printerSettings {
+            get {
+                return ResourceManager.GetString("printerSettings", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Default printer name...
+        /// </summary>
+        public static string defaultPrinterName {
+            get {
+                return ResourceManager.GetString("defaultPrinterName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Receipt paper width (mm)...
+        /// </summary>
+        public static string receiptPaperWidthMm {
+            get {
+                return ResourceManager.GetString("receiptPaperWidthMm", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to KuDE format...
+        /// </summary>
+        public static string kudeFormat {
+            get {
+                return ResourceManager.GetString("kudeFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Ticket...
+        /// </summary>
+        public static string ticket {
+            get {
+                return ResourceManager.GetString("ticket", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to A4...
+        /// </summary>
+        public static string a4 {
+            get {
+                return ResourceManager.GetString("a4", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Print receipt automatically after sale...
+        /// </summary>
+        public static string printOnSaleComplete {
+            get {
+                return ResourceManager.GetString("printOnSaleComplete", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Print test page...
+        /// </summary>
+        public static string printTestPage {
+            get {
+                return ResourceManager.GetString("printTestPage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Receipt paper width must be between 20 and 300 mm...
+        /// </summary>
+        public static string receiptPaperWidthMmOutOfRange {
+            get {
+                return ResourceManager.GetString("receiptPaperWidthMmOutOfRange", resourceCulture);
+            }
+        }
     }
 }
