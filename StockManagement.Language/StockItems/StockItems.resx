@@ -237,6 +237,9 @@
   <data name="stockItemsRemoved" xml:space="preserve">
     <value>Removed items due to them not being available in stock (Amount = 0).</value>
   </data>
+  <data name="stockItemInUse" xml:space="preserve">
+    <value>Stock item is referenced by a transaction, invoice, goods-import document or remission note and can't be deleted.</value>
+  </data>
   <data name="tire" xml:space="preserve">
     <value>Tire</value>
   </data>

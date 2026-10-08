@@ -446,6 +446,40 @@ public sealed class ImportBatchEndpointsTests
 	}
 
 	[TestMethod]
+	public async Task Preview_FileTooLarge_Returns400()
+	{
+		// Arrange
+		using var content = new MultipartFormDataContent { { new StringContent(nameof(ImportTarget.Customers)), "Target" } };
+		var oversized = new ByteArrayContent(new byte[ImportFileValidation.MaxFileSizeBytes + 1]);
+		oversized.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		content.Add(oversized, "File", "legacy.xlsx");
+
+		// Act
+		var response = await _client.PostAsync("/api/import/batches", content);
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+		StringAssert.Contains(await response.Content.ReadAsStringAsync(), "fileTooLarge");
+	}
+
+	[TestMethod]
+	public async Task Preview_DisallowedFileType_Returns400()
+	{
+		// Arrange
+		using var content = new MultipartFormDataContent { { new StringContent(nameof(ImportTarget.Customers)), "Target" } };
+		var disguised = new ByteArrayContent([0x4D, 0x5A]);
+		disguised.Headers.ContentType = new MediaTypeHeaderValue("application/x-msdownload");
+		content.Add(disguised, "File", "legacy.exe");
+
+		// Act
+		var response = await _client.PostAsync("/api/import/batches", content);
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+		StringAssert.Contains(await response.Content.ReadAsStringAsync(), "fileTypeNotAllowed");
+	}
+
+	[TestMethod]
 	public async Task Preview_NoToken_ReturnsUnauthorized()
 	{
 		// Arrange

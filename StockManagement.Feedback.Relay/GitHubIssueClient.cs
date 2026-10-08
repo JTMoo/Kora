@@ -13,6 +13,9 @@ public sealed class GitHubIssueClient(IHttpClientFactory httpClientFactory, IOpt
 	private readonly RelayOptions _options = options.Value;
 	private readonly ILogger<GitHubIssueClient> _logger = logger;
 
+	/// <summary>Cap for the free-text install-reported fields (correlation/install id, app version, OS) - not user-authored prose like the message, just identifiers</summary>
+	private const int MaxFieldLength = 200;
+
 
 	public async Task<bool> CreateIssueAsync(UserReport report, CancellationToken cancellationToken)
 	{
@@ -25,10 +28,10 @@ public sealed class GitHubIssueClient(IHttpClientFactory httpClientFactory, IOpt
 		var title = $"[{report.Category}] {Truncate(report.Message, 80).ReplaceLineEndings(" ")}";
 		var body = $"""
 			**Category:** {report.Category}
-			**Correlation id:** {report.CorrelationId}
-			**App version:** {report.AppVersion}
-			**OS:** {report.Os}
-			**Install id:** {report.InstallId}
+			**Correlation id:** {Truncate(report.CorrelationId, MaxFieldLength).ReplaceLineEndings(" ")}
+			**App version:** {Truncate(report.AppVersion, MaxFieldLength).ReplaceLineEndings(" ")}
+			**OS:** {Truncate(report.Os, MaxFieldLength).ReplaceLineEndings(" ")}
+			**Install id:** {Truncate(report.InstallId, MaxFieldLength).ReplaceLineEndings(" ")}
 			**Occurred (UTC):** {report.OccurredAtUtc:O}
 
 			## Message

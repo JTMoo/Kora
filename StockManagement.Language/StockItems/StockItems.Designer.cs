@@ -421,6 +421,15 @@ namespace StockManagement.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Stock item is referenced by a transaction, invoice, goods-import document or remission note and can&apos;t be deleted..
+        /// </summary>
+        public static string stockItemInUse {
+            get {
+                return ResourceManager.GetString("stockItemInUse", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Tire.
         /// </summary>
         public static string tire {

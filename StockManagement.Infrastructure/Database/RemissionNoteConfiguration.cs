@@ -22,7 +22,7 @@ internal sealed class RemissionNoteConfiguration : IEntityTypeConfiguration<Remi
 			item.WithOwner().HasForeignKey("RemissionNoteId");
 			item.Property<Guid>("Id").ValueGeneratedOnAdd();
 			item.HasKey("Id");
-			item.HasOne(remissionNoteItem => remissionNoteItem.StockItem).WithMany().IsRequired();
+			item.HasOne(remissionNoteItem => remissionNoteItem.StockItem).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
 			item.Navigation(remissionNoteItem => remissionNoteItem.StockItem).AutoInclude();
 			item.ToTable("RemissionNoteItems");
 		});

@@ -88,6 +88,7 @@ public class StockItemServiceProvider(AppDbContext db) : IStockItemServiceProvid
 
 	/// <exception cref="StockItemCodeAlreadyExistsException">Code already in use</exception>
 	/// <exception cref="StockItemBarcodeAlreadyExistsException">Barcode already in use</exception>
+	/// <exception cref="StockItemInUseException">Referenced by a transaction, invoice, goods-import document or remission note</exception>
 	public async Task<int> UpdateStockItemAsync(StockItem stockItem, CancellationToken cancellationToken = default)
 	{
 		// Track StockItem's own state first: Add() on the Transaction below would otherwise graph-fixup StockItem as Added too
@@ -103,6 +104,7 @@ public class StockItemServiceProvider(AppDbContext db) : IStockItemServiceProvid
 		return 1;
 	}
 
+	/// <exception cref="StockItemInUseException">Referenced by a transaction, invoice, goods-import document or remission note</exception>
 	public async Task<int> DeleteStockItemAsync(StockItem stockItem, CancellationToken cancellationToken = default)
 	{
 		// Same ordering reason as UpdateStockItemAsync
@@ -178,6 +180,10 @@ public class StockItemServiceProvider(AppDbContext db) : IStockItemServiceProvid
 		catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException { SqlState: "23505" })
 		{
 			throw new StockItemCodeAlreadyExistsException();
+		}
+		catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException { SqlState: "23503" })
+		{
+			throw new StockItemInUseException();
 		}
 	}
 }

@@ -237,6 +237,9 @@
   <data name="stockItemsRemoved" xml:space="preserve">
     <value>Se eliminaron artículos debido a que no estaban disponibles en stock (Cantidad = 0).</value>
   </data>
+  <data name="stockItemInUse" xml:space="preserve">
+    <value>El artículo está referenciado por una transacción, factura, documento de importación o remisión y no se puede eliminar.</value>
+  </data>
   <data name="tire" xml:space="preserve">
     <value>neumático</value>
   </data>

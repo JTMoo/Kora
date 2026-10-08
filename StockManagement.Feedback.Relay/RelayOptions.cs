@@ -20,6 +20,9 @@ public sealed class RelayOptions
 	/// <summary>Per-IP fixed-window cap; cheap abuse guard, not a real rate limiter.</summary>
 	public int MaxRequestsPerMinutePerIp { get; set; } = 10;
 
+	/// <summary>Reverse-proxy IPs to trust <c>X-Forwarded-For</c> from; empty (default) keeps <see cref="Microsoft.AspNetCore.Http.ConnectionInfo.RemoteIpAddress"/>.</summary>
+	public string[] TrustedProxies { get; set; } = [];
+
 	public int MaxMessageLength { get; set; } = 4000;
 
 	public int MaxLogExcerptLength { get; set; } = 8000;

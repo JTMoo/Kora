@@ -7,6 +7,7 @@ using StockManagement.Infrastructure.Database;
 using StockManagement.Kernel.Database.Interfaces;
 using StockManagement.Kernel.Exceptions;
 using StockManagement.Kernel.Model;
+using StockManagement.Kernel.Model.Types;
 
 namespace StockManagement.Api.Tests.Infrastructure;
 
@@ -123,6 +124,24 @@ public sealed class StockItemServiceProviderTests
 		// Assert
 		Assert.AreEqual(1, result);
 		Assert.IsNull(await this.UseAsync(provider => provider.GetStockItemAsync("A1")));
+	}
+
+	[TestMethod]
+	public async Task DeleteStockItemAsync_ReferencedByInvoice_ThrowsStockItemInUseExceptionAndKeepsItem()
+	{
+		// Arrange
+		await using var scope = _services.CreateAsyncScope();
+		var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+		var stockItem = new StockItem("Screw", code: "A1", amount: 10);
+		var customer = new Customer { CustomerId = 1001, Name = "Ann" };
+		db.StockItems.Add(stockItem);
+		db.Customers.Add(customer);
+		await db.SaveChangesAsync();
+		await new InvoiceServiceProvider(db).TryAddSaleAsync(new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 1 }] });
+
+		// Act + Assert
+		await Assert.ThrowsExceptionAsync<StockItemInUseException>(() => this.UseAsync(provider => provider.DeleteStockItemAsync(stockItem)));
+		Assert.IsNotNull(await this.UseAsync(provider => provider.GetStockItemAsync("A1")));
 	}
 
 	[TestMethod]
