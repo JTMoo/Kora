@@ -15,12 +15,12 @@ internal static class LicenseCalculator
 
 		if (activeToken is not null && activeToken.ExpiresAtUtc > nowUtc)
 		{
-			return new LicenseSnapshot(LicenseStatus.Active, activeToken.Plan, trialEndsAtUtc, null, activeToken.ExpiresAtUtc, DaysUntil(activeToken.ExpiresAtUtc, nowUtc));
+			return new LicenseSnapshot(LicenseStatus.Active, activeToken.Plan, trialEndsAtUtc, null, activeToken.ExpiresAtUtc, DaysUntil(activeToken.ExpiresAtUtc, nowUtc), state.MachineId, activeToken.DiscountPercent, activeToken.EffectivePricePyg);
 		}
 
 		if (nowUtc < trialEndsAtUtc)
 		{
-			return new LicenseSnapshot(LicenseStatus.Trial, LicensePlan.None, trialEndsAtUtc, null, activeToken?.ExpiresAtUtc, DaysUntil(trialEndsAtUtc, nowUtc));
+			return new LicenseSnapshot(LicenseStatus.Trial, LicensePlan.None, trialEndsAtUtc, null, activeToken?.ExpiresAtUtc, DaysUntil(trialEndsAtUtc, nowUtc), state.MachineId);
 		}
 
 		// Grace period runs from whichever lapsed more recently: the trial, or an expired subscription
@@ -29,10 +29,10 @@ internal static class LicenseCalculator
 
 		if (nowUtc < graceEndsAtUtc)
 		{
-			return new LicenseSnapshot(LicenseStatus.GracePeriod, activeToken?.Plan ?? LicensePlan.None, trialEndsAtUtc, graceEndsAtUtc, activeToken?.ExpiresAtUtc, DaysUntil(graceEndsAtUtc, nowUtc));
+			return new LicenseSnapshot(LicenseStatus.GracePeriod, activeToken?.Plan ?? LicensePlan.None, trialEndsAtUtc, graceEndsAtUtc, activeToken?.ExpiresAtUtc, DaysUntil(graceEndsAtUtc, nowUtc), state.MachineId);
 		}
 
-		return new LicenseSnapshot(LicenseStatus.Locked, activeToken?.Plan ?? LicensePlan.None, trialEndsAtUtc, graceEndsAtUtc, activeToken?.ExpiresAtUtc, 0);
+		return new LicenseSnapshot(LicenseStatus.Locked, activeToken?.Plan ?? LicensePlan.None, trialEndsAtUtc, graceEndsAtUtc, activeToken?.ExpiresAtUtc, 0, state.MachineId);
 	}
 
 	private static int DaysUntil(DateTime deadlineUtc, DateTime nowUtc)

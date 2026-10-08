@@ -143,4 +143,13 @@
   <data name="contactToSubscribe" xml:space="preserve">
     <value>Kontaktieren Sie Ihren Kora-Anbieter, um zu abonnieren.</value>
   </data>
+  <data name="machineId" xml:space="preserve">
+    <value>Geräte-ID</value>
+  </data>
+  <data name="discountApplied" xml:space="preserve">
+    <value>Angewendeter Rabatt</value>
+  </data>
+  <data name="effectivePrice" xml:space="preserve">
+    <value>Effektiver Preis</value>
+  </data>
 </root>
