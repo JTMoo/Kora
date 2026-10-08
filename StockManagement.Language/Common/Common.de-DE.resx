@@ -252,7 +252,4 @@
   <data name="no" xml:space="preserve">
     <value>Nein</value>
   </data>
-  <data name="reason" xml:space="preserve">
-    <value>Grund</value>
-  </data>
 </root>
