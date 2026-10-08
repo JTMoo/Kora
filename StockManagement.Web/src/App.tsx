@@ -22,7 +22,7 @@ import { salesRoute } from "./features/sales/route";
 import { reportsRoute } from "./features/reports/route";
 import { CommandPalette } from "./features/search/CommandPalette";
 import { sifenOperationsRoute } from "./features/sifen/route";
-import { companySettingsRoute, printerSettingsRoute, settingsRoute } from "./features/settings/routes";
+import { backupsRoute, companySettingsRoute, printerSettingsRoute, settingsRoute } from "./features/settings/routes";
 import { stockItemsRoute } from "./features/stock-items/route";
 import { suppliersRoute } from "./features/suppliers/route";
 import { usersRoute } from "./features/users/route";
@@ -31,7 +31,7 @@ import type { NavRoute, View } from "./routes";
 import { useLoad } from "./useLoad";
 
 // Same order and icons as the WPF menu (FontAwesome Wrench, AddressBook, Inbox)
-const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, creditNotesRoute, debitNotesRoute, goodsImportsRoute, purchaseIvaBookExportRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, sifenOperationsRoute, companySettingsRoute, printerSettingsRoute, settingsRoute, usersRoute, licensingRoute];
+const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, creditNotesRoute, debitNotesRoute, goodsImportsRoute, purchaseIvaBookExportRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, sifenOperationsRoute, companySettingsRoute, printerSettingsRoute, backupsRoute, settingsRoute, usersRoute, licensingRoute];
 
 export function App()
 {

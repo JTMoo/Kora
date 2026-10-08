@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StockManagement.Auth.Core;
+using StockManagement.Backup.Core;
 using StockManagement.Customers.Core;
 using StockManagement.Api.Features.Auth;
 using StockManagement.Api.Features.Licensing;
@@ -37,6 +38,7 @@ builder.Services
 	.AddSifenCore(builder.Configuration)
 	.AddLicensingCore(builder.Configuration)
 	.AddFeedbackCore(builder.Configuration)
+	.AddBackupCore(builder.Configuration)
 	.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddHealthChecks();

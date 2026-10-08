@@ -47,6 +47,7 @@ Generated from `docs/adr/*.md` by `scripts/generate-adr-index.sh`. Don't hand-ed
 | [0042](adr/0042-feedback-and-error-reporting.md) | Feedback and error reporting | Proposed |
 | [0043](adr/0043-usage-telemetry.md) | Usage telemetry | Proposed |
 | [0044](adr/0044-licensing-security-and-discounts.md) | Licensing security hardening and owner discounts | Proposed |
+| [0045](adr/0045-backup-and-restore.md) | Backup and restore | Proposed |
 | [0046](adr/0046-auth-hardening.md) | Auth hardening - JWT key, forced password rotation, login throttling | Accepted |
 | [0049](adr/0049-domestic-supplier-purchase-updates-stock.md) | Domestic supplier purchases update stock | Proposed |
 <!-- ADR-INDEX:END -->

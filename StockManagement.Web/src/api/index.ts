@@ -13,6 +13,7 @@ export * from "./printerSettings";
 export * from "./users";
 export * from "./auth";
 export * from "./import";
+export * from "./backup";
 export * from "./search";
 export * from "./reports";
 export * from "./goodsImports";
@@ -27,6 +28,7 @@ export * from "./feedback";
 export * from "./sifen";
 
 import { authApi } from "./auth";
+import { backupApi } from "./backup";
 import { companySettingsApi } from "./companySettings";
 import { printerSettingsApi } from "./printerSettings";
 import { creditNotesApi } from "./creditNotes";
@@ -73,5 +75,6 @@ export const api = {
 	...cashRegisterApi,
 	...licenseApi,
 	...feedbackApi,
-	...sifenApi
+	...sifenApi,
+	...backupApi
 };

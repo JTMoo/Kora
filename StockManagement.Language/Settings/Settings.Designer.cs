@@ -418,5 +418,122 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("receiptPaperWidthMmOutOfRange", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Backups.
+        /// </summary>
+        public static string backups {
+            get {
+                return ResourceManager.GetString("backups", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Create backup.
+        /// </summary>
+        public static string createBackup {
+            get {
+                return ResourceManager.GetString("createBackup", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No backups yet.
+        /// </summary>
+        public static string noBackupsYet {
+            get {
+                return ResourceManager.GetString("noBackupsYet", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Created.
+        /// </summary>
+        public static string backupDate {
+            get {
+                return ResourceManager.GetString("backupDate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        public static string backupSize {
+            get {
+                return ResourceManager.GetString("backupSize", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Download.
+        /// </summary>
+        public static string download {
+            get {
+                return ResourceManager.GetString("download", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Restore from file.
+        /// </summary>
+        public static string restoreBackup {
+            get {
+                return ResourceManager.GetString("restoreBackup", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Restoring replaces all current data with the backup's...
+        /// </summary>
+        public static string restoreWarning {
+            get {
+                return ResourceManager.GetString("restoreWarning", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to I understand this will overwrite all current data.
+        /// </summary>
+        public static string restoreConfirmCheckbox {
+            get {
+                return ResourceManager.GetString("restoreConfirmCheckbox", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Restore.
+        /// </summary>
+        public static string restore {
+            get {
+                return ResourceManager.GetString("restore", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Backup created.
+        /// </summary>
+        public static string backupCreatedToast {
+            get {
+                return ResourceManager.GetString("backupCreatedToast", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Restore complete. Restart the app now...
+        /// </summary>
+        public static string restoreSucceededMessage {
+            get {
+                return ResourceManager.GetString("restoreSucceededMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You must confirm before restoring...
+        /// </summary>
+        public static string confirmRequired {
+            get {
+                return ResourceManager.GetString("confirmRequired", resourceCulture);
+            }
+        }
     }
 }

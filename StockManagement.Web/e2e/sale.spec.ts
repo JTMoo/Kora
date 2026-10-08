@@ -40,7 +40,7 @@ test("full sale: create customer, sell, view invoice, stock goes down", async ({
 	await expect(page.getByTestId("invoice-total")).toHaveText("10,000");
 	await shot(page, "4-invoice");
 
-	await page.getByRole("button", { name: "Back" }).click();
+	await page.getByRole("button", { name: "Back", exact: true }).click();
 	await expect(page.getByRole("cell", { name: "Ana Gómez" })).toBeVisible();
 	await shot(page, "5-invoice-list");
 

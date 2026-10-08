@@ -237,4 +237,43 @@
   <data name="receiptPaperWidthMmOutOfRange" xml:space="preserve">
     <value>El ancho de papel del recibo debe estar entre 20 y 300 mm.</value>
   </data>
+  <data name="backups" xml:space="preserve">
+    <value>Copias de seguridad</value>
+  </data>
+  <data name="createBackup" xml:space="preserve">
+    <value>Crear copia de seguridad</value>
+  </data>
+  <data name="noBackupsYet" xml:space="preserve">
+    <value>Aún no hay copias de seguridad</value>
+  </data>
+  <data name="backupDate" xml:space="preserve">
+    <value>Creada</value>
+  </data>
+  <data name="backupSize" xml:space="preserve">
+    <value>Tamaño</value>
+  </data>
+  <data name="download" xml:space="preserve">
+    <value>Descargar</value>
+  </data>
+  <data name="restoreBackup" xml:space="preserve">
+    <value>Restaurar desde archivo</value>
+  </data>
+  <data name="restoreWarning" xml:space="preserve">
+    <value>Restaurar reemplaza todos los datos actuales con los de la copia de seguridad. Reinicie la aplicación después.</value>
+  </data>
+  <data name="restoreConfirmCheckbox" xml:space="preserve">
+    <value>Entiendo que esto sobrescribirá todos los datos actuales</value>
+  </data>
+  <data name="restore" xml:space="preserve">
+    <value>Restaurar</value>
+  </data>
+  <data name="backupCreatedToast" xml:space="preserve">
+    <value>Copia de seguridad creada</value>
+  </data>
+  <data name="restoreSucceededMessage" xml:space="preserve">
+    <value>Restauración completa. Reinicie la aplicación ahora.</value>
+  </data>
+  <data name="confirmRequired" xml:space="preserve">
+    <value>Debe confirmar antes de restaurar.</value>
+  </data>
 </root>
