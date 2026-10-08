@@ -1,4 +1,6 @@
-import type { RemissionNote } from "../../api";
+import { useState } from "react";
+import { authHeaders, type ApiFailure, type RemissionNote } from "../../api";
+import { FailureMessage } from "../../FailureMessage";
 import { Page } from "../../Page";
 import { useI18n } from "../../i18n";
 import { reasonLabel, transmissionStatusBadge } from "./remissionNoteStatus";
@@ -6,6 +8,21 @@ import { reasonLabel, transmissionStatusBadge } from "./remissionNoteStatus";
 export function RemissionNoteView({ remissionNote, onBack }: { remissionNote: RemissionNote; onBack: () => void })
 {
 	const { t, formatDate } = useI18n();
+	const [kudeFailure, setKudeFailure] = useState<ApiFailure>();
+
+	async function onViewKude()
+	{
+		setKudeFailure(undefined);
+		const response = await fetch(`/api/remission-notes/${encodeURIComponent(remissionNote.number)}/kude`, { headers: authHeaders() });
+		if (!response.ok)
+		{
+			setKudeFailure(response.status === 404 ? { kind: "notFound" } : { kind: "invalidState", reason: t("kudeUnavailable") });
+			return;
+		}
+
+		const url = URL.createObjectURL(await response.blob());
+		window.open(url, "_blank");
+	}
 
 	return (
 		<Page title={t("remissionNotes")} toolbar={
@@ -35,6 +52,10 @@ export function RemissionNoteView({ remissionNote, onBack }: { remissionNote: Re
 						))}
 					</tbody>
 				</table>
+				<div className="form-actions">
+					<button type="button" onClick={onViewKude}>{t("viewKude")}</button>
+				</div>
+				<FailureMessage failure={kudeFailure} />
 			</article>
 		</Page>
 	);

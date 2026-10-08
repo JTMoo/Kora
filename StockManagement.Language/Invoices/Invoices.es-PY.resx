@@ -261,6 +261,33 @@
   <data name="downloadIvaBook" xml:space="preserve">
     <value>Descargar CSV</value>
   </data>
+  <data name="viewKude" xml:space="preserve">
+    <value>Ver KuDE</value>
+  </data>
+  <data name="kudeUnavailable" xml:space="preserve">
+    <value>KuDE todavía no disponible.</value>
+  </data>
+  <data name="creditNotes" xml:space="preserve">
+    <value>Notas de crédito</value>
+  </data>
+  <data name="debitNotes" xml:space="preserve">
+    <value>Notas de débito</value>
+  </data>
+  <data name="debitNote" xml:space="preserve">
+    <value>Nota de débito</value>
+  </data>
+  <data name="newDebitNote" xml:space="preserve">
+    <value>Nueva nota de débito</value>
+  </data>
+  <data name="items" xml:space="preserve">
+    <value>Ítems</value>
+  </data>
+  <data name="addItem" xml:space="preserve">
+    <value>Agregar ítem</value>
+  </data>
+  <data name="debitNoteSavedToast" xml:space="preserve">
+    <value>Nota de débito {0} guardada.</value>
+  </data>
   <data name="sifenOperations" xml:space="preserve">
     <value>Operaciones SIFEN</value>
   </data>

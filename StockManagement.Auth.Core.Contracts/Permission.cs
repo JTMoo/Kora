@@ -49,4 +49,16 @@ public static class Permission
 	{
 		return user.Role == UserRole.Admin ? CatalogAll : user.Permissions;
 	}
+
+	/// <returns>The write permission required to import into <paramref name="target"/></returns>
+	public static string RequiredForImportTarget(ImportTarget target)
+	{
+		return target switch
+		{
+			ImportTarget.StockItems or ImportTarget.OpeningStock => StockItemsWrite,
+			ImportTarget.Customers => CustomersWrite,
+			ImportTarget.OpenInvoices => SalesWrite,
+			_ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+		};
+	}
 }
