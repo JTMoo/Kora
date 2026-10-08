@@ -11,7 +11,8 @@ public sealed record UndoImportBatchRequest(string Id);
 
 
 /// <remarks>Removes the entities a commit created; a batch that is not Committed (still Previewed, or already undone) is a conflict.</remarks>
-public class UndoImportBatchEndpoint(IImportBatchService importBatchService) : Endpoint<UndoImportBatchRequest, Results<Ok<ImportBatchResponse>, NotFound, Conflict<ImportBatchStatusConflictResponse>>>
+public class UndoImportBatchEndpoint(IImportBatchService importBatchService)
+	: Endpoint<UndoImportBatchRequest, Results<Ok<ImportBatchResponse>, NotFound, Conflict<ImportBatchStatusConflictResponse>, ForbidHttpResult>>
 {
 	private readonly IImportBatchService _importBatchService = importBatchService;
 
@@ -22,12 +23,21 @@ public class UndoImportBatchEndpoint(IImportBatchService importBatchService) : E
 		this.Permissions(Permission.StockItemsWrite, Permission.CustomersWrite, Permission.SalesWrite);
 	}
 
-	public override async Task<Results<Ok<ImportBatchResponse>, NotFound, Conflict<ImportBatchStatusConflictResponse>>> ExecuteAsync(UndoImportBatchRequest request, CancellationToken cancellationToken)
+	public override async Task<Results<Ok<ImportBatchResponse>, NotFound, Conflict<ImportBatchStatusConflictResponse>, ForbidHttpResult>> ExecuteAsync(UndoImportBatchRequest request, CancellationToken cancellationToken)
 	{
+		var batch = await _importBatchService.GetAsync(request.Id, cancellationToken);
+		if (batch is null) return TypedResults.NotFound();
+
+		var required = Permission.RequiredForImportTarget(batch.Target);
+		if (!this.User.Claims.Any(claim => claim.Type == "permissions" && claim.Value == required))
+		{
+			return TypedResults.Forbid();
+		}
+
 		try
 		{
-			var batch = await _importBatchService.UndoAsync(request.Id, cancellationToken);
-			return TypedResults.Ok(ImportBatchResponse.From(batch));
+			var undone = await _importBatchService.UndoAsync(request.Id, cancellationToken);
+			return TypedResults.Ok(ImportBatchResponse.From(undone));
 		}
 		catch (ImportBatchNotFoundException)
 		{

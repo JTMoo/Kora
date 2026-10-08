@@ -1,8 +1,9 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { api, type ApiFailure, type Invoice, type PaymentLink } from "../../api";
+import { api, authHeaders, type ApiFailure, type Invoice, type Payment, type PaymentLink } from "../../api";
 import { FailureMessage } from "../../FailureMessage";
 import { invoiceStatusBadge } from "./invoiceStatus";
 import { paymentLinkStatusBadge } from "./paymentLinkStatus";
+import { RecordPaymentForm } from "./RecordPaymentForm";
 import { Page } from "../../Page";
 import { isTextKey, useI18n } from "../../i18n";
 
@@ -17,9 +18,28 @@ export function InvoiceView({ invoice: initial, onBack }: { invoice?: Invoice; o
 	const [paymentLink, setPaymentLink] = useState<PaymentLink>();
 	const [paymentLinkFailure, setPaymentLinkFailure] = useState<ApiFailure>();
 	const [creatingPaymentLink, setCreatingPaymentLink] = useState(false);
+	const [payments, setPayments] = useState<Payment[]>([]);
+	const [recordingPayment, setRecordingPayment] = useState(false);
+	const [kudeFailure, setKudeFailure] = useState<ApiFailure>();
+	const [creditNoteNumber, setCreditNoteNumber] = useState<number>();
 
 	useEffect(() => setInvoice(initial), [initial]);
 	useEffect(() => setCancelling(false), [invoice?.number]);
+	useEffect(() => setRecordingPayment(false), [invoice?.number]);
+
+	useEffect(() =>
+	{
+		setPayments([]);
+		if (!invoice) return;
+
+		const controller = new AbortController();
+		api.listPayments(invoice.number, controller.signal).then(result =>
+		{
+			if (controller.signal.aborted) return;
+			if (result.ok) setPayments(result.value.items);
+		});
+		return () => controller.abort();
+	}, [invoice?.number]);
 
 	useEffect(() =>
 	{
@@ -58,6 +78,30 @@ export function InvoiceView({ invoice: initial, onBack }: { invoice?: Invoice; o
 		setFailure(result.ok ? undefined : result.failure);
 	}
 
+	async function onPaymentRecorded()
+	{
+		setRecordingPayment(false);
+		const result = await api.getInvoice(invoice!.number);
+		if (result.ok) setInvoice(result.value);
+
+		const paymentsResult = await api.listPayments(invoice!.number);
+		if (paymentsResult.ok) setPayments(paymentsResult.value.items);
+	}
+
+	async function onViewKude()
+	{
+		setKudeFailure(undefined);
+		const response = await fetch(`/api/invoices/${encodeURIComponent(invoice!.number)}/kude`, { headers: authHeaders() });
+		if (!response.ok)
+		{
+			setKudeFailure(response.status === 404 ? { kind: "notFound" } : { kind: "invalidState", reason: t("kudeUnavailable") });
+			return;
+		}
+
+		const url = URL.createObjectURL(await response.blob());
+		window.open(url, "_blank");
+	}
+
 	async function onCancelInvoice(event: FormEvent)
 	{
 		event.preventDefault();
@@ -67,6 +111,7 @@ export function InvoiceView({ invoice: initial, onBack }: { invoice?: Invoice; o
 		setFailure(undefined);
 		setCancelling(false);
 		setCancelReason("");
+		setCreditNoteNumber(result.value.number);
 		setInvoice({ ...invoice!, isCancelled: true });
 	}
 
@@ -110,7 +155,12 @@ export function InvoiceView({ invoice: initial, onBack }: { invoice?: Invoice; o
 					{!invoice.isCancelled && !cancelling && (
 						<div className="form-actions">
 							<button type="button" onClick={() => setCancelling(true)}>{t("cancelInvoice")}</button>
+							<button type="button" onClick={onViewKude}>{t("viewKude")}</button>
 						</div>
+					)}
+					<FailureMessage failure={kudeFailure} />
+					{invoice.isCancelled && creditNoteNumber !== undefined && (
+						<p>{t("creditNote")}: {creditNoteNumber}</p>
 					)}
 					{!invoice.isCancelled && cancelling && (
 						<form onSubmit={onCancelInvoice} className="form-grid">
@@ -143,6 +193,31 @@ export function InvoiceView({ invoice: initial, onBack }: { invoice?: Invoice; o
 							)}
 						</section>
 					)}
+					<section aria-label={t("payments")}>
+						<h4>{t("payments")}</h4>
+						{payments.length > 0 && (
+							<table>
+								<thead>
+									<tr><th>{t("paymentDate")}</th><th>{t("paymentMethod")}</th><th className="number">{t("paymentAmount")}</th></tr>
+								</thead>
+								<tbody>
+									{payments.map((payment, index) => (
+										<tr key={index}>
+											<td>{formatDate(payment.date)}</td><td>{t(payment.method === "BankTransfer" ? "bankTransfer" : payment.method === "BancardQr" ? "bancardQr" : payment.method === "Check" ? "check" : payment.method === "Other" ? "other" : "cash")}</td><td className="number">{formatNumber(payment.amount)}</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						)}
+						{!invoice.isCancelled && invoice.amountDue > 0 && !recordingPayment && (
+							<div className="form-actions">
+								<button type="button" onClick={() => setRecordingPayment(true)}>{t("recordPayment")}</button>
+							</div>
+						)}
+						{recordingPayment && (
+							<RecordPaymentForm invoiceNumber={invoice.number} onPaid={onPaymentRecorded} onCancel={() => setRecordingPayment(false)} />
+						)}
+					</section>
 				</article>
 			)}
 		</Page>
