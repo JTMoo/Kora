@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { api, setLicenseLockedHandler, type Invoice, type LicenseInfo } from "./api";
 import { useAuth } from "./auth";
 import { useFeedback } from "./Feedback";
+import { ChangePasswordPage } from "./features/auth/ChangePasswordPage";
 import { LoginPage } from "./features/auth/LoginPage";
 import { cashRegisterRoute } from "./features/cash-register/route";
 import { creditNotesRoute } from "./features/credit-notes/route";
@@ -34,11 +35,12 @@ const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, sal
 
 export function App()
 {
-	const { username } = useAuth();
+	const { username, mustChangePassword } = useAuth();
 
 	// A separate component, mounted only once logged in: its hooks (the license fetch below) must not run,
 	// and so must not fetch with a missing auth token, while the login screen is still showing.
 	if (!username) return <LoginPage />;
+	if (mustChangePassword) return <ChangePasswordPage />;
 	return <AuthenticatedApp />;
 }
 

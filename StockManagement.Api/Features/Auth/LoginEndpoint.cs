@@ -10,7 +10,7 @@ namespace StockManagement.Api.Features.Auth;
 
 public sealed record LoginRequest(string Username, string Password);
 
-public sealed record LoginResponse(string Token, string Username, UserRole Role, IReadOnlyList<string> Permissions);
+public sealed record LoginResponse(string Token, string Username, UserRole Role, IReadOnlyList<string> Permissions, bool MustChangePassword);
 
 
 public class LoginValidator : Validator<LoginRequest>
@@ -34,6 +34,7 @@ public class LoginEndpoint(IAuthService authService, IConfiguration configuratio
 	{
 		this.Post("/auth/login");
 		this.AllowAnonymous();
+		this.Throttle(5, 60); // 5 attempts/minute per client IP (ADR-0046); unlimited password guessing otherwise (#238)
 	}
 
 	public override async Task<Results<Ok<LoginResponse>, UnauthorizedHttpResult>> ExecuteAsync(LoginRequest request, CancellationToken cancellationToken)
@@ -55,6 +56,6 @@ public class LoginEndpoint(IAuthService authService, IConfiguration configuratio
 			options.User.Permissions.AddRange(permissions);
 		});
 
-		return TypedResults.Ok(new LoginResponse(token, user.Username, user.Role, permissions));
+		return TypedResults.Ok(new LoginResponse(token, user.Username, user.Role, permissions, user.MustChangePassword));
 	}
 }

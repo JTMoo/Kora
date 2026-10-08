@@ -15,6 +15,7 @@ public class User : BaseDocument
 	private string position = string.Empty;
 	private UserRole role = UserRole.Standard;
 	private string[] permissions = [];
+	private bool mustChangePassword;
 
 
 	public string Username
@@ -75,5 +76,15 @@ public class User : BaseDocument
 	{
 		get { return this.permissions; }
 		set { this.SetField(ref this.permissions, value); }
+	}
+
+	/// <summary>
+	/// Set on the seeded admin account; cleared once that user changes their password. Blocks every other
+	/// endpoint via <c>ForcePasswordChangeMiddleware</c> until cleared.
+	/// </summary>
+	public bool MustChangePassword
+	{
+		get { return this.mustChangePassword; }
+		set { this.SetField(ref this.mustChangePassword, value); }
 	}
 }
