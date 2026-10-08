@@ -1,11 +1,14 @@
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
 using ClosedXML.Excel;
 using Microsoft.Extensions.DependencyInjection;
 using StockManagement.Api.Features.Import;
 using StockManagement.Api.Features.Invoices;
 using StockManagement.Api.Features.StockItems;
+using StockManagement.Api.Features.Users;
+using StockManagement.Auth.Core.Contracts;
 using StockManagement.Import.Core.Contracts;
 using StockManagement.Kernel.Database.Interfaces;
 using StockManagement.Kernel.Model;
@@ -456,6 +459,75 @@ public sealed class ImportBatchEndpointsTests
 		Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
 	}
 
+	[TestMethod]
+	public async Task Preview_CustomersWriteOnly_CannotPreviewStockItemsTarget()
+	{
+		// Arrange
+		var client = await this.CreateStandardUserClientAsync("customers-only", [Permission.CustomersWrite]);
+		var content = ExcelFileContent(ImportTarget.StockItems, CreateWorkbook("Stock", ["Code", "Name", "Amount"], ["A1", "Screw", "10"]));
+
+		// Act
+		var response = await client.PostAsync("/api/import/batches", content);
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task Commit_CustomersWriteOnly_CannotCommitStockItemsBatch()
+	{
+		// Arrange
+		var content = ExcelFileContent(ImportTarget.StockItems, CreateWorkbook("Stock", ["Code", "Name", "Amount"], ["A1", "Screw", "10"]));
+		var previewed = await (await _client.PostAsync("/api/import/batches", content)).Content.ReadAsAsync<ImportBatchResponse>();
+		var client = await this.CreateStandardUserClientAsync("customers-only2", [Permission.CustomersWrite]);
+
+		// Act
+		var response = await client.PostAsync($"/api/import/batches/{previewed.Id}/commit", null);
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task Undo_CustomersWriteOnly_CannotUndoStockItemsBatch()
+	{
+		// Arrange
+		var content = ExcelFileContent(ImportTarget.StockItems, CreateWorkbook("Stock", ["Code", "Name", "Amount"], ["A1", "Screw", "10"]));
+		var previewed = await (await _client.PostAsync("/api/import/batches", content)).Content.ReadAsAsync<ImportBatchResponse>();
+		await _client.PostAsync($"/api/import/batches/{previewed.Id}/commit", null);
+		var client = await this.CreateStandardUserClientAsync("customers-only3", [Permission.CustomersWrite]);
+
+		// Act
+		var response = await client.PostAsync($"/api/import/batches/{previewed.Id}/undo", null);
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task PreviewThenCommit_StockItemsWriteOnly_CanImportStockItems()
+	{
+		// Arrange
+		var client = await this.CreateStandardUserClientAsync("stockitems-only", [Permission.StockItemsWrite]);
+		var content = ExcelFileContent(ImportTarget.StockItems, CreateWorkbook("Stock", ["Code", "Name", "Amount"], ["A1", "Screw", "10"]));
+
+		// Act
+		var previewResponse = await client.PostAsync("/api/import/batches", content);
+		var previewed = await previewResponse.Content.ReadAsAsync<ImportBatchResponse>();
+		var commitResponse = await client.PostAsync($"/api/import/batches/{previewed.Id}/commit", null);
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.OK, previewResponse.StatusCode);
+		Assert.AreEqual(HttpStatusCode.OK, commitResponse.StatusCode);
+	}
+
+
+	private async Task<HttpClient> CreateStandardUserClientAsync(string username, IReadOnlyList<string> permissions)
+	{
+		const string password = "s3cret!23";
+		await _client.PostAsJsonAsync("/api/users", new CreateUserRequest(username, password, Permissions: permissions));
+		return await _factory.CreateAuthenticatedClientAsync(username, password);
+	}
 
 	private static MultipartFormDataContent ExcelFileContent(ImportTarget target, XLWorkbook workbook)
 	{
