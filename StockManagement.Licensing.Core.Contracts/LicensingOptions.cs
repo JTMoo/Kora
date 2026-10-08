@@ -21,9 +21,11 @@ public sealed class LicensingOptions
 	public int MonthlyPricePyg { get; set; } = 150_000;
 
 	/// <summary>
-	/// SubjectPublicKeyInfo of the license server's signing key, base64. Empty disables activation (trial/locked only).
+	/// SubjectPublicKeyInfo of the license server's signing key(s), base64, keyed by key id (<c>kid</c>, see ADR-0044).
+	/// Empty/no matching kid disables activation (trial/locked only). Lets the server rotate keys without invalidating
+	/// keys already issued under an older kid.
 	/// </summary>
-	public string PublicKey { get; set; } = "";
+	public Dictionary<string, string> PublicKeys { get; set; } = [];
 
 	public int YearlyPricePyg => this.MonthlyPricePyg * 10;
 }
