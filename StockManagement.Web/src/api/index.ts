@@ -24,6 +24,7 @@ export * from "./debitNotes";
 export * from "./cashRegister";
 export * from "./license";
 export * from "./feedback";
+export * from "./sifen";
 
 import { authApi } from "./auth";
 import { companySettingsApi } from "./companySettings";
@@ -44,6 +45,7 @@ import { reportsApi } from "./reports";
 import { salesApi } from "./sales";
 import { searchApi } from "./search";
 import { settingsApi } from "./settings";
+import { sifenApi } from "./sifen";
 import { stockItemsApi } from "./stockItems";
 import { suppliersApi } from "./suppliers";
 import { usersApi } from "./users";
@@ -70,5 +72,6 @@ export const api = {
 	...debitNotesApi,
 	...cashRegisterApi,
 	...licenseApi,
-	...feedbackApi
+	...feedbackApi,
+	...sifenApi
 };

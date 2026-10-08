@@ -571,5 +571,158 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("debitNoteSavedToast", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to SIFEN operations.
+        /// </summary>
+        public static string sifenOperations {
+            get {
+                return ResourceManager.GetString("sifenOperations", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Contingency.
+        /// </summary>
+        public static string contingencyTab {
+            get {
+                return ResourceManager.GetString("contingencyTab", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cancellation.
+        /// </summary>
+        public static string cancellationTab {
+            get {
+                return ResourceManager.GetString("cancellationTab", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Number void.
+        /// </summary>
+        public static string numberVoidTab {
+            get {
+                return ResourceManager.GetString("numberVoidTab", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Stuck transmissions.
+        /// </summary>
+        public static string stuckTransmissionsTab {
+            get {
+                return ResourceManager.GetString("stuckTransmissionsTab", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Range configured.
+        /// </summary>
+        public static string contingencyRangeConfigured {
+            get {
+                return ResourceManager.GetString("contingencyRangeConfigured", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Range start.
+        /// </summary>
+        public static string rangeStart {
+            get {
+                return ResourceManager.GetString("rangeStart", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Range end.
+        /// </summary>
+        public static string rangeEnd {
+            get {
+                return ResourceManager.GetString("rangeEnd", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Next number.
+        /// </summary>
+        public static string contingencyNextNumber {
+            get {
+                return ResourceManager.GetString("contingencyNextNumber", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Remaining.
+        /// </summary>
+        public static string contingencyRemaining {
+            get {
+                return ResourceManager.GetString("contingencyRemaining", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Enable contingency mode.
+        /// </summary>
+        public static string enableContingencyMode {
+            get {
+                return ResourceManager.GetString("enableContingencyMode", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Disable contingency mode.
+        /// </summary>
+        public static string disableContingencyMode {
+            get {
+                return ResourceManager.GetString("disableContingencyMode", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Save range.
+        /// </summary>
+        public static string saveRange {
+            get {
+                return ResourceManager.GetString("saveRange", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Request cancellation.
+        /// </summary>
+        public static string requestCancellation {
+            get {
+                return ResourceManager.GetString("requestCancellation", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Invoice number.
+        /// </summary>
+        public static string invoiceNumber {
+            get {
+                return ResourceManager.GetString("invoiceNumber", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Requested at.
+        /// </summary>
+        public static string requestedAt {
+            get {
+                return ResourceManager.GetString("requestedAt", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Request number void.
+        /// </summary>
+        public static string requestNumberVoid {
+            get {
+                return ResourceManager.GetString("requestNumberVoid", resourceCulture);
+            }
+        }
     }
 }

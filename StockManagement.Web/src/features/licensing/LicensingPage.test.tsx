@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 import { mockApi, renderEnglish, sentBody } from "../../test-utils";
 import { LicensingPage } from "./LicensingPage";
 
-const trial = { status: "Trial", plan: "None", trialEndsAtUtc: "2026-01-20T00:00:00Z", graceEndsAtUtc: null, subscriptionExpiresAtUtc: null, daysRemaining: 7, monthlyPricePyg: 150000, yearlyPricePyg: 1500000 };
-const active = { status: "Active", plan: "Yearly", trialEndsAtUtc: "2026-01-10T00:00:00Z", graceEndsAtUtc: null, subscriptionExpiresAtUtc: "2027-01-01T00:00:00Z", daysRemaining: 300, monthlyPricePyg: 150000, yearlyPricePyg: 1500000 };
+const trial = { status: "Trial", plan: "None", trialEndsAtUtc: "2026-01-20T00:00:00Z", graceEndsAtUtc: null, subscriptionExpiresAtUtc: null, daysRemaining: 7, monthlyPricePyg: 150000, yearlyPricePyg: 1500000, machineId: "machine-abc", discountPercent: null, effectivePricePyg: null };
+const active = { status: "Active", plan: "Yearly", trialEndsAtUtc: "2026-01-10T00:00:00Z", graceEndsAtUtc: null, subscriptionExpiresAtUtc: "2027-01-01T00:00:00Z", daysRemaining: 300, monthlyPricePyg: 150000, yearlyPricePyg: 1500000, machineId: "machine-abc", discountPercent: 20, effectivePricePyg: 1200000 };
 
 describe("LicensingPage", () =>
 {
@@ -34,6 +34,7 @@ describe("LicensingPage", () =>
 		// Assert
 		expect(await screen.findByText("Active")).toBeInTheDocument();
 		expect(screen.getByText("Yearly")).toBeInTheDocument();
+		expect(screen.getByText("20%")).toBeInTheDocument();
 	});
 
 	it("Activate_InvalidKey_ShowsFailure", async () =>

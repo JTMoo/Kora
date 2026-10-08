@@ -288,4 +288,55 @@
   <data name="debitNoteSavedToast" xml:space="preserve">
     <value>Lastschrift {0} gespeichert.</value>
   </data>
+  <data name="sifenOperations" xml:space="preserve">
+    <value>SIFEN-Betrieb</value>
+  </data>
+  <data name="contingencyTab" xml:space="preserve">
+    <value>Kontingenz</value>
+  </data>
+  <data name="cancellationTab" xml:space="preserve">
+    <value>Stornierung</value>
+  </data>
+  <data name="numberVoidTab" xml:space="preserve">
+    <value>Nummernsperrung</value>
+  </data>
+  <data name="stuckTransmissionsTab" xml:space="preserve">
+    <value>Festgefahrene Übertragungen</value>
+  </data>
+  <data name="contingencyRangeConfigured" xml:space="preserve">
+    <value>Bereich konfiguriert</value>
+  </data>
+  <data name="rangeStart" xml:space="preserve">
+    <value>Bereichsanfang</value>
+  </data>
+  <data name="rangeEnd" xml:space="preserve">
+    <value>Bereichsende</value>
+  </data>
+  <data name="contingencyNextNumber" xml:space="preserve">
+    <value>Nächste Nummer</value>
+  </data>
+  <data name="contingencyRemaining" xml:space="preserve">
+    <value>Verbleibend</value>
+  </data>
+  <data name="enableContingencyMode" xml:space="preserve">
+    <value>Kontingenzmodus aktivieren</value>
+  </data>
+  <data name="disableContingencyMode" xml:space="preserve">
+    <value>Kontingenzmodus deaktivieren</value>
+  </data>
+  <data name="saveRange" xml:space="preserve">
+    <value>Bereich speichern</value>
+  </data>
+  <data name="requestCancellation" xml:space="preserve">
+    <value>Stornierung beantragen</value>
+  </data>
+  <data name="invoiceNumber" xml:space="preserve">
+    <value>Rechnungsnummer</value>
+  </data>
+  <data name="requestedAt" xml:space="preserve">
+    <value>Beantragt am</value>
+  </data>
+  <data name="requestNumberVoid" xml:space="preserve">
+    <value>Nummernsperrung beantragen</value>
+  </data>
 </root>

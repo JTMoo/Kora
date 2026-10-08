@@ -288,4 +288,55 @@
   <data name="debitNoteSavedToast" xml:space="preserve">
     <value>Debit note {0} saved.</value>
   </data>
+  <data name="sifenOperations" xml:space="preserve">
+    <value>SIFEN operations</value>
+  </data>
+  <data name="contingencyTab" xml:space="preserve">
+    <value>Contingency</value>
+  </data>
+  <data name="cancellationTab" xml:space="preserve">
+    <value>Cancellation</value>
+  </data>
+  <data name="numberVoidTab" xml:space="preserve">
+    <value>Number void</value>
+  </data>
+  <data name="stuckTransmissionsTab" xml:space="preserve">
+    <value>Stuck transmissions</value>
+  </data>
+  <data name="contingencyRangeConfigured" xml:space="preserve">
+    <value>Range configured</value>
+  </data>
+  <data name="rangeStart" xml:space="preserve">
+    <value>Range start</value>
+  </data>
+  <data name="rangeEnd" xml:space="preserve">
+    <value>Range end</value>
+  </data>
+  <data name="contingencyNextNumber" xml:space="preserve">
+    <value>Next number</value>
+  </data>
+  <data name="contingencyRemaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="enableContingencyMode" xml:space="preserve">
+    <value>Enable contingency mode</value>
+  </data>
+  <data name="disableContingencyMode" xml:space="preserve">
+    <value>Disable contingency mode</value>
+  </data>
+  <data name="saveRange" xml:space="preserve">
+    <value>Save range</value>
+  </data>
+  <data name="requestCancellation" xml:space="preserve">
+    <value>Request cancellation</value>
+  </data>
+  <data name="invoiceNumber" xml:space="preserve">
+    <value>Invoice number</value>
+  </data>
+  <data name="requestedAt" xml:space="preserve">
+    <value>Requested at</value>
+  </data>
+  <data name="requestNumberVoid" xml:space="preserve">
+    <value>Request number void</value>
+  </data>
 </root>

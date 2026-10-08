@@ -143,4 +143,13 @@
   <data name="contactToSubscribe" xml:space="preserve">
     <value>Contacte a su proveedor de Kora para suscribirse.</value>
   </data>
+  <data name="machineId" xml:space="preserve">
+    <value>ID de Máquina</value>
+  </data>
+  <data name="discountApplied" xml:space="preserve">
+    <value>Descuento Aplicado</value>
+  </data>
+  <data name="effectivePrice" xml:space="preserve">
+    <value>Precio Efectivo</value>
+  </data>
 </root>
