@@ -4,9 +4,11 @@ export type PaymentMethod = "Cash" | "BankTransfer" | "Check" | "BancardQr" | "O
 
 export type SupplierInvoiceStatus = "Open" | "PartiallyPaid" | "Paid" | "Overdue";
 
-export type SupplierInvoice = { number: string; date: string; expirationDate: string; total: number; supplierId: string; supplierName: string; amountPaid: number; amountDue: number; status: SupplierInvoiceStatus };
+export type SupplierInvoiceLine = { code: string; name: string; amount: number; unitPrice: number };
 
-export type NewSupplierInvoice = { number: string; supplierId: string; date: string; expirationDate: string; total: number };
+export type SupplierInvoice = { number: string; date: string; expirationDate: string; total: number; supplierId: string; supplierName: string; amountPaid: number; amountDue: number; status: SupplierInvoiceStatus; items: SupplierInvoiceLine[] };
+
+export type NewSupplierInvoice = { number: string; supplierId: string; date: string; expirationDate: string; total: number; items?: { code: string; amount: number; unitPrice: number }[] };
 
 export type SupplierInvoiceFilter = { supplierId?: string; cursor?: string; pageSize: number };
 

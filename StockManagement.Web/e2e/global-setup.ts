@@ -8,7 +8,7 @@ export default async function globalSetup()
 {
 	const client = new Client(postgres);
 	await client.connect();
-	await client.query('TRUNCATE "StockItems", "Customers", "Invoices", "InvoiceItems", "Payments", "Transactions", "CreditNotes", "PendingTransmissions", "PaymentLinks", "RemissionNotes", "RemissionNoteItems", "PendingRemisionTransmissions", "GoodsImportDocuments", "GoodsImportDocumentItems", "DebitNotes", "DebitNoteItems", "PendingDebitNoteTransmissions", "CancellationRequests", "InvoiceNumberVoids", "CashRegisterSessions", "CashMovements"');
+	await client.query('TRUNCATE "StockItems", "Customers", "Invoices", "InvoiceItems", "Payments", "Transactions", "CreditNotes", "PendingTransmissions", "PaymentLinks", "RemissionNotes", "RemissionNoteItems", "PendingRemisionTransmissions", "GoodsImportDocuments", "GoodsImportDocumentItems", "DebitNotes", "DebitNoteItems", "PendingDebitNoteTransmissions", "CancellationRequests", "InvoiceNumberVoids", "CashRegisterSessions", "CashMovements", "SupplierInvoiceItems"');
 
 	// The AddUsers migration seeds the admin with MustChangePassword = true (#244); these specs log in and
 	// go straight to their own feature, not the forced change-password screen, so clear it here same as the

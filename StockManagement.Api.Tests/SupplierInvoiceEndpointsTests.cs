@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using StockManagement.Api.Features.Payments;
 using StockManagement.Api.Features.Reports;
+using StockManagement.Api.Features.StockItems;
 using StockManagement.Api.Features.SupplierInvoices;
 using StockManagement.Kernel.Database.Interfaces;
 using StockManagement.Kernel.Model;
@@ -27,6 +28,7 @@ public sealed class SupplierInvoiceEndpointsTests
 
 		_supplier = new Supplier("Acme Imports");
 		await _factory.ScopedServices.GetRequiredService<ISupplierServiceProvider>().AddSupplierAsync(_supplier);
+		await _factory.ScopedServices.GetRequiredService<IStockItemServiceProvider>().AddStockItemAsync(new StockItem("Screw", code: "A1", amount: 10, price: 5000));
 	}
 
 	[TestCleanup]
@@ -223,6 +225,53 @@ public sealed class SupplierInvoiceEndpointsTests
 		Assert.AreEqual(2500m, body.Totals.Days90Plus);
 		Assert.AreEqual(2, body.Items.Count);
 		CollectionAssert.AreEquivalent(new[] { 0m, 2500m }, body.Items.Select(row => row.Days90Plus).ToList());
+	}
+
+	[TestMethod]
+	public async Task CreateSupplierInvoice_WithItems_Returns201AndChecksInStockAndComputesTotal()
+	{
+		// Act
+		var response = await _client.PostAsJsonAsync("/api/supplier-invoices",
+			new CreateSupplierInvoiceRequest("SI-10", _supplier.Id, DateTime.Now, DateTime.Now.AddDays(30), Total: 0, Items: [new("A1", 5, 1200m)]));
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+		var invoice = await response.Content.ReadAsAsync<SupplierInvoiceResponse>();
+		Assert.AreEqual(6000m, invoice.Total); // 5 * 1200, server-computed, ignoring the request's Total
+		Assert.AreEqual(5, invoice.Items.Single().Amount);
+		Assert.AreEqual(1200m, invoice.Items.Single().UnitPrice);
+
+		var stockItem = await _client.GetFromJsonAsync<StockItemResponse>("/api/stock-items/A1", ApiFactory.JsonOptions);
+		Assert.AreEqual(15, stockItem.Amount);
+	}
+
+	[TestMethod]
+	public async Task CreateSupplierInvoice_WithItems_UnknownStockItemCode_Returns404()
+	{
+		// Act
+		var response = await _client.PostAsJsonAsync("/api/supplier-invoices",
+			new CreateSupplierInvoiceRequest("SI-11", _supplier.Id, DateTime.Now, DateTime.Now.AddDays(30), Total: 0, Items: [new("unknown-code", 1, 100m)]));
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+
+		var stockItem = await _client.GetFromJsonAsync<StockItemResponse>("/api/stock-items/A1", ApiFactory.JsonOptions);
+		Assert.AreEqual(10, stockItem.Amount);
+	}
+
+	[TestMethod]
+	public async Task CreateSupplierInvoice_NoItems_KeepsFlatTotalBehavior()
+	{
+		// Act
+		await this.CreateSupplierInvoiceAsync("SI-12", 750);
+
+		// Assert
+		var invoice = await (await _client.GetAsync("/api/supplier-invoices/SI-12")).Content.ReadAsAsync<SupplierInvoiceResponse>();
+		Assert.AreEqual(750m, invoice.Total);
+		Assert.AreEqual(0, invoice.Items.Count);
+
+		var stockItem = await _client.GetFromJsonAsync<StockItemResponse>("/api/stock-items/A1", ApiFactory.JsonOptions);
+		Assert.AreEqual(10, stockItem.Amount);
 	}
 
 	private async Task CreateSupplierInvoiceAsync(string number, decimal total)
