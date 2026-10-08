@@ -41,6 +41,12 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(0);
 
+                    b.Property<string>("DefaultPrinterName")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("");
+
                     b.Property<string>("EstablishmentAddress")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -59,6 +65,11 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.Property<int>("FirstInvoiceNumber")
                         .HasColumnType("integer");
 
+                    b.Property<int>("KudeFormat")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.Property<int>("Language")
                         .HasColumnType("integer");
 
@@ -70,6 +81,16 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
                         .HasDefaultValue("001");
+
+                    b.Property<bool>("PrintOnSaleComplete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("ReceiptPaperWidthMm")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(80);
 
                     b.Property<string>("Ruc")
                         .IsRequired()
@@ -494,6 +515,34 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("InvoiceNumberVoids");
+                });
+
+            modelBuilder.Entity("StockManagement.Kernel.Model.LicenseState", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ActivatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ActivatedLicenseKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("HighWaterMarkUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MachineId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("TrialStartedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LicenseStates");
                 });
 
             modelBuilder.Entity("StockManagement.Kernel.Model.PaymentLink", b =>

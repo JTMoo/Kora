@@ -3,6 +3,7 @@ import type { ReactElement } from "react";
 import { vi } from "vitest";
 import type { Permission, UserRole } from "./api";
 import { AuthProvider } from "./auth";
+import { FeedbackProvider } from "./Feedback";
 import { I18nProvider } from "./i18n";
 import { ToastProvider } from "./Toast";
 
@@ -41,7 +42,7 @@ export function renderEnglish(ui: ReactElement, { authenticated = true, role = "
 		localStorage.setItem("auth.permissions", JSON.stringify(permissions));
 	}
 
-	return render(<I18nProvider culture="en-US"><AuthProvider><ToastProvider>{ui}</ToastProvider></AuthProvider></I18nProvider>);
+	return render(<I18nProvider culture="en-US"><AuthProvider><ToastProvider><FeedbackProvider>{ui}</FeedbackProvider></ToastProvider></AuthProvider></I18nProvider>);
 }
 
 export const screw = { id: "1", code: "A1", name: "Screw", description: "M6", location: "A-1", amount: 10, price: 5000, manufacturer: "None", factor: 0, purchasePrice: 0, purchaseExchangeRate: 0, additionalPurchaseCost: 0, minimumStock: 0, barcode: "" };

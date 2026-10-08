@@ -63,6 +63,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvid
 
 	public DbSet<CashRegisterSession> CashRegisterSessions => this.Set<CashRegisterSession>();
 
+	public DbSet<LicenseState> LicenseStates => this.Set<LicenseState>();
+
 
 	public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
 	{

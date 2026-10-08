@@ -9,6 +9,7 @@ export * from "./sales";
 export * from "./invoices";
 export * from "./settings";
 export * from "./companySettings";
+export * from "./printerSettings";
 export * from "./users";
 export * from "./auth";
 export * from "./import";
@@ -19,13 +20,19 @@ export * from "./remissionNotes";
 export * from "./payments";
 export * from "./payables";
 export * from "./cashRegister";
+export * from "./license";
+export * from "./feedback";
+export * from "./sifen";
 
 import { authApi } from "./auth";
 import { companySettingsApi } from "./companySettings";
+import { printerSettingsApi } from "./printerSettings";
 import { customersApi } from "./customers";
+import { feedbackApi } from "./feedback";
 import { goodsImportApi } from "./goodsImports";
 import { importApi } from "./import";
 import { invoicesApi } from "./invoices";
+import { licenseApi } from "./license";
 import { paymentsApi } from "./payments";
 import { payablesApi } from "./payables";
 import { cashRegisterApi } from "./cashRegister";
@@ -34,6 +41,7 @@ import { reportsApi } from "./reports";
 import { salesApi } from "./sales";
 import { searchApi } from "./search";
 import { settingsApi } from "./settings";
+import { sifenApi } from "./sifen";
 import { stockItemsApi } from "./stockItems";
 import { suppliersApi } from "./suppliers";
 import { usersApi } from "./users";
@@ -46,6 +54,7 @@ export const api = {
 	...invoicesApi,
 	...settingsApi,
 	...companySettingsApi,
+	...printerSettingsApi,
 	...usersApi,
 	...authApi,
 	...importApi,
@@ -55,5 +64,8 @@ export const api = {
 	...remissionNotesApi,
 	...paymentsApi,
 	...payablesApi,
-	...cashRegisterApi
+	...cashRegisterApi,
+	...licenseApi,
+	...feedbackApi,
+	...sifenApi
 };
