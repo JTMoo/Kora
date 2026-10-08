@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StockManagement.Auth.Core;
 using StockManagement.Customers.Core;
+using StockManagement.Api.Features.Auth;
 using StockManagement.Api.Features.Licensing;
+using StockManagement.Api.Security;
 using StockManagement.Feedback.Core;
 using StockManagement.Import.Core;
 using StockManagement.Infrastructure;
@@ -18,7 +20,8 @@ using StockManagement.Sifen.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var jwtSigningKey = builder.Configuration["Jwt:SigningKey"] ?? throw new InvalidOperationException("Jwt:SigningKey is missing.");
+var jwtSigningKey = JwtSigningKeyProvider.Resolve(builder.Configuration["Jwt:SigningKey"], builder.Environment.IsDevelopment());
+builder.Configuration["Jwt:SigningKey"] = jwtSigningKey; // keeps LoginEndpoint (reads IConfiguration) in sync with the resolved, possibly-generated key
 
 builder.Services
 	.AddAuthenticationJwtBearer(options => options.SigningKey = jwtSigningKey)
@@ -74,6 +77,7 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<ForcePasswordChangeMiddleware>();
 app.UseMiddleware<LicenseEnforcementMiddleware>();
 
 app.UseFastEndpoints(config =>
