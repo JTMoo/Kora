@@ -243,4 +243,16 @@
   <data name="statusRejected" xml:space="preserve">
     <value>Abgelehnt</value>
   </data>
+  <data name="statusError" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="no" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="reason" xml:space="preserve">
+    <value>Grund</value>
+  </data>
 </root>
