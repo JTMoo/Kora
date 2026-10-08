@@ -221,5 +221,23 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("documentDate", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Purchase IVA book.
+        /// </summary>
+        public static string purchaseIvaBookExport {
+            get {
+                return ResourceManager.GetString("purchaseIvaBookExport", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Download CSV.
+        /// </summary>
+        public static string downloadPurchaseIvaBook {
+            get {
+                return ResourceManager.GetString("downloadPurchaseIvaBook", resourceCulture);
+            }
+        }
     }
 }

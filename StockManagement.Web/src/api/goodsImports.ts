@@ -1,4 +1,4 @@
-import { send } from "./client";
+import { authHeaders, send } from "./client";
 
 export type Incoterm = "Exw" | "Fca" | "Fob" | "Cfr" | "Cif" | "Cpt" | "Cip" | "Dap" | "Ddp";
 
@@ -17,7 +17,8 @@ export type GoodsImportDocumentFilter = { cursor?: string; pageSize: number };
 export const goodsImportApi = {
 	listGoodsImportDocuments: (filter: GoodsImportDocumentFilter, signal?: AbortSignal) => send<GoodsImportDocumentListResult>(`/goods-import-documents?${goodsImportFilterQuery(filter)}`, { signal }),
 	getGoodsImportDocument: (id: string, signal?: AbortSignal) => send<GoodsImportDocument>(`/goods-import-documents/${encodeURIComponent(id)}`, { signal }),
-	createGoodsImportDocument: (document: NewGoodsImportDocument) => send<GoodsImportDocument>("/goods-import-documents", { method: "POST", body: JSON.stringify(document) })
+	createGoodsImportDocument: (document: NewGoodsImportDocument) => send<GoodsImportDocument>("/goods-import-documents", { method: "POST", body: JSON.stringify(document) }),
+	downloadPurchaseIvaBook: (from: string, to: string) => fetch(`/api/goods-import-documents/iva-book?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`, { headers: authHeaders() })
 };
 
 function goodsImportFilterQuery(filter: GoodsImportDocumentFilter): string

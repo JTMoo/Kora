@@ -98,4 +98,19 @@ public sealed class LicenseCalculatorTests
 		// Assert
 		Assert.AreEqual(LicenseStatus.Locked, snapshot.Status);
 	}
+
+	[TestMethod]
+	public void Compute_ActiveTokenWithDiscount_CarriesDiscountIntoSnapshot()
+	{
+		// Arrange
+		var state = new LicenseState { TrialStartedAtUtc = TrialStart };
+		var token = new LicenseToken("Acme", LicensePlan.Monthly, TrialStart, TrialStart.AddDays(30), DiscountPercent: 20, EffectivePricePyg: 120_000);
+
+		// Act
+		var snapshot = LicenseCalculator.Compute(state, token, Options, TrialStart.AddDays(20));
+
+		// Assert
+		Assert.AreEqual(20, snapshot.DiscountPercent);
+		Assert.AreEqual(120_000, snapshot.EffectivePricePyg);
+	}
 }
