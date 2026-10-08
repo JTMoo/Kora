@@ -237,4 +237,43 @@
   <data name="receiptPaperWidthMmOutOfRange" xml:space="preserve">
     <value>Die Bonpapierbreite muss zwischen 20 und 300 mm liegen.</value>
   </data>
+  <data name="backups" xml:space="preserve">
+    <value>Backups</value>
+  </data>
+  <data name="createBackup" xml:space="preserve">
+    <value>Backup erstellen</value>
+  </data>
+  <data name="noBackupsYet" xml:space="preserve">
+    <value>Noch keine Backups</value>
+  </data>
+  <data name="backupDate" xml:space="preserve">
+    <value>Erstellt</value>
+  </data>
+  <data name="backupSize" xml:space="preserve">
+    <value>Größe</value>
+  </data>
+  <data name="download" xml:space="preserve">
+    <value>Herunterladen</value>
+  </data>
+  <data name="restoreBackup" xml:space="preserve">
+    <value>Aus Datei wiederherstellen</value>
+  </data>
+  <data name="restoreWarning" xml:space="preserve">
+    <value>Die Wiederherstellung ersetzt alle aktuellen Daten durch die des Backups. Die App danach neu starten.</value>
+  </data>
+  <data name="restoreConfirmCheckbox" xml:space="preserve">
+    <value>Mir ist bewusst, dass dies alle aktuellen Daten überschreibt</value>
+  </data>
+  <data name="restore" xml:space="preserve">
+    <value>Wiederherstellen</value>
+  </data>
+  <data name="backupCreatedToast" xml:space="preserve">
+    <value>Backup erstellt</value>
+  </data>
+  <data name="restoreSucceededMessage" xml:space="preserve">
+    <value>Wiederherstellung abgeschlossen. Die App jetzt neu starten.</value>
+  </data>
+  <data name="confirmRequired" xml:space="preserve">
+    <value>Sie müssen vor der Wiederherstellung bestätigen.</value>
+  </data>
 </root>

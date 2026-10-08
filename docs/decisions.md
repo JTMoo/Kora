@@ -46,6 +46,7 @@ Generated from `docs/adr/*.md` by `scripts/generate-adr-index.sh`. Don't hand-ed
 | [0041](adr/0041-licensing.md) | Licensing (trial + subscription) | Proposed |
 | [0042](adr/0042-feedback-and-error-reporting.md) | Feedback and error reporting | Proposed |
 | [0043](adr/0043-usage-telemetry.md) | Usage telemetry | Proposed |
+| [0045](adr/0045-backup-and-restore.md) | Backup and restore | Proposed |
 <!-- ADR-INDEX:END -->
 
 ## Standing decisions

@@ -237,4 +237,43 @@
   <data name="receiptPaperWidthMmOutOfRange" xml:space="preserve">
     <value>Receipt paper width must be between 20 and 300 mm.</value>
   </data>
+  <data name="backups" xml:space="preserve">
+    <value>Backups</value>
+  </data>
+  <data name="createBackup" xml:space="preserve">
+    <value>Create backup</value>
+  </data>
+  <data name="noBackupsYet" xml:space="preserve">
+    <value>No backups yet</value>
+  </data>
+  <data name="backupDate" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="backupSize" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="restoreBackup" xml:space="preserve">
+    <value>Restore from file</value>
+  </data>
+  <data name="restoreWarning" xml:space="preserve">
+    <value>Restoring replaces all current data with the backup's. Restart the app afterwards.</value>
+  </data>
+  <data name="restoreConfirmCheckbox" xml:space="preserve">
+    <value>I understand this will overwrite all current data</value>
+  </data>
+  <data name="restore" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="backupCreatedToast" xml:space="preserve">
+    <value>Backup created</value>
+  </data>
+  <data name="restoreSucceededMessage" xml:space="preserve">
+    <value>Restore complete. Restart the app now.</value>
+  </data>
+  <data name="confirmRequired" xml:space="preserve">
+    <value>You must confirm before restoring.</value>
+  </data>
 </root>
