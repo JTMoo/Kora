@@ -349,6 +349,14 @@ namespace StockManagement.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Manage backups.
+        /// </summary>
+        public static string permBackupManage {
+            get {
+                return ResourceManager.GetString("permBackupManage", resourceCulture);
+            }
+        }
+        /// <summary>
         ///   Looks up a localized string similar to Manage users.
         /// </summary>
         public static string permUsersManage {
