@@ -53,4 +53,9 @@ public class SupplierInvoice : BaseDocument
 	public Supplier Supplier { get; set; }
 
 	public List<Payment> Payments { get; set; } = [];
+
+	/// <summary>
+	/// Stock items received under this bill (#246); empty for a pure service invoice with no stock effect
+	/// </summary>
+	public List<SupplierInvoiceItem> Items { get; set; } = [];
 }

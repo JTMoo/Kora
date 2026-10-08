@@ -8,7 +8,12 @@ export default async function globalSetup()
 {
 	const client = new Client(postgres);
 	await client.connect();
-	await client.query('TRUNCATE "StockItems", "Customers", "Invoices", "InvoiceItems", "Payments", "Transactions", "CreditNotes", "PendingTransmissions", "PaymentLinks", "RemissionNotes", "RemissionNoteItems", "PendingRemisionTransmissions", "GoodsImportDocuments", "GoodsImportDocumentItems", "DebitNotes", "DebitNoteItems", "PendingDebitNoteTransmissions", "CancellationRequests", "InvoiceNumberVoids", "CashRegisterSessions", "CashMovements"');
+	await client.query('TRUNCATE "StockItems", "Customers", "Invoices", "InvoiceItems", "Payments", "Transactions", "CreditNotes", "PendingTransmissions", "PaymentLinks", "RemissionNotes", "RemissionNoteItems", "PendingRemisionTransmissions", "GoodsImportDocuments", "GoodsImportDocumentItems", "DebitNotes", "DebitNoteItems", "PendingDebitNoteTransmissions", "CancellationRequests", "InvoiceNumberVoids", "CashRegisterSessions", "CashMovements", "SupplierInvoiceItems"');
+
+	// The AddUsers migration seeds the admin with MustChangePassword = true (#244); these specs log in and
+	// go straight to their own feature, not the forced change-password screen, so clear it here same as the
+	// API test harness's ApiFactory.CreateAuthenticatedClientAsync does.
+	await client.query('UPDATE "Users" SET "MustChangePassword" = false WHERE "Username" = \'admin\'');
 	await client.query(
 		'INSERT INTO "StockItems" ("Id", "Name", "Code", "Amount", "Description", "Location", "Price", "Factor", "Manufacturer", "Miscellaneous") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10), ($11, $12, $13, $14, $15, $16, $17, $18, $19, $20)',
 		[

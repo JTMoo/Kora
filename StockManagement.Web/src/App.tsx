@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 import { api, setLicenseLockedHandler, type Invoice, type LicenseInfo } from "./api";
 import { useAuth } from "./auth";
 import { useFeedback } from "./Feedback";
+import { ChangePasswordPage } from "./features/auth/ChangePasswordPage";
 import { LoginPage } from "./features/auth/LoginPage";
 import { cashRegisterRoute } from "./features/cash-register/route";
+import { creditNotesRoute } from "./features/credit-notes/route";
 import { customersRoute } from "./features/customers/route";
+import { debitNotesRoute } from "./features/debit-notes/route";
 import { goodsImportsRoute } from "./features/goods-imports/route";
 import { purchaseIvaBookExportRoute } from "./features/goods-imports/purchaseIvaBookRoute";
 import { invoicesRoute } from "./features/invoices/route";
@@ -28,15 +31,16 @@ import type { NavRoute, View } from "./routes";
 import { useLoad } from "./useLoad";
 
 // Same order and icons as the WPF menu (FontAwesome Wrench, AddressBook, Inbox)
-const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, goodsImportsRoute, purchaseIvaBookExportRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, sifenOperationsRoute, companySettingsRoute, printerSettingsRoute, settingsRoute, usersRoute, licensingRoute];
+const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, creditNotesRoute, debitNotesRoute, goodsImportsRoute, purchaseIvaBookExportRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, sifenOperationsRoute, companySettingsRoute, printerSettingsRoute, settingsRoute, usersRoute, licensingRoute];
 
 export function App()
 {
-	const { username } = useAuth();
+	const { username, mustChangePassword } = useAuth();
 
 	// A separate component, mounted only once logged in: its hooks (the license fetch below) must not run,
 	// and so must not fetch with a missing auth token, while the login screen is still showing.
 	if (!username) return <LoginPage />;
+	if (mustChangePassword) return <ChangePasswordPage />;
 	return <AuthenticatedApp />;
 }
 

@@ -35,6 +35,35 @@ describe("AuthProvider", () =>
 		expect(localStorage.getItem("auth.token")).toBeNull();
 	});
 
+	it("Login_MustChangePassword_SetsFlagAndPersists", async () =>
+	{
+		// Arrange
+		mockApi({ "POST /api/auth/login": { body: { token: "the-token", username: "admin", mustChangePassword: true } } });
+		const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+		// Act
+		await act(() => result.current.login("admin", "ChangeMe123!"));
+
+		// Assert
+		expect(result.current.mustChangePassword).toBe(true);
+		expect(localStorage.getItem("auth.mustChangePassword")).toBe("true");
+	});
+
+	it("PasswordChanged_AfterForcedChange_ClearsFlag", async () =>
+	{
+		// Arrange
+		mockApi({ "POST /api/auth/login": { body: { token: "the-token", username: "admin", mustChangePassword: true } } });
+		const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+		await act(() => result.current.login("admin", "ChangeMe123!"));
+
+		// Act
+		act(() => result.current.passwordChanged());
+
+		// Assert
+		expect(result.current.mustChangePassword).toBe(false);
+		expect(localStorage.getItem("auth.mustChangePassword")).toBe("false");
+	});
+
 	it("ExistingSession_Unauthorized_LogsOut", async () =>
 	{
 		// Arrange

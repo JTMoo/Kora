@@ -907,6 +907,9 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1367,6 +1370,49 @@ namespace StockManagement.Infrastructure.Database.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("SupplierInvoiceId");
                         });
+
+                    b.OwnsMany("StockManagement.Kernel.Model.SupplierInvoiceItem", "Items", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Amount")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("StockItemId")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("SupplierInvoiceId")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<decimal>("UnitPrice")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("numeric(18,2)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("StockItemId");
+
+                            b1.HasIndex("SupplierInvoiceId");
+
+                            b1.ToTable("SupplierInvoiceItems", (string)null);
+
+                            b1.HasOne("StockManagement.Kernel.Model.StockItem", "StockItem")
+                                .WithMany()
+                                .HasForeignKey("StockItemId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierInvoiceId");
+
+                            b1.Navigation("StockItem");
+                        });
+
+                    b.Navigation("Items");
 
                     b.Navigation("Payments");
 

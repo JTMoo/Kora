@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using StockManagement.Api.Features.Auth;
+using StockManagement.Kernel.Database.Interfaces;
+using StockManagement.Kernel.Model;
 
 namespace StockManagement.Api.Tests;
 
@@ -41,6 +43,19 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
 
 	/// <summary>
+	/// Every client from this factory gets its own fake "X-Forwarded-For" so LoginEndpoint's per-IP throttle
+	/// (#238) counts each test's requests separately instead of sharing one bucket across the whole test run
+	/// (TestServer gives every request the same, unset <c>RemoteIpAddress</c>). Real clients don't send this
+	/// header, so production throttling still keys off the actual remote IP.
+	/// </summary>
+	public new HttpClient CreateClient()
+	{
+		var client = base.CreateClient();
+		client.DefaultRequestHeaders.Add("X-Forwarded-For", Guid.NewGuid().ToString());
+		return client;
+	}
+
+	/// <summary>
 	/// A client logged in as the seeded admin user, with the JWT set as a bearer token
 	/// </summary>
 	public Task<HttpClient> CreateAuthenticatedClientAsync()
@@ -49,10 +64,20 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 	}
 
 	/// <summary>
-	/// A client logged in as <paramref name="username"/>, with the JWT set as a bearer token
+	/// A client logged in as <paramref name="username"/>, with the JWT set as a bearer token. Clears
+	/// <see cref="User.MustChangePassword"/> first if set (true for the seeded admin, #244) so callers get a
+	/// client that can reach every endpoint without going through <c>ChangePasswordEndpoint</c> themselves;
+	/// tests of that forced-change gate log in directly instead.
 	/// </summary>
 	public async Task<HttpClient> CreateAuthenticatedClientAsync(string username, string password)
 	{
+		var userServiceProvider = this.ScopedServices.GetRequiredService<IUserServiceProvider>();
+		if (await userServiceProvider.GetUserByUsernameAsync(username) is { MustChangePassword: true } user)
+		{
+			user.MustChangePassword = false;
+			await userServiceProvider.UpdateUserAsync(user);
+		}
+
 		var client = this.CreateClient();
 		var response = await client.PostAsJsonAsync("/api/auth/login", new LoginRequest(username, password));
 		var body = await response.Content.ReadAsAsync<LoginResponse>();

@@ -139,5 +139,59 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("passwordRequired", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Change password.
+        /// </summary>
+        public static string changePassword {
+            get {
+                return ResourceManager.GetString("changePassword", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Current password.
+        /// </summary>
+        public static string currentPassword {
+            get {
+                return ResourceManager.GetString("currentPassword", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to New password.
+        /// </summary>
+        public static string newPassword {
+            get {
+                return ResourceManager.GetString("newPassword", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Password changed..
+        /// </summary>
+        public static string passwordChanged {
+            get {
+                return ResourceManager.GetString("passwordChanged", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You must change your password before continuing..
+        /// </summary>
+        public static string mustChangePasswordMessage {
+            get {
+                return ResourceManager.GetString("mustChangePasswordMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Current password is incorrect..
+        /// </summary>
+        public static string incorrectCurrentPassword {
+            get {
+                return ResourceManager.GetString("incorrectCurrentPassword", resourceCulture);
+            }
+        }
     }
 }

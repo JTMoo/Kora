@@ -40,7 +40,7 @@ public sealed record InvalidExcelFileResponse(string Reason);
 
 /// <remarks>Parses the first worksheet and splits duplicates, then stores the result as a new batch; nothing is written to <see cref="ImportTarget"/> until it is committed (docs/adr/0015-generic-import-pipeline.md).</remarks>
 public class PreviewImportEndpoint(IImportBatchService importBatchService, ILogger<PreviewImportEndpoint> logger)
-	: Endpoint<PreviewImportRequest, Results<Ok<ImportBatchResponse>, BadRequest<InvalidExcelFileResponse>>>
+	: Endpoint<PreviewImportRequest, Results<Ok<ImportBatchResponse>, BadRequest<InvalidExcelFileResponse>, ForbidHttpResult>>
 {
 	private readonly IImportBatchService _importBatchService = importBatchService;
 	private readonly ILogger<PreviewImportEndpoint> _logger = logger;
@@ -53,8 +53,14 @@ public class PreviewImportEndpoint(IImportBatchService importBatchService, ILogg
 		this.Permissions(Permission.StockItemsWrite, Permission.CustomersWrite, Permission.SalesWrite);
 	}
 
-	public override async Task<Results<Ok<ImportBatchResponse>, BadRequest<InvalidExcelFileResponse>>> ExecuteAsync(PreviewImportRequest request, CancellationToken cancellationToken)
+	public override async Task<Results<Ok<ImportBatchResponse>, BadRequest<InvalidExcelFileResponse>, ForbidHttpResult>> ExecuteAsync(PreviewImportRequest request, CancellationToken cancellationToken)
 	{
+		var required = Permission.RequiredForImportTarget(request.Target);
+		if (!this.User.Claims.Any(claim => claim.Type == "permissions" && claim.Value == required))
+		{
+			return TypedResults.Forbid();
+		}
+
 		await using var stream = request.File.OpenReadStream();
 
 		try
