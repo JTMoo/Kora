@@ -30,5 +30,17 @@ internal sealed class SupplierInvoiceConfiguration : IEntityTypeConfiguration<Su
 		});
 		builder.Navigation(invoice => invoice.Payments).AutoInclude();
 		builder.Navigation(invoice => invoice.Supplier).AutoInclude();
+
+		builder.OwnsMany(invoice => invoice.Items, item =>
+		{
+			item.WithOwner().HasForeignKey("SupplierInvoiceId");
+			item.Property<Guid>("Id").ValueGeneratedOnAdd();
+			item.HasKey("Id");
+			item.Property(line => line.UnitPrice).HasPrecision(18, 2);
+			item.HasOne(line => line.StockItem).WithMany().IsRequired();
+			item.Navigation(line => line.StockItem).AutoInclude();
+			item.ToTable("SupplierInvoiceItems");
+		});
+		builder.Navigation(invoice => invoice.Items).AutoInclude();
 	}
 }

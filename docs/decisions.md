@@ -43,6 +43,7 @@ Generated from `docs/adr/*.md` by `scripts/generate-adr-index.sh`. Don't hand-ed
 | [0034](adr/0034-open-invoice-import.md) | Open invoices as an import target | Proposed |
 | [0035](adr/0035-kude-generation.md) | KuDE generation for SIFEN documents | Accepted |
 | [0036](adr/0036-debit-notes.md) | Nota de Débito Electrónica | Proposed |
+| [0049](adr/0049-domestic-supplier-purchase-updates-stock.md) | Domestic supplier purchases update stock | Proposed |
 <!-- ADR-INDEX:END -->
 
 ## Standing decisions
