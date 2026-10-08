@@ -144,4 +144,22 @@
   <data name="passwordRequired" xml:space="preserve">
     <value>La contraseña es obligatoria.</value>
   </data>
+  <data name="changePassword" xml:space="preserve">
+    <value>Cambiar contraseña</value>
+  </data>
+  <data name="currentPassword" xml:space="preserve">
+    <value>Contraseña actual</value>
+  </data>
+  <data name="newPassword" xml:space="preserve">
+    <value>Nueva contraseña</value>
+  </data>
+  <data name="passwordChanged" xml:space="preserve">
+    <value>Contraseña cambiada.</value>
+  </data>
+  <data name="mustChangePasswordMessage" xml:space="preserve">
+    <value>Debe cambiar su contraseña antes de continuar.</value>
+  </data>
+  <data name="incorrectCurrentPassword" xml:space="preserve">
+    <value>La contraseña actual es incorrecta.</value>
+  </data>
 </root>

@@ -49,6 +49,17 @@ describe("App", () =>
 		expect(screen.queryByRole("button", { name: "Settings" })).not.toBeInTheDocument();
 	});
 
+	it("MustChangePassword_ShowsChangePasswordScreenInsteadOfShell", () =>
+	{
+		// Arrange + Act
+		localStorage.setItem("auth.mustChangePassword", "true");
+		renderEnglish(<App />);
+
+		// Assert
+		expect(screen.getByRole("heading", { name: "Change password" })).toBeInTheDocument();
+		expect(screen.queryByRole("button", { name: "Settings" })).not.toBeInTheDocument();
+	});
+
 	it("WithoutUsersManage_HidesUsersNavItem", () =>
 	{
 		// Arrange + Act
