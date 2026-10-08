@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using MongoDB.Bson.Serialization.Attributes;
 using StockManagement.Kernel.Database;
 
 namespace StockManagement.Kernel.Model;
@@ -119,7 +118,6 @@ public class StockItem : BaseDocument
 	}
 
 	[Display(ResourceType = typeof(Language.StockItems), Name = nameof(Language.StockItems.manufacturer))]
-	[BsonSerializer(typeof(ManufacturerSerializer))]
 	public string Manufacturer
 	{
 		get { return _manufacturer; }

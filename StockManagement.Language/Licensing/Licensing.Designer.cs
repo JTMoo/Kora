@@ -284,5 +284,32 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("contactToSubscribe", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string machineId {
+            get {
+                return ResourceManager.GetString("machineId", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string discountApplied {
+            get {
+                return ResourceManager.GetString("discountApplied", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string effectivePrice {
+            get {
+                return ResourceManager.GetString("effectivePrice", resourceCulture);
+            }
+        }
     }
 }

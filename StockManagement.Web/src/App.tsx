@@ -7,6 +7,7 @@ import { LoginPage } from "./features/auth/LoginPage";
 import { cashRegisterRoute } from "./features/cash-register/route";
 import { customersRoute } from "./features/customers/route";
 import { goodsImportsRoute } from "./features/goods-imports/route";
+import { purchaseIvaBookExportRoute } from "./features/goods-imports/purchaseIvaBookRoute";
 import { invoicesRoute } from "./features/invoices/route";
 import { LicenseBanner } from "./features/licensing/LicenseBanner";
 import { LicenseLockedScreen } from "./features/licensing/LicenseLockedScreen";
@@ -17,6 +18,7 @@ import { remissionNotesRoute } from "./features/remission-notes/route";
 import { salesRoute } from "./features/sales/route";
 import { reportsRoute } from "./features/reports/route";
 import { CommandPalette } from "./features/search/CommandPalette";
+import { sifenOperationsRoute } from "./features/sifen/route";
 import { backupsRoute, companySettingsRoute, printerSettingsRoute, settingsRoute } from "./features/settings/routes";
 import { stockItemsRoute } from "./features/stock-items/route";
 import { suppliersRoute } from "./features/suppliers/route";
@@ -26,7 +28,7 @@ import type { NavRoute, View } from "./routes";
 import { useLoad } from "./useLoad";
 
 // Same order and icons as the WPF menu (FontAwesome Wrench, AddressBook, Inbox)
-const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, goodsImportsRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, companySettingsRoute, printerSettingsRoute, backupsRoute, settingsRoute, usersRoute, licensingRoute];
+const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, goodsImportsRoute, purchaseIvaBookExportRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, sifenOperationsRoute, companySettingsRoute, printerSettingsRoute, backupsRoute, settingsRoute, usersRoute, licensingRoute];
 
 export function App()
 {
