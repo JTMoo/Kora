@@ -5,13 +5,16 @@ const tokenKey = "auth.token";
 const usernameKey = "auth.username";
 const roleKey = "auth.role";
 const permissionsKey = "auth.permissions";
+const mustChangePasswordKey = "auth.mustChangePassword";
 
 type Auth = {
 	username: string | null;
 	role: UserRole | null;
 	permissions: Permission[];
+	mustChangePassword: boolean;
 	hasPermission: (permission: Permission) => boolean;
 	login: (username: string, password: string) => Promise<Result<LoginResult>>;
+	passwordChanged: () => void;
 	logout: () => void;
 };
 
@@ -65,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode })
 	});
 	const [role, setRole] = useState<UserRole | null>(() => readStorage(roleKey) as UserRole | null);
 	const [permissions, setPermissions] = useState<Permission[]>(readPermissions);
+	const [mustChangePassword, setMustChangePassword] = useState(() => readStorage(mustChangePasswordKey) === "true");
 
 	useEffect(() =>
 	{
@@ -81,12 +85,21 @@ export function AuthProvider({ children }: { children: ReactNode })
 			setUsername(result.value.username);
 			setRole(result.value.role);
 			setPermissions(result.value.permissions);
+			setMustChangePassword(result.value.mustChangePassword);
 			writeStorage(tokenKey, result.value.token);
 			writeStorage(usernameKey, result.value.username);
 			writeStorage(roleKey, result.value.role);
 			writeStorage(permissionsKey, JSON.stringify(result.value.permissions));
+			writeStorage(mustChangePasswordKey, String(result.value.mustChangePassword));
 		}
 		return result;
+	}
+
+	// Called once ChangePasswordPage's own submit got a 200 back (ADR-0046); unblocks the rest of the app
+	function passwordChanged()
+	{
+		setMustChangePassword(false);
+		writeStorage(mustChangePasswordKey, "false");
 	}
 
 	function logout()
@@ -95,10 +108,12 @@ export function AuthProvider({ children }: { children: ReactNode })
 		setUsername(null);
 		setRole(null);
 		setPermissions([]);
+		setMustChangePassword(false);
 		writeStorage(tokenKey, null);
 		writeStorage(usernameKey, null);
 		writeStorage(roleKey, null);
 		writeStorage(permissionsKey, null);
+		writeStorage(mustChangePasswordKey, null);
 	}
 
 	function hasPermission(permission: Permission)
@@ -106,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode })
 		return permissions.includes(permission);
 	}
 
-	return <AuthContext.Provider value={{ username, role, permissions, hasPermission, login, logout }}>{children}</AuthContext.Provider>;
+	return <AuthContext.Provider value={{ username, role, permissions, mustChangePassword, hasPermission, login, passwordChanged, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): Auth
