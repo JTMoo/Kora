@@ -261,4 +261,55 @@
   <data name="downloadIvaBook" xml:space="preserve">
     <value>Descargar CSV</value>
   </data>
+  <data name="sifenOperations" xml:space="preserve">
+    <value>Operaciones SIFEN</value>
+  </data>
+  <data name="contingencyTab" xml:space="preserve">
+    <value>Contingencia</value>
+  </data>
+  <data name="cancellationTab" xml:space="preserve">
+    <value>Cancelación</value>
+  </data>
+  <data name="numberVoidTab" xml:space="preserve">
+    <value>Inutilización</value>
+  </data>
+  <data name="stuckTransmissionsTab" xml:space="preserve">
+    <value>Transmisiones atascadas</value>
+  </data>
+  <data name="contingencyRangeConfigured" xml:space="preserve">
+    <value>Rango configurado</value>
+  </data>
+  <data name="rangeStart" xml:space="preserve">
+    <value>Inicio de rango</value>
+  </data>
+  <data name="rangeEnd" xml:space="preserve">
+    <value>Fin de rango</value>
+  </data>
+  <data name="contingencyNextNumber" xml:space="preserve">
+    <value>Próximo número</value>
+  </data>
+  <data name="contingencyRemaining" xml:space="preserve">
+    <value>Restante</value>
+  </data>
+  <data name="enableContingencyMode" xml:space="preserve">
+    <value>Activar modo contingencia</value>
+  </data>
+  <data name="disableContingencyMode" xml:space="preserve">
+    <value>Desactivar modo contingencia</value>
+  </data>
+  <data name="saveRange" xml:space="preserve">
+    <value>Guardar rango</value>
+  </data>
+  <data name="requestCancellation" xml:space="preserve">
+    <value>Solicitar cancelación</value>
+  </data>
+  <data name="invoiceNumber" xml:space="preserve">
+    <value>Número de factura</value>
+  </data>
+  <data name="requestedAt" xml:space="preserve">
+    <value>Solicitado el</value>
+  </data>
+  <data name="requestNumberVoid" xml:space="preserve">
+    <value>Solicitar inutilización</value>
+  </data>
 </root>

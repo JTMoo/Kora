@@ -122,4 +122,10 @@
   <data name="documentDate" xml:space="preserve">
     <value>Date</value>
   </data>
+  <data name="purchaseIvaBookExport" xml:space="preserve">
+    <value>Purchase IVA book</value>
+  </data>
+  <data name="downloadPurchaseIvaBook" xml:space="preserve">
+    <value>Download CSV</value>
+  </data>
 </root>
