@@ -13,7 +13,7 @@ public sealed class LicenseServiceTests
 {
 	private readonly Mock<ILicenseServiceProvider> _provider = new();
 	private readonly Mock<ILicenseTokenVerifier> _tokenVerifier = new();
-	private readonly FixedTimeProvider _time = new(new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc));
+	private readonly MutableTimeProvider _time = new(new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc));
 
 
 	[TestMethod]
@@ -27,6 +27,7 @@ public sealed class LicenseServiceTests
 
 		// Assert
 		Assert.AreEqual(LicenseStatus.Trial, snapshot.Status);
+		Assert.IsFalse(string.IsNullOrEmpty(snapshot.MachineId));
 		_provider.Verify(provider => provider.AddAsync(It.Is<LicenseState>(state => state.TrialStartedAtUtc == _time.GetUtcNow().UtcDateTime), It.IsAny<CancellationToken>()), Times.Once);
 	}
 
@@ -46,7 +47,25 @@ public sealed class LicenseServiceTests
 	}
 
 	[TestMethod]
-	public async Task TryActivateAsync_InvalidKey_LeavesStateUnchanged()
+	public async Task GetStatusAsync_ClockRolledBack_StatusUnaffected()
+	{
+		// Arrange: trial started 9 days ago, 1 day left - then the system clock gets rolled back a year
+		var state = new LicenseState { TrialStartedAtUtc = _time.GetUtcNow().UtcDateTime.AddDays(-9) };
+		_provider.Setup(provider => provider.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(state);
+		var service = this.CreateService();
+		await service.GetStatusAsync();
+		_time.UtcNow = _time.UtcNow.AddYears(-1);
+
+		// Act
+		var snapshot = await service.GetStatusAsync();
+
+		// Assert: clamped to the high-water mark, so the trial still reads as 1 day left, not reset
+		Assert.AreEqual(LicenseStatus.Trial, snapshot.Status);
+		Assert.AreEqual(1, snapshot.DaysRemaining);
+	}
+
+	[TestMethod]
+	public async Task TryActivateAsync_InvalidKey_LeavesActivationUnchanged()
 	{
 		// Arrange
 		_provider.Setup(provider => provider.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new LicenseState { TrialStartedAtUtc = _time.GetUtcNow().UtcDateTime });
@@ -58,7 +77,7 @@ public sealed class LicenseServiceTests
 		// Assert
 		Assert.IsFalse(success);
 		Assert.AreEqual(LicenseStatus.Trial, status.Status);
-		_provider.Verify(provider => provider.UpdateAsync(It.IsAny<LicenseState>(), It.IsAny<CancellationToken>()), Times.Never);
+		_provider.Verify(provider => provider.UpdateAsync(It.Is<LicenseState>(s => s.ActivatedLicenseKey != ""), It.IsAny<CancellationToken>()), Times.Never);
 	}
 
 	[TestMethod]
@@ -77,7 +96,7 @@ public sealed class LicenseServiceTests
 		Assert.IsTrue(success);
 		Assert.AreEqual(LicenseStatus.Active, status.Status);
 		Assert.AreEqual(LicensePlan.Yearly, status.Plan);
-		_provider.Verify(provider => provider.UpdateAsync(It.Is<LicenseState>(s => s.ActivatedLicenseKey == "good-key"), It.IsAny<CancellationToken>()), Times.Once);
+		_provider.Verify(provider => provider.UpdateAsync(It.Is<LicenseState>(s => s.ActivatedLicenseKey == "good-key"), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
 	}
 
 	[TestMethod]
@@ -93,7 +112,41 @@ public sealed class LicenseServiceTests
 
 		// Assert
 		Assert.IsFalse(success);
-		_provider.Verify(provider => provider.UpdateAsync(It.IsAny<LicenseState>(), It.IsAny<CancellationToken>()), Times.Never);
+		_provider.Verify(provider => provider.UpdateAsync(It.Is<LicenseState>(s => s.ActivatedLicenseKey != ""), It.IsAny<CancellationToken>()), Times.Never);
+	}
+
+	[TestMethod]
+	public async Task TryActivateAsync_KeyBoundToAnotherMachine_Rejected()
+	{
+		// Arrange
+		var state = new LicenseState { TrialStartedAtUtc = _time.GetUtcNow().UtcDateTime, MachineId = "this-machine" };
+		_provider.Setup(provider => provider.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(state);
+		var token = new LicenseToken("Acme", LicensePlan.Monthly, _time.GetUtcNow().UtcDateTime, _time.GetUtcNow().UtcDateTime.AddDays(30), MachineId: "other-machine");
+		_tokenVerifier.Setup(verifier => verifier.TryVerify("stolen-key", out token)).Returns(true);
+
+		// Act
+		var (success, status) = await this.CreateService().TryActivateAsync("stolen-key");
+
+		// Assert
+		Assert.IsFalse(success);
+		Assert.AreEqual(LicenseStatus.Trial, status.Status);
+		_provider.Verify(provider => provider.UpdateAsync(It.Is<LicenseState>(s => s.ActivatedLicenseKey != ""), It.IsAny<CancellationToken>()), Times.Never);
+	}
+
+	[TestMethod]
+	public async Task GetStatusAsync_ActivatedKeyNowBoundToAnotherMachine_TreatedAsUnlicensed()
+	{
+		// Arrange: a valid, unexpired key that was activated on a different machine than this one
+		var state = new LicenseState { TrialStartedAtUtc = _time.GetUtcNow().UtcDateTime.AddDays(-20), ActivatedLicenseKey = "copied-key", MachineId = "this-machine" };
+		_provider.Setup(provider => provider.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(state);
+		var token = new LicenseToken("Acme", LicensePlan.Monthly, _time.GetUtcNow().UtcDateTime, _time.GetUtcNow().UtcDateTime.AddDays(30), MachineId: "other-machine");
+		_tokenVerifier.Setup(verifier => verifier.TryVerify("copied-key", out token)).Returns(true);
+
+		// Act
+		var snapshot = await this.CreateService().GetStatusAsync();
+
+		// Assert: trial+grace already lapsed and the token doesn't count, so it reads as Locked
+		Assert.AreEqual(LicenseStatus.Locked, snapshot.Status);
 	}
 
 	private LicenseService CreateService()
@@ -103,10 +156,10 @@ public sealed class LicenseServiceTests
 	}
 
 
-	private sealed class FixedTimeProvider(DateTime utcNow) : TimeProvider
+	private sealed class MutableTimeProvider(DateTime utcNow) : TimeProvider
 	{
-		private readonly DateTimeOffset _utcNow = utcNow;
+		public DateTime UtcNow { get; set; } = utcNow;
 
-		public override DateTimeOffset GetUtcNow() => _utcNow;
+		public override DateTimeOffset GetUtcNow() => this.UtcNow;
 	}
 }

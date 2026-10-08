@@ -50,6 +50,22 @@ export function LicensingPage()
 					{t("yearlyPrice")}
 					<span>{formatNumber(license.yearlyPricePyg)}</span>
 				</label>
+				{license.discountPercent != null && (
+					<label>
+						{t("discountApplied")}
+						<span>{license.discountPercent}%</span>
+					</label>
+				)}
+				{license.effectivePricePyg != null && (
+					<label>
+						{t("effectivePrice")}
+						<span>{formatNumber(license.effectivePricePyg)}</span>
+					</label>
+				)}
+				<label>
+					{t("machineId")}
+					<span>{license.machineId}</span>
+				</label>
 			</div>
 
 			{hasPermission("Settings.Write") && (

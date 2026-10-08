@@ -73,7 +73,7 @@ public sealed class LicenseEndpointsTests
 	{
 		// Arrange: needs its own factory - the public key must be configured before the host builds
 		using var signingKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
-		using var factory = new ApiFactory(new Dictionary<string, string?> { ["Licensing:PublicKey"] = Convert.ToBase64String(signingKey.ExportSubjectPublicKeyInfo()) });
+		using var factory = new ApiFactory(new Dictionary<string, string?> { ["Licensing:PublicKeys:1"] = Convert.ToBase64String(signingKey.ExportSubjectPublicKeyInfo()) });
 		using var client = await factory.CreateAuthenticatedClientAsync();
 		var key = SignKey(signingKey, "Acme S.A.", LicensePlan.Yearly, DateTime.UtcNow.AddYears(1));
 
@@ -130,6 +130,6 @@ public sealed class LicenseEndpointsTests
 	{
 		var payloadBytes = JsonSerializer.SerializeToUtf8Bytes(new { Licensee = licensee, Plan = plan, IssuedAtUtc = DateTime.UtcNow, ExpiresAtUtc = expiresAtUtc });
 		var signature = signingKey.SignData(payloadBytes, HashAlgorithmName.SHA256);
-		return $"{Base64Url.EncodeToString(payloadBytes)}.{Base64Url.EncodeToString(signature)}";
+		return $"1.{Base64Url.EncodeToString(payloadBytes)}.{Base64Url.EncodeToString(signature)}";
 	}
 }
