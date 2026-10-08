@@ -1,4 +1,8 @@
 using System.Collections.Concurrent;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
 using StockManagement.Feedback.Core.Contracts;
 using StockManagement.Feedback.Relay;
@@ -10,7 +14,20 @@ builder.Services.AddHttpClient(nameof(GitHubIssueClient));
 builder.Services.AddSingleton<GitHubIssueClient>();
 builder.Services.AddHealthChecks();
 
+// Only honor X-Forwarded-For from configured reverse proxies (RelayOptions.TrustedProxies); unconfigured (default) keeps RemoteIpAddress, so a client can't spoof its own rate-limit bucket.
+var trustedProxies = (builder.Configuration.GetSection(RelayOptions.SectionName).Get<RelayOptions>()?.TrustedProxies ?? []).Select(IPAddress.Parse).ToList();
+if (trustedProxies.Count > 0)
+{
+	builder.Services.Configure<ForwardedHeadersOptions>(options =>
+	{
+		options.ForwardedHeaders = ForwardedHeaders.XForwardedFor;
+		foreach (var proxy in trustedProxies) options.KnownProxies.Add(proxy);
+	});
+}
+
 var app = builder.Build();
+
+if (trustedProxies.Count > 0) app.UseForwardedHeaders();
 
 app.MapHealthChecks("/health");
 
@@ -21,9 +38,10 @@ app.MapPost("/reports", async (UserReport report, HttpContext context, GitHubIss
 {
 	var relayOptions = options.Value;
 
-	if (context.Request.Headers["X-Relay-Secret"] != relayOptions.SharedSecret)
+	if (!IsSecretValid(context.Request.Headers["X-Relay-Secret"].ToString(), relayOptions.SharedSecret))
 		return Results.Unauthorized();
 
+	// Trusted only when ForwardedHeaders middleware above already rewrote it from a known proxy; otherwise this is the real connection.
 	var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 	var now = DateTimeOffset.UtcNow;
 	var window = requestsByIp.AddOrUpdate(ip,
@@ -38,3 +56,11 @@ app.MapPost("/reports", async (UserReport report, HttpContext context, GitHubIss
 });
 
 await app.RunAsync();
+
+/// <summary>Constant-time compare so timing can't be used to narrow down <see cref="RelayOptions.SharedSecret"/> byte-by-byte.</summary>
+static bool IsSecretValid(string provided, string expected)
+{
+	var providedBytes = Encoding.UTF8.GetBytes(provided);
+	var expectedBytes = Encoding.UTF8.GetBytes(expected);
+	return providedBytes.Length == expectedBytes.Length && CryptographicOperations.FixedTimeEquals(providedBytes, expectedBytes);
+}

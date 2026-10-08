@@ -259,6 +259,24 @@ namespace StockManagement.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to File is too large (max 20 MB)..
+        /// </summary>
+        public static string fileTooLarge {
+            get {
+                return ResourceManager.GetString("fileTooLarge", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Only .xlsx files are allowed..
+        /// </summary>
+        public static string fileTypeNotAllowed {
+            get {
+                return ResourceManager.GetString("fileTypeNotAllowed", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Imported.
         /// </summary>
         public static string statusImported {

@@ -47,6 +47,16 @@ public static class StockItemExtensions
 	}
 
 	/// <summary>
+	/// Sum of <c>Amount*UnitPrice</c> across a domestic purchase's lines (#246), rounded once at the end.
+	/// </summary>
+	/// <remarks>Rounds to <paramref name="currencyDecimalDigits"/> using <see cref="MidpointRounding.AwayFromZero"/>, same as <see cref="CalculateSalePrice"/>.</remarks>
+	public static decimal CalculatePurchaseTotal(IEnumerable<SupplierInvoiceItem> items, int currencyDecimalDigits)
+	{
+		var total = (items ?? []).Sum(item => item.Amount * item.UnitPrice);
+		return Math.Round(total, currencyDecimalDigits, MidpointRounding.AwayFromZero);
+	}
+
+	/// <summary>
 	/// Distinct manufacturer names in use, sorted.
 	/// </summary>
 	/// <remarks>Empty names are skipped; names differing only in case count once (first spelling wins).</remarks>

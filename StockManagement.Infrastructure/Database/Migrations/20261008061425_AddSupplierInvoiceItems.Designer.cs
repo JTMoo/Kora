@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StockManagement.Infrastructure.Database;
@@ -11,9 +12,11 @@ using StockManagement.Infrastructure.Database;
 namespace StockManagement.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261008061425_AddSupplierInvoiceItems")]
+    partial class AddSupplierInvoiceItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,12 +44,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(0);
 
-                    b.Property<string>("DefaultPrinterName")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("");
-
                     b.Property<string>("EstablishmentAddress")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -65,11 +62,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.Property<int>("FirstInvoiceNumber")
                         .HasColumnType("integer");
 
-                    b.Property<int>("KudeFormat")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
                     b.Property<int>("Language")
                         .HasColumnType("integer");
 
@@ -81,16 +73,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
                         .HasDefaultValue("001");
-
-                    b.Property<bool>("PrintOnSaleComplete")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("ReceiptPaperWidthMm")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(80);
 
                     b.Property<string>("Ruc")
                         .IsRequired()
@@ -517,34 +499,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                     b.ToTable("InvoiceNumberVoids");
                 });
 
-            modelBuilder.Entity("StockManagement.Kernel.Model.LicenseState", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("ActivatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ActivatedLicenseKey")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("HighWaterMarkUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("MachineId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("TrialStartedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LicenseStates");
-                });
-
             modelBuilder.Entity("StockManagement.Kernel.Model.PaymentLink", b =>
                 {
                     b.Property<string>("Id")
@@ -907,9 +861,6 @@ namespace StockManagement.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("MustChangePassword")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1088,7 +1039,7 @@ namespace StockManagement.Infrastructure.Database.Migrations
                             b1.HasOne("StockManagement.Kernel.Model.StockItem", "StockItem")
                                 .WithMany()
                                 .HasForeignKey("StockItemId")
-                                .OnDelete(DeleteBehavior.Restrict)
+                                .OnDelete(DeleteBehavior.Cascade)
                                 .IsRequired();
 
                             b1.Navigation("StockItem");
@@ -1214,7 +1165,7 @@ namespace StockManagement.Infrastructure.Database.Migrations
                             b1.HasOne("StockManagement.Kernel.Model.StockItem", "StockItem")
                                 .WithMany()
                                 .HasForeignKey("StockItemId")
-                                .OnDelete(DeleteBehavior.Restrict)
+                                .OnDelete(DeleteBehavior.Cascade)
                                 .IsRequired();
 
                             b1.Navigation("StockItem");
@@ -1310,7 +1261,7 @@ namespace StockManagement.Infrastructure.Database.Migrations
                             b1.HasOne("StockManagement.Kernel.Model.StockItem", "StockItem")
                                 .WithMany()
                                 .HasForeignKey("StockItemId")
-                                .OnDelete(DeleteBehavior.Restrict)
+                                .OnDelete(DeleteBehavior.Cascade)
                                 .IsRequired();
 
                             b1.Navigation("StockItem");

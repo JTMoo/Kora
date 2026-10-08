@@ -101,13 +101,14 @@ public sealed class PaymentLinkEndpointsTests
 	}
 
 	[TestMethod]
-	public async Task BancardWebhook_UnknownShopProcessId_Returns404()
+	public async Task BancardWebhook_UnknownShopProcessId_Returns200()
 	{
-		// Act
+		// Act - always 200 regardless of match (#255): a distinguishable not-found would let an unauthenticated
+		// caller enumerate valid shop_process_id values.
 		var response = await _client.PostAsJsonAsync("/api/webhooks/bancard", new BancardWebhookRequest("does-not-exist"), ApiFactory.JsonOptions);
 
 		// Assert
-		Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+		Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 	}
 
 	/// <returns>Number of a stored 15000-total credit invoice for <see cref="_customer"/></returns>

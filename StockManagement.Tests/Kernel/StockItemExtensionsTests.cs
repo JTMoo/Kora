@@ -123,4 +123,28 @@ public sealed class StockItemExtensionsTests
 		Assert.IsFalse(ok);
 		Assert.AreEqual(0, allocations.Count);
 	}
+
+	[TestMethod]
+	public void CalculatePurchaseTotal_SumsAmountTimesUnitPrice_RoundsToCurrencyDigits()
+	{
+		// Arrange
+		var itemA = new SupplierInvoiceItem(new StockItem("a")) { Amount = 3, UnitPrice = 10.004m };
+		var itemB = new SupplierInvoiceItem(new StockItem("b")) { Amount = 2, UnitPrice = 5.006m };
+
+		// Act
+		var result = StockItemExtensions.CalculatePurchaseTotal([itemA, itemB], currencyDecimalDigits: 2);
+
+		// Assert: 3*10.004 + 2*5.006 = 30.012 + 10.012 = 40.024 -> rounds to 40.02
+		Assert.AreEqual(40.02m, result);
+	}
+
+	[TestMethod]
+	public void CalculatePurchaseTotal_NullItems_ReturnsZero()
+	{
+		// Act
+		var result = StockItemExtensions.CalculatePurchaseTotal(null, currencyDecimalDigits: 0);
+
+		// Assert
+		Assert.AreEqual(0m, result);
+	}
 }

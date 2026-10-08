@@ -15,6 +15,9 @@ public interface ISupplierInvoiceServiceProvider
 	/// </summary>
 	public Task<CursorPage<SupplierInvoice>> GetSupplierInvoicesAsync(string? supplierId, string? cursor, int pageSize, CancellationToken cancellationToken = default);
 
+	/// <summary>
+	/// Adds the invoice and checks in every <see cref="SupplierInvoiceItem.Amount"/> as stock, atomically
+	/// </summary>
 	/// <exception cref="Exceptions.SupplierInvoiceNumberAlreadyExistsException">Number already in use; nothing written</exception>
 	public Task AddSupplierInvoiceAsync(SupplierInvoice invoice, CancellationToken cancellationToken = default);
 
