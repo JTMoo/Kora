@@ -22,7 +22,7 @@ internal sealed class GoodsImportDocumentConfiguration : IEntityTypeConfiguratio
 			item.WithOwner().HasForeignKey("GoodsImportDocumentId");
 			item.Property<Guid>("Id").ValueGeneratedOnAdd();
 			item.HasKey("Id");
-			item.HasOne(documentItem => documentItem.StockItem).WithMany().IsRequired();
+			item.HasOne(documentItem => documentItem.StockItem).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
 			item.Navigation(documentItem => documentItem.StockItem).AutoInclude();
 			item.ToTable("GoodsImportDocumentItems");
 		});

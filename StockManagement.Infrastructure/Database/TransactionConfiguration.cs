@@ -11,6 +11,8 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
 	{
 		builder.Property<string>("Id").ValueGeneratedOnAdd();
 		builder.HasKey("Id");
+		// Cascade, not Restrict: DeleteStockItemAsync itself inserts a Deletion-kind Transaction in the same SaveChanges
+		// call that removes the StockItem, so Restrict would make every delete fail its own audit write.
 		builder.HasOne(transaction => transaction.StockItem).WithMany().IsRequired();
 
 		// DateTime.Now (Kind=Local); Npgsql only accepts UTC for "timestamp with time zone"

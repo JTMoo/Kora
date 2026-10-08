@@ -183,6 +183,12 @@
   <data name="fileRequired" xml:space="preserve">
     <value>Eine Datei ist erforderlich.</value>
   </data>
+  <data name="fileTooLarge" xml:space="preserve">
+    <value>Die Datei ist zu groß (max. 20 MB).</value>
+  </data>
+  <data name="fileTypeNotAllowed" xml:space="preserve">
+    <value>Nur .xlsx-Dateien sind erlaubt.</value>
+  </data>
   <data name="statusImported" xml:space="preserve">
     <value>Importiert</value>
   </data>

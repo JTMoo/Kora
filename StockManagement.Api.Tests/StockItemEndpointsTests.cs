@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StockManagement.Api.Features.StockItems;
 using StockManagement.Kernel.Database.Interfaces;
 using StockManagement.Kernel.Model;
+using StockManagement.Kernel.Model.Types;
 
 namespace StockManagement.Api.Tests;
 
@@ -251,6 +252,26 @@ public sealed class StockItemEndpointsTests
 
 		// Assert
 		Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task DeleteStockItem_ReferencedByInvoice_Returns409AndKeepsItem()
+	{
+		// Arrange
+		var id = (await (await _client.GetAsync("/api/stock-items/A1")).Content.ReadAsAsync<StockItemResponse>()).Id;
+		var stockItem = await _factory.ScopedServices.GetRequiredService<IStockItemServiceProvider>().GetStockItemByIdAsync(id);
+		var customers = _factory.ScopedServices.GetRequiredService<ICustomerServiceProvider>();
+		await customers.AddCustomerAsync(new Customer { CustomerId = 1001, Name = "Ana" });
+		var customer = await customers.GetCustomerAsync(1001);
+		await _factory.ScopedServices.GetRequiredService<IInvoiceServiceProvider>()
+			.AddInvoiceAsync(new Invoice { Number = "1", Customer = customer, SaleCondition = SaleCondition.Cash, Items = [new ShoppingCartItem(stockItem) { Amount = 1 }] });
+
+		// Act
+		var response = await _client.DeleteAsync($"/api/stock-items/{id}");
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.Conflict, response.StatusCode);
+		Assert.AreEqual(HttpStatusCode.OK, (await _client.GetAsync("/api/stock-items/A1")).StatusCode);
 	}
 
 	[TestMethod]

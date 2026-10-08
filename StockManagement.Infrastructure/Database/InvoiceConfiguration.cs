@@ -26,7 +26,7 @@ internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
 			item.WithOwner().HasForeignKey("InvoiceId");
 			item.Property<Guid>("Id").ValueGeneratedOnAdd();
 			item.HasKey("Id");
-			item.HasOne(cartItem => cartItem.StockItem).WithMany().IsRequired();
+			item.HasOne(cartItem => cartItem.StockItem).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
 			item.Navigation(cartItem => cartItem.StockItem).AutoInclude();
 			item.ToTable("InvoiceItems");
 		});

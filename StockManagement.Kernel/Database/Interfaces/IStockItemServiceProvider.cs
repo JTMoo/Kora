@@ -26,6 +26,7 @@ public interface IStockItemServiceProvider
 	public Task<int> UpdateStockItemAsync(StockItem stockItem, CancellationToken cancellationToken = default);
 
 	/// <returns>Rows affected; 1 on success</returns>
+	/// <exception cref="Exceptions.StockItemInUseException">Referenced by a transaction, invoice, goods-import document or remission note</exception>
 	public Task<int> DeleteStockItemAsync(StockItem stockItem, CancellationToken cancellationToken = default);
 	public Task AddStockItemAsync(StockItem stockItem, CancellationToken cancellationToken = default);
 	public Task AddManyStockItemsAsync(IList<StockItem> stockItem, CancellationToken cancellationToken = default);
