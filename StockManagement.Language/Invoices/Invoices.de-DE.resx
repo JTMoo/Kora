@@ -261,4 +261,31 @@
   <data name="downloadIvaBook" xml:space="preserve">
     <value>CSV herunterladen</value>
   </data>
+  <data name="viewKude" xml:space="preserve">
+    <value>KuDE anzeigen</value>
+  </data>
+  <data name="kudeUnavailable" xml:space="preserve">
+    <value>KuDE noch nicht verfügbar.</value>
+  </data>
+  <data name="creditNotes" xml:space="preserve">
+    <value>Gutschriften</value>
+  </data>
+  <data name="debitNotes" xml:space="preserve">
+    <value>Lastschriften</value>
+  </data>
+  <data name="debitNote" xml:space="preserve">
+    <value>Lastschrift</value>
+  </data>
+  <data name="newDebitNote" xml:space="preserve">
+    <value>Neue Lastschrift</value>
+  </data>
+  <data name="items" xml:space="preserve">
+    <value>Positionen</value>
+  </data>
+  <data name="addItem" xml:space="preserve">
+    <value>Position hinzufügen</value>
+  </data>
+  <data name="debitNoteSavedToast" xml:space="preserve">
+    <value>Lastschrift {0} gespeichert.</value>
+  </data>
 </root>

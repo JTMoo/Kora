@@ -19,6 +19,8 @@ export * from "./goodsImports";
 export * from "./remissionNotes";
 export * from "./payments";
 export * from "./payables";
+export * from "./creditNotes";
+export * from "./debitNotes";
 export * from "./cashRegister";
 export * from "./license";
 export * from "./feedback";
@@ -26,7 +28,9 @@ export * from "./feedback";
 import { authApi } from "./auth";
 import { companySettingsApi } from "./companySettings";
 import { printerSettingsApi } from "./printerSettings";
+import { creditNotesApi } from "./creditNotes";
 import { customersApi } from "./customers";
+import { debitNotesApi } from "./debitNotes";
 import { feedbackApi } from "./feedback";
 import { goodsImportApi } from "./goodsImports";
 import { importApi } from "./import";
@@ -62,6 +66,8 @@ export const api = {
 	...remissionNotesApi,
 	...paymentsApi,
 	...payablesApi,
+	...creditNotesApi,
+	...debitNotesApi,
 	...cashRegisterApi,
 	...licenseApi,
 	...feedbackApi

@@ -5,7 +5,9 @@ import { useAuth } from "./auth";
 import { useFeedback } from "./Feedback";
 import { LoginPage } from "./features/auth/LoginPage";
 import { cashRegisterRoute } from "./features/cash-register/route";
+import { creditNotesRoute } from "./features/credit-notes/route";
 import { customersRoute } from "./features/customers/route";
+import { debitNotesRoute } from "./features/debit-notes/route";
 import { goodsImportsRoute } from "./features/goods-imports/route";
 import { invoicesRoute } from "./features/invoices/route";
 import { LicenseBanner } from "./features/licensing/LicenseBanner";
@@ -26,7 +28,7 @@ import type { NavRoute, View } from "./routes";
 import { useLoad } from "./useLoad";
 
 // Same order and icons as the WPF menu (FontAwesome Wrench, AddressBook, Inbox)
-const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, goodsImportsRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, companySettingsRoute, printerSettingsRoute, settingsRoute, usersRoute, licensingRoute];
+const routes: NavRoute[] = [stockItemsRoute, customersRoute, suppliersRoute, salesRoute, invoicesRoute, remissionNotesRoute, creditNotesRoute, debitNotesRoute, goodsImportsRoute, marangatuExportRoute, payablesRoute, cashRegisterRoute, reportsRoute, companySettingsRoute, printerSettingsRoute, settingsRoute, usersRoute, licensingRoute];
 
 export function App()
 {

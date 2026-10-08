@@ -5,7 +5,7 @@ import type { Invoice, Permission } from "./api";
 // Kernel: each feature's route.tsx depends on this; this depends on nothing feature-specific.
 // Adding a view means adding one route.tsx (icon, permission, render) and wiring it into App.tsx's `routes` array.
 
-export type View = "stockItems" | "clients" | "suppliers" | "newSale" | "invoices" | "remissionNotes" | "goodsImports" | "marangatuExport" | "payables" | "cashRegister" | "reports" | "companySettings" | "printerSettings" | "settings" | "users" | "licensing";
+export type View = "stockItems" | "clients" | "suppliers" | "newSale" | "invoices" | "remissionNotes" | "creditNotes" | "debitNotes" | "goodsImports" | "marangatuExport" | "payables" | "cashRegister" | "reports" | "companySettings" | "printerSettings" | "settings" | "users" | "licensing";
 
 export type NavContext = { invoice?: Invoice; onSold: (invoice: Invoice) => void };
 

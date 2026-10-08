@@ -490,5 +490,86 @@ namespace StockManagement.Language {
                 return ResourceManager.GetString("downloadIvaBook", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to View KuDE.
+        /// </summary>
+        public static string viewKude {
+            get {
+                return ResourceManager.GetString("viewKude", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to KuDE not available yet..
+        /// </summary>
+        public static string kudeUnavailable {
+            get {
+                return ResourceManager.GetString("kudeUnavailable", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Credit notes.
+        /// </summary>
+        public static string creditNotes {
+            get {
+                return ResourceManager.GetString("creditNotes", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Debit notes.
+        /// </summary>
+        public static string debitNotes {
+            get {
+                return ResourceManager.GetString("debitNotes", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Debit note.
+        /// </summary>
+        public static string debitNote {
+            get {
+                return ResourceManager.GetString("debitNote", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to New debit note.
+        /// </summary>
+        public static string newDebitNote {
+            get {
+                return ResourceManager.GetString("newDebitNote", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Items.
+        /// </summary>
+        public static string items {
+            get {
+                return ResourceManager.GetString("items", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add item.
+        /// </summary>
+        public static string addItem {
+            get {
+                return ResourceManager.GetString("addItem", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Debit note {0} saved..
+        /// </summary>
+        public static string debitNoteSavedToast {
+            get {
+                return ResourceManager.GetString("debitNoteSavedToast", resourceCulture);
+            }
+        }
     }
 }
